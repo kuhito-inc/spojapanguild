@@ -1,0 +1,31 @@
+{
+  "title": "ステークプール運用",
+  "pages": [
+    "index",
+    "---日常オペレーション---",
+    "kes-update",
+    "node-update",
+    "withdrawal",
+    "cert-update",
+    "---インフラ管理---",
+    "relay-migration",
+    "bp-migration",
+    "ubuntu24-migration",
+    "---運用ツール---",
+    "calidus-key-generation",
+    "mithril-client",
+    "sjg-tool-setup",
+    "sftp-setup",
+    "---Grafana追加設定---",
+    "grafana-security",
+    "grafana-alert",
+    "---ガバナンス---",
+    "gov-spo-vote",
+    "delegating-to-a-drep",
+    "catalyst-voting",
+    "---その他---",
+    "pool-retire",
+    "mithril-signer-node-setup-and-updates",
+    "linux-commands"
+  ]
+}

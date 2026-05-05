@@ -1,0 +1,245 @@
+---
+title: "アドレス生成"
+---
+
+# **アドレス生成**
+
+<Callout type="error" title="注意">
+
+プール登録後、以下の手順をやり直しすると変更手続きが面倒になるのでご注意ください。
+
+</Callout>
+
+
+
+
+## **1. プロトコルパラメータの取得**
+
+<Tabs items={["ブロックプロデューサーノード"]}>
+<Tab value="ブロックプロデューサーノード">
+
+```bash
+cd $NODE_HOME
+cardano-cli latest query protocol-parameters \
+    $NODE_NETWORK \
+    --out-file params.json
+```
+
+</Tab>
+</Tabs>
+
+<Callout type="info" title="運用上のセキュリティに関する重要なアドバイス">
+
+キーの生成はエアギャップオフラインマシンで生成する必要があり、インターネット接続が無くても生成可能です。  
+paymentキーは支払い用アドレスに使用され、stakeキーはプール委任アドレス用の管理に使用されます。
+
+</Callout>
+
+
+
+## **2. 支払いアドレスキーの作成**
+
+<Tabs items={["エアギャップオフラインマシン"]}>
+<Tab value="エアギャップオフラインマシン">
+
+
+
+</Tab>
+</Tabs>
+
+```bash
+cd $NODE_HOME
+cardano-cli latest address key-gen \
+    --verification-key-file payment.vkey \
+    --signing-key-file payment.skey
+```
+## **3. ステークアドレスキーの作成**
+
+<Tabs items={["エアギャップオフラインマシン"]}>
+<Tab value="エアギャップオフラインマシン">
+
+
+
+</Tab>
+</Tabs>
+
+```bash
+cardano-cli latest stake-address key-gen \
+    --verification-key-file stake.vkey \
+    --signing-key-file stake.skey
+```
+
+## **4. ステークアドレスの作成**
+
+<Tabs items={["エアギャップオフラインマシン"]}>
+<Tab value="エアギャップオフラインマシン">
+
+
+
+</Tab>
+</Tabs>
+
+```bash
+cardano-cli latest stake-address build \
+    --stake-verification-key-file stake.vkey \
+    --out-file stake.addr \
+    $NODE_NETWORK
+```
+
+## **5. 支払い用アドレスの作成**
+<Tabs items={["エアギャップオフラインマシン"]}>
+<Tab value="エアギャップオフラインマシン">
+
+
+
+</Tab>
+</Tabs>
+
+```bash
+cardano-cli latest address build \
+    --payment-verification-key-file payment.vkey \
+    --stake-verification-key-file stake.vkey \
+    --out-file payment.addr \
+    $NODE_NETWORK
+```
+
+上書き・削除されないようパーミッションを変更する。
+
+<Tabs items={["エアギャップオフラインマシン"]}>
+<Tab value="エアギャップオフラインマシン">
+
+
+
+</Tab>
+</Tabs>
+
+```bash
+chmod 400 payment.vkey
+chmod 400 payment.skey
+chmod 400 stake.vkey
+chmod 400 stake.skey
+chmod 400 stake.addr
+chmod 400 payment.addr
+```
+
+| ファイル      | 用途                          |
+| ----------- | ------------------------------------ |
+| `payment.vkey`       | paymentアドレス公開鍵  |
+| `payment.skey`       | paymentアドレス秘密鍵 |
+| `payment.addr`    | paymentアドレスファイル |
+| `stake.vkey`       | ステークアドレス公開鍵  |
+| `stake.skey`       | ステークアドレス秘密鍵 |
+| `stake.addr`    | ステークアドレスファイル |
+
+<Callout type="error" title="注意">
+
+これらのファイルは紛失しないようにご注意ください。  
+特に`.vkey`/`.skey`を無くした場合、プール報酬や誓約金を引き出せなくなります。  
+複数の外部デバイスにバックアップを取ってください。
+
+</Callout>
+
+
+
+
+
+
+## **6. 支払い用アドレスへ入金**
+
+次のステップは、あなたの支払いアドレスに送金する手順です。
+
+<Callout type="warn" title="ファイル転送">
+
+エアギャップマシンの`payment.addr`と`stake.addr` をBPのcnodeディレクトリにコピーします。
+``` mermaid
+graph LR
+    A[エアギャップ] -->|payment.addr / stake.addr| B[BP];
+```
+
+</Callout>
+
+
+<Tabs items={["メインネット", "テストネット"]}>
+<Tab value="メインネット">
+
+
+<Callout type="info" title="Cardanoウォレット(メインネット)から送金が可能です">
+
+* （例）ダイダロス / ヨロイウォレット / Eternl  
+
+</Callout>
+
+
+支払いアドレスを表示させ、このアドレスに送金します。
+
+```bash
+echo "$(cat $NODE_HOME/payment.addr)"
+```
+<Callout type="warn" title="何ADA入金したらいい？">
+
+初回はテストで少額から入金してください  
+
+payment.addrは以下の役割があるため必要分入金してください  
+●プール登録料の支払い(500ADA)  
+●ステークアドレス登録料の支払い(2ADA)  
+●トランザクション手数料の支払い(数ADA)  
+●誓約金の預け先(誓約として設定したい額)  
+
+</Callout>
+
+
+</Tab>
+<Tab value="テストネット">
+
+<Callout type="info" title="テストネット用tADAの請求">
+
+[テストネット用口座](https://docs.cardano.org/cardano-testnets/tools/faucet)にあなたの支払い用アドレスをリクエストします。  
+テストネット用口座は24時間ごとに10000tADAを提供します。
+
+</Callout>
+
+
+次のコードを実行し。支払いアドレスを表示させます。
+
+```bash
+echo "$(cat $NODE_HOME/payment.addr)"
+```
+
+このアドレスを上記ページのリクエスト欄に貼り付けます。
+
+</Tab>
+</Tabs>
+
+支払い用アドレスに送金後、残高を確認してください。
+
+<Callout type="info" title="Hint">
+
+ノードをブロックチェーンと完全に同期させる必要があります。完全に同期されていない場合は、残高が表示されません。
+
+</Callout>
+
+
+
+<Tabs items={["ブロックプロデューサーノード"]}>
+<Tab value="ブロックプロデューサーノード">
+
+
+```bash
+cardano-cli latest query utxo \
+    --address $(cat payment.addr) \
+    $NODE_NETWORK \
+    --output-text
+```
+
+次のように表示されたら入金完了です。
+
+```text
+                        TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+9e0c10b599606a5**********************************************     0        10000000000     lovelace + TxOutDatumNone
+```
+
+</Tab>
+</Tabs>
+
+---

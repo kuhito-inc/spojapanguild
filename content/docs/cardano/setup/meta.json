@@ -1,0 +1,18 @@
+{
+  "title": "ステークプール構築",
+  "pages": [
+    "index",
+    "air-gapped-setup",
+    "ubuntu-setup",
+    "node-setup",
+    "relay-bp-setup",
+    "bp-key-setup",
+    "address-generate",
+    "stake-address-register",
+    "stake-pool-register",
+    "final-checks",
+    "monitoring-setup",
+    "blocklog-setup",
+    "blocknotify-setup"
+  ]
+}
