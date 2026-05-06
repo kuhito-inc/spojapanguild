@@ -1,6 +1,10 @@
 {
   "title": "Cardano",
+  "description": "Cardano バリデータの構築・運用",
+  "icon": "Boxes",
+  "root": true,
   "pages": [
+    "index",
     "---ステークプール構築---",
     "setup",
     "---ステークプール運用---",

@@ -1,0 +1,16 @@
+{
+  "title": "概要",
+  "description": "SPO JAPAN GUILD ドキュメントの概要",
+  "icon": "House",
+  "root": true,
+  "pages": [
+    "index",
+    "---SPO JAPAN GUILD---",
+    "learning",
+    "contributors",
+    "donation-credit",
+    "---その他---",
+    "spo-newsletter",
+    "changelogs"
+  ]
+}

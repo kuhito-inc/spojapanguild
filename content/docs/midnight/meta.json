@@ -1,5 +1,8 @@
 {
   "title": "Midnight",
+  "description": "Midnight バリデータの構築・運用",
+  "icon": "Moon",
+  "root": true,
   "pages": [
     "index"
   ]
