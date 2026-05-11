@@ -307,7 +307,7 @@ sudo dpkg-reconfigure --priority=low unattended-upgrades
 `root`アカウントを無効化します。
 > サーバーのセキュリティ維持のため、頻繁に root アカウントでログインしないでください。
 
-<Callout type="info" title="`root`アカウント無効">
+<Callout type="info" title="rootアカウント無効">
 
 ```bash
 sudo passwd -l root
@@ -316,14 +316,16 @@ sudo passwd -l root
 </Callout>
 
 
-<Callout type="info" title="`root`アカウント有効">
+<AccordionsRed type="single">
+  <Accordion id="ubuntu-setup-root-account-enable" title="rootアカウント有効">
 
+何らかの理由でrootアカウントを有効にする必要がある場合のみ有効にします。
 ```bash
 sudo passwd -u root
 ```
-> 何らかの理由でrootアカウントを有効にする必要がある場合
 
-</Callout>
+  </Accordion>
+</AccordionsRed>
 
 
 
@@ -362,7 +364,8 @@ sudo nano /etc/fail2ban/jail.local
 ```
 
 ファイルの最後に次の行を追加し保存します。
-> コマンド中の (SSHポートを入力してください) については[3. SSH設定変更](/docs/cardano/setup/ubuntu-setup#3-ssh)で設定したSSHポートを入力してください。(**)は不要です。
+> コマンド中の (SSHポートを入力してください) については[3. SSH設定変更](/docs/cardano/setup/ubuntu-setup#sec-3)で設定したSSHポートを入力してください。  
+(**)は不要です。
 
 ```bash
 [sshd]
@@ -400,7 +403,6 @@ sudo mv /etc/chrony/chrony.conf /etc/chrony/chrony-bk.conf
 ```
 
 `/etc/chrony/chrony.conf`を更新します。
-> 以下をすべてコピーして実行してください。
 
 ```bash
 cat > $HOME/chrony.conf << EOF
@@ -620,7 +622,8 @@ cat $HOME/sysctl-before-cardano-*.txt
 
     
 
-<Callout type="info" title="`Google Authenticator`を用いたSSH2段階設定（任意）">
+<AccordionsBlue type="single">
+  <Accordion id="ubuntu-setup-ssh-google-authenticator" title="Google Authenticatorを用いたSSH2段階設定">
 
 システムを更新して`libpam-google-authenticator`をインストールします。
 
@@ -780,7 +783,7 @@ kbdinteractiveauthentication yes
 authenticationmethods publickey,keyboard-interactive
 ```
 
-### 最終確認（必須） [#sec-12]
+**最終確認**
 
 既存の SSH セッションは切断せず、**別ターミナルから新規接続**を行い、以下を必ず確認してください。
 
@@ -791,7 +794,7 @@ authenticationmethods publickey,keyboard-interactive
 以下の実効値が表示されていれば、設定は正しく反映されています。
 
 
-## SSH 2FA（Google Authenticator）完全クリーンアップ [#sec-13]
+**SSH 2FA（Google Authenticator）完全クリーンアップ**
 
 SSH 側：2FA 強制を解除
 ```bash
@@ -851,7 +854,8 @@ sudo apt autoremove -y
 rm -f ~/.google_authenticator
 ```
 
-</Callout>
+  </Accordion>
+</AccordionsBlue>
 
 
 ---
