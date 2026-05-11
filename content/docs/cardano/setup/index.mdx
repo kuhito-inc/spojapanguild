@@ -19,7 +19,7 @@ Windows向けの軽量SSHクライアントです。
 
 ダウンロード：[https://kmiya-culti.github.io/RLogin/](https://kmiya-culti.github.io/RLogin/)
 
-<Accordions type="single">
+<AccordionsBlue type="single">
   <Accordion id="r-login-recommended-settings" title="R-Login 推奨設定">
 
 **カラー設定**  
@@ -29,7 +29,7 @@ Windows向けの軽量SSHクライアントです。
 <img src="/images/r-login-setting.png" width="500px" />
 
   </Accordion>
-</Accordions>
+</AccordionsBlue>
 
 
 </Callout>
@@ -81,9 +81,8 @@ where ssh
 ```cmd
 powershell -Command "Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0"
 ```
-> 追加後、`where ssh`を実行し、PATHが表示されていることを確認  
-
-※ OpenSSH の追加のみ管理者権限が必要です。以降は通常モードの cmd で実行してください。
+> 追加後、`where ssh`を実行し、PATHが表示されていることを確認。  
+> OpenSSH の追加のみ管理者権限が必要です。以降は通常モードの cmd で実行してください。
 
 </Callout>
 
@@ -131,6 +130,3 @@ mv ssh_ed25519.pub authorized_keys
 `authorized_keys` （公開鍵）
 
 </Callout>
-
-
----

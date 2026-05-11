@@ -11,11 +11,6 @@ graph LR
     C[3-stake.addrから全額引出処理] -->|全額| D(3-payment.addr着金確認);
     E[4-stake.addr解除処理] -->|2ADA返還| F(4-payment.addr確認);
     G[5-payment.addr全額引出処理] -->|全額| H(5-任意のアドレス確認);
-    click A "./#1"
-    click B "./#_3"
-    click C "../withdrawal/#2-1-paymentaddr"
-    click E "./#2"
-    click G "./#3paymentaddr"
 ```
 
 </Callout>
@@ -311,7 +306,7 @@ curl -s -X POST -H "content-type: application/json" -d @- "https://api.koios.res
 EOS
 ```
 
-```yaml
+```yaml title="期待される表示例：" noCopy
 #戻り値サンプル
 "retired" # "retiring"でリタイア処理待ち "retired"でリタイア済み 
 309 #リタイアエポック
@@ -361,7 +356,7 @@ cardano-cli latest query stake-address-info \
 
 ## 3. stake.addrから引き出し
 
-[stake.addrからpayment.addrへ送金する方法](/docs/cardano/operation/withdrawal#1-1-paymentaddr)  
+[stake.addrからpayment.addrへ送金する方法](/docs/cardano/operation/withdrawal#1-1-paymentaddrへ送金する方法)  
 
 
 ## 4. ステークキーの解除
@@ -825,7 +820,7 @@ cardano-cli latest query utxo \
 
 トランザクションが消えていれば問題ありません。
 
-```text
+```yaml title="期待される表示例：" noCopy
                            TxHash                                 TxIx        Lovelace
 ----------------------------------------------------------------------------------------
 ```

@@ -51,7 +51,7 @@ title: "Ubuntu初期設定"
 adduser cardano
 ```
 
-```yaml
+```yaml title="期待される表示例：" noCopy
 New password:           # パスワードを設定
 Retype new password:    # 確認のため再入力
 
@@ -167,7 +167,7 @@ sudo sshd -t
 ```bash
 sudo sshd -T | grep -iE 'passwordauthentication|kbdinteractiveauthentication|permitrootlogin|port'
 ```
-```yaml
+```yaml title="期待される表示例：" noCopy
 port xxxxx
 permitrootlogin no
 passwordauthentication no
@@ -206,7 +206,7 @@ sudo systemctl restart ssh.socket
 ```bash
 sudo ss -tlnp | grep ssh
 ```
-```yaml
+```yaml title="期待される表示例：" noCopy
 LISTEN 0 4096 0.0.0.0:<設定したSSH Port>  
 LISTEN 0 4096 [::]:<設定したSSH Port>  
 ```
@@ -648,17 +648,17 @@ google-authenticator
 
 - `認証トークンを時間ベースにしたいですか？`に対して「`y`」を入力します。
 > 表示される `secret key` / `スクラッチコード` は、スクリーンショットではなく安全な保管方法（オフライン保管等）で保存してください。
-```yaml
+```yaml title="期待される表示例：" noCopy
 Do you want authentication tokens to be time-based (y/n) : y
 ```
 
 - `Google Authenticator`でQRコードを読み込み、表示された6桁のコードを入力
-```yaml
+```yaml title="期待される表示例：" noCopy
 Enter code from app (-1 to skip) : ******
 ```
 
 - スクラッチコードも控えておきます。
-```yaml
+```yaml title="期待される表示例：" noCopy
 Code confirmed
 Your emergency scratch codes are : 
   ********
@@ -669,19 +669,19 @@ Your emergency scratch codes are :
 ```
 
 - `「/home/$USER/.google_authenticator」ファイルを更新しますか？`に対して「`y`」を入力
-```yaml
+```yaml title="期待される表示例：" noCopy
 Do you want me to update your "/home/$USER/.google_authenticator" file? (y/n) : y
 ```
 
 - `同じ認証トークンの複数回使用を禁止しますか？これにより、約30秒ごとに1回のログインに制限されますが、中間者攻撃を検知したり、防止したりする可能性が高まります。`に対して「`y`」を入力
-```yaml
+```yaml title="期待される表示例：" noCopy
 Do you want to disallow multiple uses of the same authentication
 token? This restricts you to one login about every 30s, but it increases
 your chances to notice or even prevent man-in-the-middle attacks (y/n) : y
 ```
 
 - `デフォルトでは、モバイルアプリによって30秒ごとに新しいトークンが生成されます。クライアントとサーバー間の時刻のずれを補正するため、現在時刻の前後に追加のトークンを許可しています。これにより、認証サーバーとクライアント間の時刻のずれは最大30秒まで許容されます。時刻同期がうまくいかない場合は、ウィンドウサイズをデフォルトの3コード（前のコード1つ、現在のコード、次のコード）から17コード（前のコード8つ、現在のコード、次のコード8つ）に増やすことができます。これにより、クライアントとサーバー間の時刻のずれ最大4分まで許容されます。これを実行しますか？`に対して「`n`」を入力
-```yaml
+```yaml title="期待される表示例：" noCopy
 By default, a new token is generated every 30 seconds by the mobile app.
 In order to compensate for possible time-skew between the client and the server,
 we allow an extra token before and after the current time. This allows for a
@@ -695,7 +695,7 @@ Do you want to do so? (y/n) : n
 ```
 
 - `ログイン先のコンピューターがブルートフォース攻撃によるログイン試行に対して強化されていない場合は、認証モジュールのレート制限を有効にすることができます。デフォルトでは、攻撃者によるログイン試行は30秒ごとに3回までに制限されます。レート制限を有効にしますか？`に対して「`y`」を入力
-```yaml
+```yaml title="期待される表示例：" noCopy
 If the computer that you are logging into isn't hardened against brute-force
 login attempts, you can enable rate-limiting for the authentication module.
 By default, this limits attackers to no more than 3 login attempts every 30s.
@@ -726,7 +726,7 @@ echo 'auth required pam_google_authenticator.so' | sudo tee -a /etc/pam.d/sshd >
 ```bash
 grep -n -E 'common-auth|pam_google_authenticator' /etc/pam.d/sshd
 ```
-```yaml
+```yaml title="期待される表示例：" noCopy
 4:# @include common-auth
 56:auth required pam_google_authenticator.so
 ```
@@ -748,7 +748,7 @@ sudo grep -RIn --color=auto \
   -E '^\s*KbdInteractiveAuthentication\s+no\b' \
   /etc/ssh/sshd_config /etc/ssh/sshd_config.d 2>/dev/null
 ```
-```yaml
+```yaml title="期待される表示例：" noCopy
 /etc/ssh/sshd_config:61:KbdInteractiveAuthentication no
 /etc/ssh/sshd_config.d/01-custom-ssh.conf:2:KbdInteractiveAuthentication no
 ```
@@ -773,7 +773,7 @@ sudo systemctl restart ssh.socket
 ```bash
 sudo sshd -T | egrep -i 'usepam|kbdinteractiveauthentication|authenticationmethods|passwordauthentication'
 ```
-```yaml
+```yaml title="期待される表示例：" noCopy
 usepam yes
 passwordauthentication no
 kbdinteractiveauthentication yes
@@ -809,7 +809,7 @@ sudo systemctl restart ssh.socket
 ```bash
 sudo sshd -T | egrep -i 'authenticationmethods|kbdinteractiveauthentication'
 ```
-```yaml 
+```yaml title="期待される表示例：" noCopy
 kbdinteractiveauthentication yes
 authenticationmethods any
 ```
@@ -827,7 +827,7 @@ sudo sed -i -E 's/^#\s*@include\s+common-auth/@include common-auth/' /etc/pam.d/
 ```bash
 grep -n -E 'common-auth|pam_google_authenticator' /etc/pam.d/sshd
 ```
-```yaml 
+```yaml title="期待される表示例：" noCopy
 4:@include common-auth
 ``` 
 

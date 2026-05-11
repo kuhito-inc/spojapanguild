@@ -5,7 +5,7 @@ title: "エアギャップ環境構築"
 <Callout type="info" title="エアギャップマシンとは">
 
 エアギャップマシンとは、ネットワークから完全に隔離されたオフライン環境で動作する専用マシンを指します。  
-ステークプール運用においては、ウォレットの秘密鍵およびプール運営用の秘密鍵を安全に管理し、**オフライン状態**で**`cardano-cli`**を用いたトランザクション署名を行うために使用します。  
+ステークプール運用においては、ウォレットの秘密鍵およびプール運営用の秘密鍵を安全に管理し、**オフライン状態**で`cardano-cli`を用いたトランザクション署名を行うために使用します。  
 エアギャップの一般的な定義および考え方については、[Wikipediaの解説](https://ja.wikipedia.org/wiki/%E3%82%A8%E3%82%A2%E3%82%AE%E3%83%A3%E3%83%83%E3%83%97)をご参照ください。
 
 <Callout type="error" title="秘密鍵オンライン保存のリスク">
@@ -51,8 +51,8 @@ UbuntuをインストールするPC（既存OSが消去されても問題ないP
 ### 1. Ubuntu Desktopイメージの取得
 Ubuntu **`Desktop`** イメージファイルをダウンロードします。
 
-[**Ubuntu 24.04.* (Noble Numbat)**](https://releases.ubuntu.com/noble)  
-※ ダウンロード完了まで少しかかるのでしばらくお待ちください。
+[Ubuntu 24.04.* (Noble Numbat)](https://releases.ubuntu.com/noble)  
+> ダウンロード完了まで少しかかるのでしばらくお待ちください。
 
 
 ### 2. USBブートディスク作成（balenaEtcher）
@@ -62,7 +62,7 @@ Ubuntu **`Desktop`** イメージファイルをダウンロードします。
 
 - 初期化しても問題ない容量**`12GB`**以上のUSBメモリデバイス  
 - `Windows`または`macOS`が動作するPC  
-- [1. Ubuntu Desktopイメージの取得](/docs/cardano/setup/air-gapped-setup#1-ubuntu-desktop)で取得したISOイメージファイル
+- [1. Ubuntu Desktopイメージの取得](/docs/cardano/setup/air-gapped-setup#1-ubuntu-desktopイメージの取得)で取得したISOイメージファイル
 
 </Callout>
 
@@ -166,7 +166,7 @@ macOS環境では、USBメディアが「読み取れません」といった警
 ![](/images/airgap/ubuntu-desktop-24.04.3/1_ubuntu-24.04.3-install.png)
 
 #### 3-1. インストーラーのセットアップ
-※ 以降の画像は一例であり、環境によって表示が異なる場合があります。  
+> 以降の画像は一例であり、環境によって表示が異なる場合があります。  
 
 1. 言語を選択。  
 ![](/images/airgap/ubuntu-desktop-24.04.3/2_ubuntu-24.04.3-install.png)
@@ -256,7 +256,7 @@ exit
 
 #### 3-7. 通信機能の完全無効化
 エアギャップ・オフラインマシンとして運用するため、`Wi-Fi` / `Bluetooth` / `有線通信`を含むすべてのネットワーク機能を`OS`レベルで無効化します。  
-※ 機内モードは再起動後に解除されるため使用しません。
+> 機内モードは再起動後に解除されるため使用しません。
 
 1. `NetworkManager`の完全停止  
 ```bash
@@ -286,7 +286,7 @@ sudo rfkill block all
 ```bash
 rfkill list
 ```
-`Soft blocked: yes` であることを確認します。　　
+`Soft blocked: yes` であることを確認します。
 
 5. `rfkill` の永続化
 ```bash
@@ -323,8 +323,7 @@ sudo reboot
 ```bash
 nmcli general status
 ```
-期待される表示例：
-```yaml
+```yaml title="期待される表示例：" noCopy
 Error: NetworkManager is not running.
 ```  
 
@@ -332,8 +331,7 @@ Error: NetworkManager is not running.
 ```bash
 nmcli radio
 ```
-期待される表示例：
-```yaml
+```yaml title="期待される表示例：" noCopy
 Error: NetworkManager is not running.
 ```
 
@@ -347,8 +345,7 @@ rfkill list
 ```bash
 systemctl status bluetooth --no-pager
 ```
-期待される表示例：
-```yaml
+```yaml title="期待される表示例：" noCopy
 ○ bluetooth.service
      Loaded: masked (Reason: Unit bluetooth.service is masked.)
      Active: inactive (dead)
@@ -372,7 +369,9 @@ source ~/.bashrc
 mkdir -p ${NODE_HOME}
 ```
 
-<Callout type="info" title="テストネットの場合はこちら">
+
+<AccordionsBlue type="single">
+  <Accordion id="air-gapped-setup-testnet" title="テストネットの場合はこちら">
 
 <Tabs items={["Preview", "PreProd"]}>
 <Tab value="Preview">
@@ -403,8 +402,8 @@ mkdir -p ${NODE_HOME}
 </Tab>
 </Tabs>
 
-
-</Callout>
+  </Accordion>
+</AccordionsBlue>
 
 
 #### 4-2. ファイルの移動
@@ -441,6 +440,6 @@ chmod a-rx $HOME/cold-keys
 
 #### 4-3. cardano-cliのインストール
 
-[バイナリーファイルコピー](/docs/cardano/operation/node-update#4)を参照してください。
+[バイナリーファイルコピー](/docs/cardano/operation/node-update#4-エアギャップアップデート)を参照してください。
 
 ---

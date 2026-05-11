@@ -27,6 +27,21 @@ function normalizeDocsPathAndQuery(fullPathQueryHash: string): string {
   return strippedPath.replace(/\/{2,}/g, '/') + query + hash;
 }
 
+/** `/path#同じ#同じ` → `/path#同じ`（フラグメントがそのまま連結で重複している場合） */
+function collapseDuplicateHashSegments(full: string): string {
+  const i = full.indexOf('#');
+  if (i === -1) return full;
+  const before = full.slice(0, i + 1);
+  const rest = full.slice(i + 1);
+  const segments = rest.split('#').filter((s) => s.length > 0);
+  if (segments.length < 2) return full;
+  const head = segments[0]!;
+  if (segments.every((s) => s === head)) {
+    return before + head;
+  }
+  return full;
+}
+
 /**
  * Markdown `<a>` 用。
  * `./` など相対リンクを現在のページから `/docs/**` に解決し、`/docs` では `.md` 修飾子を除去する。
@@ -53,7 +68,10 @@ function normalizeHref(href: string, pathname: string | null): string {
 
   if (!pathQueryHash.startsWith('/docs')) return pathQueryHash;
 
-  return normalizeDocsPathAndQuery(pathQueryHash);
+  let normalized = normalizeDocsPathAndQuery(pathQueryHash);
+  // `/docs/...#4#4-見出し` のように番号が二重になったフラグメント先頭
+  normalized = normalized.replace(/^(\/docs\/[^#]*)#(\d)#\2-/, '$1#$2-');
+  return collapseDuplicateHashSegments(normalized);
 }
 
 export function DocsMdxAnchor(props: ComponentPropsWithoutRef<typeof Link>) {
@@ -65,5 +83,6 @@ export function DocsMdxAnchor(props: ComponentPropsWithoutRef<typeof Link>) {
   }
 
   const normalized = normalizeHref(href, pathname);
-  return <Link {...rest} href={normalized} />;
+  const hasFragment = normalized.includes('#');
+  return <Link {...rest} href={normalized} prefetch={hasFragment ? false : rest.prefetch} />;
 }

@@ -328,7 +328,7 @@ sudo nginx -t
 <Tabs items={["正常な場合", "エラーがある場合(例) "]}>
 <Tab value="正常な場合">
 
-```yaml
+```yaml title="期待される表示例：" noCopy
 nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
 nginx: configuration file /etc/nginx/nginx.conf test is successful
 ```
@@ -336,11 +336,11 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 </Tab>
 <Tab value="エラーがある場合(例) ">
 
-```yaml
+エラー箇所を修正してください。
+```yaml title="期待される表示例：" noCopy
 nginx: [emerg] unexpected "}" in /etc/nginx/sites-enabled/******.conf:8
 nginx: configuration file /etc/nginx/nginx.conf test failed
 ```
-エラー箇所を修正してください。
 
 </Tab>
 </Tabs>

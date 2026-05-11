@@ -59,7 +59,7 @@ make check
 
 <Callout type="info" title="戻り値確認">
 
-```yaml
+```yaml title="期待される表示例：" noCopy
 Testsuite summary for libsodium 1.0.18
 ============================================================================
 # TOTAL: 82
@@ -99,7 +99,7 @@ make check
 ```
 <Callout type="info" title="戻り値確認">
 
-```yaml
+```yaml title="期待される表示例：" noCopy
 Testsuite summary for libsecp256k1 0.3.2
 ============================================================================
 # TOTAL: 3
@@ -290,7 +290,7 @@ cardano-node version
 ```
 
 以下の戻り値を確認します。  
-```yaml
+```yaml title="期待される表示例：" noCopy
 cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
 git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
 
@@ -322,7 +322,8 @@ echo export NODE_NETWORK='"--mainnet"' >> $HOME/.bashrc
 echo export CARDANO_NODE_NETWORK_ID=mainnet >> $HOME/.bashrc
 ```
 
-<Callout type="info" title="テストネットの場合はこちら">
+<AccordionsBlue type="single">
+  <Accordion id="node-setup-env-testnet" title="テストネットの場合はこちら">
 
 <Tabs items={["Preview(テストネット)", "PreProd(テストネット)"]}>
 <Tab value="Preview(テストネット)">
@@ -345,8 +346,8 @@ echo export CARDANO_NODE_NETWORK_ID=1 >> $HOME/.bashrc
 </Tab>
 </Tabs>
 
-
-</Callout>
+  </Accordion>
+</AccordionsBlue>
 
 
 bashrc再読み込み
@@ -485,7 +486,7 @@ chmod +x startBlockProducingNode.sh
 
 
 一旦ノードを停止します。
-```yaml
+```yaml title="期待される表示例：" noCopy
 Ctrl+C
 ```
 
@@ -620,7 +621,7 @@ source $HOME/.bashrc
 ```
 
 単語を入力するだけで、起動状態(ログ)を確認できます。  
-```yaml
+```yaml title="期待される表示例：" noCopy
 cnode ・・・ログ表示
 cnstart ・・・ノード起動
 cnrestart ・・・ノード再起動
@@ -754,7 +755,8 @@ source ~/.bashrc
 mkdir -p ${NODE_HOME}
 ```
 
-<Callout type="info" title="テストネットの場合はこちら">
+<AccordionsBlue type="single">
+  <Accordion id="node-setup-section8-testnet" title="テストネットの場合はこちら">
 
 <Tabs items={["Preview", "PreProd"]}>
 <Tab value="Preview">
@@ -783,8 +785,8 @@ mkdir -p ${NODE_HOME}
 </Tab>
 </Tabs>
 
-
-</Callout>
+  </Accordion>
+</AccordionsBlue>
 
 
 ### 8-3. 反映確認

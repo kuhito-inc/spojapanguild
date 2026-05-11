@@ -40,7 +40,7 @@ export default defineConfig({
         if ('noCopy' in data || 'nocopy' in data) {
           data.allowCopy = false;
           data['data-no-copy'] = true;
-          data.title ??= '期待される表示例';
+          data.title ??= '期待される表示例：';
         }
 
         data.__raw = parsed.rest;

@@ -19,7 +19,7 @@ title: "Mithril Signerノードの設定、更新"
 
 <Callout type="info" title="補足">
 
-**`Mithril Signer`**は、ブロック生成ノード（BP）が保持する`KES鍵`を用いて署名を行うため、BP上で稼働させる必要があります。
+`Mithril Signer`は、ブロック生成ノード（BP）が保持する`KES鍵`を用いて署名を行うため、BP上で稼働させる必要があります。
 
 </Callout>
 
@@ -188,7 +188,7 @@ sudo make install
 ```
 
 戻り値
-```yaml
+```yaml title="期待される表示例：" noCopy
 Squid Cache: Version 7.5
 Service Name: squid
 configure options:  '--prefix=/opt/squid' '--localstatedir=/opt/squid/var' '--libexecdir=/opt/squid/lib/squid' '--datadir=/opt/squid/share/squid' '--sysconfdir=/etc/squid' '--with-default-user=squid' '--with-logdir=/opt/squid/var/log/squid' '--with-pidfile=/opt/squid/var/run/squid.pid' 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:'
@@ -367,11 +367,11 @@ PARTY_ID=$(cat $NODE_HOME/pool.id-bech32) AGGREGATOR_ENDPOINT=https://aggregator
 <Callout type="info" title="登録確認">
 
 正常の場合
-```yaml
+```yaml title="期待される表示例：" noCopy
 >> Congrats, your signer node is registered!
 ```
 未登録の場合
-```yaml
+```yaml title="期待される表示例：" noCopy
 >> Oops, your signer node is not registered. Party ID not found among the signers registered at epoch ***.
 ```
 
@@ -395,7 +395,7 @@ source $HOME/.bashrc
 ```
 
 設定後は、以下のコマンドを実行するだけで、`Mithril Signer`の起動状態（ログ）をリアルタイムで確認できます。
-```yaml
+```yaml title="期待される表示例：" noCopy
 mithril ・・・ログ表示
 ```
 
@@ -441,13 +441,13 @@ sudo promtool check config /etc/prometheus/prometheus.yml
 <Callout type="info" title="戻り値確認">
 
 構文エラーなしの場合
-```yaml
+```yaml title="期待される表示例：" noCopy
 Checking /etc/prometheus/prometheus.yml
 SUCCESS: 0 rule files found
 ```
 
 構文エラーの場合(一例)
-```yaml
+```yaml title="期待される表示例：" noCopy
 Checking /etc/prometheus/prometheus.yml
 FAILED: parsing YAML file /etc/prometheus/prometheus.yml: yaml: line XX: did not find expected '-' indicator
 ```
@@ -554,7 +554,7 @@ curl -s localhost:61234/metrics | grep ^mithril_signer_signer_registration_succe
 
 <Callout type="info" title="Signer登録成功の戻り値">
 
-```yaml
+```yaml title="期待される表示例：" noCopy
 mithril_signer_signer_registration_success_last_epoch  (現在のエポック）
 mithril_signer_signer_registration_success_since_startup 1
 ```
@@ -643,7 +643,7 @@ sudo make install
 ```
 
 戻り値
-```yaml
+```yaml title="期待される表示例：" noCopy
 Squid Cache: Version 7.5
 ```
 

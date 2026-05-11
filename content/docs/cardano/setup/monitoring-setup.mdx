@@ -199,14 +199,14 @@ sudo promtool check config $HOME/prometheus.yml
 <Callout type="info" title="戻り値確認">
 
 構文エラーなしの場合
-```yaml
+```yaml title="期待される表示例：" noCopy
 Checking /home/$USER/prometheus.yml
 SUCCESS: /home/$USER/prometheus.yml is valid prometheus config file syntax
 ```
 
 <Callout type="warn" title="構文エラーの場合(一例)">
 
-```yaml
+```yaml title="期待される表示例：" noCopy
 Checking /home/$USER/prometheus.yml
   FAILED: parsing YAML file /home/$USER/prometheus.yml: yaml: line **: did not find expected '-' indicator
 ```
@@ -333,14 +333,14 @@ sudo promtool check config /etc/prometheus/prometheus.yml
 <Callout type="info" title="戻り値確認">
 
 構文エラーなしの場合
-```yaml
+```yaml title="期待される表示例：" noCopy
 Checking /etc/prometheus/prometheus.yml
 SUCCESS: /etc/prometheus/prometheus.yml is valid prometheus config file syntax
 ```
 
 <Callout type="warn" title="構文エラーの場合(一例)">
 
-```yaml
+```yaml title="期待される表示例：" noCopy
 Checking /etc/prometheus/prometheus.yml
   FAILED: parsing YAML file /etc/prometheus/prometheus.yml: yaml: line **: did not find expected '-' indicator
 ```
