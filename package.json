@@ -7,6 +7,8 @@
     "build": "next build",
     "dev": "next dev",
     "docs:absolutize-links": "node scripts/absolutize-docs-links.mjs",
+    "docs:english-anchors": "node scripts/english-anchor-docs.mjs",
+    "docs:fix-relative-fragments": "node scripts/fix-relative-doc-fragments.mjs",
     "start": "next start",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
@@ -29,6 +31,7 @@
     "@types/node": "^25.6.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "github-slugger": "^2.0.0",
     "postcss": "^8.5.13",
     "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3"

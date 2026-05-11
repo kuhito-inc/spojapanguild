@@ -13,9 +13,9 @@ title: "Mithril Signerノードの設定、更新"
 </Callout>
 
 
-## 1. Mithril Signerの設定
+## 1. Mithril Signerの設定 [#sec-1]
 
-### 1-1. BPにMithril Signerのインストール
+### 1-1. BPにMithril Signerのインストール [#sec-2]
 
 <Callout type="info" title="補足">
 
@@ -55,7 +55,7 @@ mithril-signer -V
 ```
 > mithril-signer 1.0.0
 
-#### ENV変数の設定
+#### ENV変数の設定 [#sec-3]
 
 パラメータ値算出
 ```bash
@@ -89,7 +89,7 @@ METRICS_SERVER_PORT=61234
 EOF
 ```
 
-#### サービスファイル作成
+#### サービスファイル作成 [#sec-4]
 
 ```bash
 cat > $HOME/mithril/mithril-signer.service << EOF
@@ -131,7 +131,7 @@ sudo systemctl enable mithril-signer
 </Tab>
 </Tabs>
 
-### 1-2. Mithrilリレーノードのセットアップ
+### 1-2. Mithrilリレーノードのセットアップ [#sec-5]
 
 <Callout type="info" title="説明">
 
@@ -214,7 +214,7 @@ sudo chown squid -R /opt/squid/var/
 sudo chgrp squid -R /opt/squid/var/
 ```
 
-#### `squid`のサービスファイル作成
+#### `squid`のサービスファイル作成 [#sec-6]
 ```bash
 cat > $HOME/squid.service << EOF
 [Unit]
@@ -347,7 +347,7 @@ journalctl -u mithril-signer -f --output=cat
 </Tab>
 </Tabs>
 
-### 1-3. Mithril-Signerの動作確認
+### 1-3. Mithril-Signerの動作確認 [#sec-7]
 インストール後にアグリゲーターに正常に登録されているかを確認します。
 
 <Tabs items={["ブロックプロデューサー"]}>
@@ -381,7 +381,7 @@ PARTY_ID=$(cat $NODE_HOME/pool.id-bech32) AGGREGATOR_ENDPOINT=https://aggregator
 </Tabs>
 
 
-### 1-4. 便利なエイリアス設定
+### 1-4. 便利なエイリアス設定 [#sec-8]
 
 <Tabs items={["ブロックプロデューサー"]}>
 <Tab value="ブロックプロデューサー">
@@ -405,7 +405,7 @@ mithril ・・・ログ表示
 </Tabs>
 
 
-### 1-5. Grafanaダッシュボード設定
+### 1-5. Grafanaダッシュボード設定 [#sec-9]
 
 <Tabs items={["ブロックプロデューサー", "Grafana導入サーバー"]}>
 <Tab value="ブロックプロデューサー">
@@ -504,9 +504,9 @@ Grafanaの左メニューから「`Dashboards`」を開き、「`New`」→「`I
 設定内容を確認後、「`Import`」を選択するとダッシュボードが読み込まれます。
 
 
-## 2. Mithril Signerの更新
+## 2. Mithril Signerの更新 [#sec-10]
 
-### 2-1. BPのMithril Signer更新
+### 2-1. BPのMithril Signer更新 [#sec-11]
 
 <Tabs items={["ブロックプロデューサー"]}>
 <Tab value="ブロックプロデューサー">
@@ -573,7 +573,7 @@ journalctl -u mithril-signer -f --output=cat
 </Tab>
 </Tabs>
 
-### 2-2. リレーノードのMithril Signer更新
+### 2-2. リレーノードのMithril Signer更新 [#sec-12]
 
 <Tabs items={["リレーノード"]}>
 <Tab value="リレーノード">

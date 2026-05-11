@@ -16,7 +16,7 @@ graph LR
 </Callout>
 
 
-## 1. リタイア処理
+## 1. リタイア処理 [#sec-1]
 
 **現在のエポックの計算**
 
@@ -292,7 +292,7 @@ cardano-cli latest transaction submit \
 </Tab>
 </Tabs>
 
-### 1-1. リタイア確認
+### 1-1. リタイア確認 [#sec-2]
 
 * KOIOS APIを使用してリタイア処理ステータスを確認できます。
 
@@ -315,7 +315,7 @@ EOS
 </Tab>
 </Tabs>
 
-## 2. 登録料返還確認
+## 2. 登録料返還確認 [#sec-3]
 
 <Callout type="warn" title="注意">
 
@@ -354,12 +354,12 @@ cardano-cli latest query stake-address-info \
 
 > rewardAccountBalance: の値を確認
 
-## 3. stake.addrから引き出し
+## 3. stake.addrから引き出し [#sec-4]
 
-[stake.addrからpayment.addrへ送金する方法](/docs/cardano/operation/withdrawal#1-1-paymentaddrへ送金する方法)  
+[stake.addrからpayment.addrへ送金する方法](/docs/cardano/operation/withdrawal#sec-2)  
 
 
-## 4. ステークキーの解除
+## 4. ステークキーの解除 [#sec-5]
 
 <Callout type="error" title="注意">
 
@@ -591,7 +591,7 @@ cardano-cli latest transaction submit \
 </Tab>
 </Tabs>
 
-## 5. 全額引き出し（payment.addr）
+## 5. 全額引き出し（payment.addr） [#sec-6]
 
 まずは、最新のスロット番号を取得し **invalid-hereafter** パラメータを正しく設定します。
 

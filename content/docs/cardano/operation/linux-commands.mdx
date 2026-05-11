@@ -2,7 +2,7 @@
 title: "Linuxコマンド集"
 ---
 
-## ノード停止
+## ノード停止 [#sec-1]
 ```
 sudo systemctl stop cardano-node
 ```
@@ -12,7 +12,7 @@ sudo systemctl stop cardano-node
 cnstop
 ```
 
-## ノード起動
+## ノード起動 [#sec-2]
 ```
 sudo systemctl start cardano-node
 ```
@@ -22,7 +22,7 @@ sudo systemctl start cardano-node
 cnstart
 ```
 
-## ノード再起動
+## ノード再起動 [#sec-3]
 ```
 sudo systemctl reload-or-restart cardano-node
 ```
@@ -32,29 +32,29 @@ sudo systemctl reload-or-restart cardano-node
 cnrestart
 ```
 
-## サーバ再起動
+## サーバ再起動 [#sec-4]
 ```
 sudo reboot
 ```
 > ノードを停止してから実行してください。
 
-## プロセス確認
+## プロセス確認 [#sec-5]
 ```
 ps aux | grep cardano-node
 ```
 > Cardano ノードのサービス確認
 
-## ネットワーク確認
+## ネットワーク確認 [#sec-6]
 ```
 networkctl status -a
 ```
 
-## ネットワーク疎通確認
+## ネットワーク疎通確認 [#sec-7]
 ```
 nc -vz <IP> <Port>
 ```
 
-## ブロックログ各サービス再起動
+## ブロックログ各サービス再起動 [#sec-8]
 ```
 sudo systemctl reload-or-restart cnode-cncli-sync.service
 ```
@@ -65,12 +65,12 @@ sudo systemctl reload-or-restart cnode-logmonitor.service
 ```
 > logmonitor
 
-## SPO Block Notifyサービス再起動
+## SPO Block Notifyサービス再起動 [#sec-9]
 ```
 sudo systemctl reload-or-restart cnode-blocknotify.service
 ```
 
-## パラメータファイル更新
+## パラメータファイル更新 [#sec-10]
 ```
 cd $NODE_HOME
 date=`date +\%Y\%m\%d`
@@ -81,7 +81,7 @@ cardano-cli latest query protocol-parameters \
 ```
 > バックアップ及び更新、確認
 
-## TraceMempoolをTrueからFalseにする
+## TraceMempoolをTrueからFalseにする [#sec-11]
 ```
 cd $NODE_HOME
 sed -i ${NODE_CONFIG}-config.json \
@@ -92,7 +92,7 @@ sed -i ${NODE_CONFIG}-config.json \
 sudo systemctl reload-or-restart cardano-node
 ```
 
-## TraceMempoolをFalseからTrueにする
+## TraceMempoolをFalseからTrueにする [#sec-12]
 
 ```
 cd $NODE_HOME
@@ -104,14 +104,14 @@ sed -i ${NODE_CONFIG}-config.json \
 sudo systemctl reload-or-restart cardano-node
 ```
 
-## 既存のスワップファイル削除
+## 既存のスワップファイル削除 [#sec-13]
 ```
 cd $HOME
 sudo swapoff /swapfile
 sudo rm /swapfile
 ```
 
-## スワップファイル作成
+## スワップファイル作成 [#sec-14]
 ```
 sudo systemctl stop cardano-node
 ```
@@ -134,14 +134,14 @@ sudo reboot
 ```
 > 8GBのスワップを設定するコマンド
 
-## SSH接続
+## SSH接続 [#sec-15]
 ```
 ssh -i /Users/ローカルユーザ名/ローカル格納先/id_rsa 接続先ユーザ名@接続先IP -p ポート番号
 ```
 
-## systemd活用コマンド
+## systemd活用コマンド [#sec-16]
 
-#### 🗄 ログのフィルタリング
+#### 🗄 ログのフィルタリング [#sec-17]
 
 昨日のログ
 ```bash

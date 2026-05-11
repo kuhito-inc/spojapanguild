@@ -10,7 +10,7 @@ title: "ブロックログ設定"
 </Callout>
 
 
-## 1. インストール要件
+## 1. インストール要件 [#sec-1]
 
 <Callout type="info" title="設定サーバー">
 
@@ -61,7 +61,7 @@ title: "ブロックログ設定"
 </Callout>
 
 
-## 2. CNCLIインストール
+## 2. CNCLIインストール [#sec-2]
 
 <Callout type="info" title="CNCLIについて">
 
@@ -114,7 +114,7 @@ cncli --version
 ```
 > cncli v6.7.0
 
-## 3. sqlite3のインストール
+## 3. sqlite3のインストール [#sec-3]
 ```bash
 sudo apt install sqlite3
 ```
@@ -124,7 +124,7 @@ sqlite3 --version
 > 3.31.1以上のバージョンがインストールされていれば問題ありません。
 
 
-## 4. 依存ファイルのダウンロード
+## 4. 依存ファイルのダウンロード [#sec-4]
 
 ```bash
 cd $NODE_HOME/scripts
@@ -194,7 +194,7 @@ sed -i $NODE_HOME/scripts/cncli.sh \
 -e '1,30s!#POOL_VRF_VKEY=""!POOL_VRF_VKEY="${CNODE_HOME}/vrf.vkey"!'
 ```
 
-## 5. サービスファイル作成・登録
+## 5. サービスファイル作成・登録 [#sec-5]
 ```bash
 mkdir -p $NODE_HOME/service
 cd $NODE_HOME/service
@@ -372,7 +372,7 @@ source $HOME/.bashrc
 </Callout>
 
 
-## 6. ブロックチェーンとDBを同期
+## 6. ブロックチェーンとDBを同期 [#sec-6]
 
 cncliログ確認
 ```bash
@@ -456,7 +456,7 @@ Ctrl+cで閉じます
 </Tab>
 </Tabs>
 
-## 7. ブロックログを表示する
+## 7. ブロックログを表示する [#sec-7]
 
 このツールでは上記で設定してきたプログラムを組み合わせ、割り当てられたスロットリーダーに対してのブロック生成結果をデータベースに格納し、確認することができます。
 
@@ -512,7 +512,7 @@ echo $LANG
 ```
 
 
-## 8. ブロック生成スケジュールと通知
+## 8. ブロック生成スケジュールと通知 [#sec-8]
 
 [SPO BlockNotify設定](/docs/cardano/setup/blocknotify-setup)を導入することでブロックログDBに保存されるブロック生成ステータスを`LINE`/`Slack`/`Discord`/`Telegram`に通知することができます。  
 
@@ -549,7 +549,7 @@ echo $LANG
 </Callout>
 
 
-## 9. CNCLI更新手順
+## 9. CNCLI更新手順 [#sec-9]
 
 <Callout type="warn" title="注意">
 
@@ -594,7 +594,7 @@ cnclilog
 >100% syncedになったことを確認
 
 
-### 9-1. スケジュールにないブロックが生成される場合
+### 9-1. スケジュールにないブロックが生成される場合 [#sec-10]
 
 <Callout type="info" title="ヒント">
 

@@ -28,7 +28,7 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 </Callout>
 
 
-## 1. KESキーの作成
+## 1. KESキーの作成 [#sec-1]
 
 
 <Callout type="info" title="KESキーについて">
@@ -53,7 +53,7 @@ cardano-cli latest node key-gen-KES \
 </Tab>
 </Tabs>
 
-## 2. コールドキーの作成
+## 2. コールドキーの作成 [#sec-2]
 <Callout type="error" title="注意">
 
  **コールドキーはエアギャップオフラインマシンで生成し保管する必要があります**  
@@ -99,7 +99,7 @@ chmod 400 node.skey
 </Callout>
 
 
-## 3. プール運用証明書の作成
+## 3. プール運用証明書の作成 [#sec-3]
 
 
 <Callout type="warn" title="事前確認">
@@ -267,7 +267,7 @@ sha256sum node.cert
 </Tab>
 </Tabs>
 
-## 4. VRFキーの作成
+## 4. VRFキーの作成 [#sec-4]
 
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
@@ -295,7 +295,7 @@ vrfキーを誤って削除しないように注意してください。
 </Tab>
 </Tabs>
 
-## 5. BPノードとして再起動
+## 5. BPノードとして再起動 [#sec-5]
 
 
 BPノードを停止します。

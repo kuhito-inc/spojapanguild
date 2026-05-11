@@ -76,7 +76,7 @@ title: "SPO BlockNotify設定"
 
 
 
-## 1. 依存プログラムのインストール
+## 1. 依存プログラムのインストール [#sec-1]
 
 **Python環境のセットアップ**
 
@@ -121,7 +121,7 @@ rm ${bn_release}.tar.gz
 
 ```
 
-## 2. 通知アプリの設定
+## 2. 通知アプリの設定 [#sec-2]
 
 通知させたいアプリのタブをクリックし設定を確認してください。
 
@@ -285,7 +285,7 @@ LINE Official Account Managerへをクリック
 </Tab>
 </Tabs>
 
-## 3. 通知プログラムの設定
+## 3. 通知プログラムの設定 [#sec-3]
 
 **設定ファイルをSJG用にします**
 ```
@@ -405,7 +405,7 @@ blocknotify
 
 
 
-## 4. アップデート手順
+## 4. アップデート手順 [#sec-4]
 
 SPO BlockNotifyの停止
 ```
@@ -457,7 +457,7 @@ sudo systemctl start cnode-blocknotify.service
 $HOME/notify-venv/bin/python $NODE_HOME/scripts/block-notify/block_notify.py version
 ```
 
-## 5. アンインストール手順
+## 5. アンインストール手順 [#sec-5]
 
 ```bash
 sudo systemctl stop cnode-blocknotify.service

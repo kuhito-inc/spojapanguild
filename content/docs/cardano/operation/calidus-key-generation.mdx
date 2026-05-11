@@ -13,9 +13,9 @@ title: "Calidusキー生成"
 
 
 
-## 1. cardano-signerインストール
+## 1. cardano-signerインストール [#sec-1]
 
-### 1-1. ブロックプロデューサー
+### 1-1. ブロックプロデューサー [#sec-2]
 
 **ダウンロード**
 <Tabs items={["ブロックプロデューサーノード"]}>
@@ -56,7 +56,7 @@ cardano-signer --version
 </Tab>
 </Tabs>
 
-### 1-2. エアギャップ
+### 1-2. エアギャップ [#sec-3]
 
 <Callout type="warn" title="ファイル転送">
 
@@ -93,7 +93,7 @@ cardano-signer --version
 </Tab>
 </Tabs>
 
-## 2. Calidusキー作成
+## 2. Calidusキー作成 [#sec-4]
 
 <Callout type="error" title="Calidusキーとjsonファイルの取り扱いについて">
 
@@ -133,7 +133,7 @@ cardano-signer keygen --path calidus \
 </Tab>
 </Tabs>
 
-## 3. メタデータ作成
+## 3. メタデータ作成 [#sec-5]
 
 **プール秘密鍵で署名したメタデータの作成**  
 <Tabs items={["エアギャップマシン"]}>
@@ -152,7 +152,7 @@ chmod a-rwx $HOME/cold-keys
 </Tab>
 </Tabs>
 
-## 4. オンチェーン登録
+## 4. オンチェーン登録 [#sec-6]
 
 最新のスロット番号を取得します。
 
@@ -406,13 +406,13 @@ cardano-cli latest transaction submit \
 
 > Transacsion Successfully submittedと表示されれば成功
 
-## 5. オンチェーン確認
+## 5. オンチェーン確認 [#sec-7]
 ```bash
 curl -s "https://api.koios.rest/api/v1/pool_calidus_keys?pool_id_bech32=eq.$(cat $NODE_HOME/pool.id-bech32)" | jq .
 ```
 > 戻り値に、`"pool_status": "registered"`の項目があれば登録成功
 
-## 6. Calidusキー転送
+## 6. Calidusキー転送 [#sec-8]
 
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
@@ -436,7 +436,7 @@ graph LR
 </Callout>
 
 
-## 7. ニーモニックフレーズを使い、Eternlでウォレット作成
+## 7. ニーモニックフレーズを使い、Eternlでウォレット作成 [#sec-9]
 
 エアギャップにて以下のコマンドを実行し、ニーモニックフレーズを紙などにメモします。
 <Tabs items={["エアギャップ"]}>

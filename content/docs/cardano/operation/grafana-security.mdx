@@ -10,7 +10,7 @@ title: "Grafanaセキュリティ強化"
 
 
 
-## 事前確認
+## 事前確認 [#sec-1]
 
 以下の手順は、[監視ツール設定](/docs/cardano/setup/monitoring-setup)で設定したGrafana導入サーバーで実施してください。
 
@@ -31,7 +31,7 @@ title: "Grafanaセキュリティ強化"
 </Callout>
 
 
-## 1. ドメイン(サブドメイン)の取得
+## 1. ドメイン(サブドメイン)の取得 [#sec-2]
 
 <Callout type="info" title="確認">
 
@@ -76,7 +76,7 @@ DDNS Nowは完全無料・定期通知不要・サービス保障稼働率100%�
 </Tab>
 </Tabs>
 
-## 2. nginxのインストール
+## 2. nginxのインストール [#sec-3]
 
 **インストール**
 
@@ -197,7 +197,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-## 3. certbotをインストール
+## 3. certbotをインストール [#sec-4]
 
 snapが利用可能か確認
 
@@ -217,7 +217,7 @@ sudo snap install --classic certbot
 sudo ln -sf /snap/bin/certbot /usr/bin/certbot
 ```
 
-## 4. 無料SSL証明書(Let’s Encrypt)を取得
+## 4. 無料SSL証明書(Let’s Encrypt)を取得 [#sec-5]
 ```bash
 sudo certbot --nginx
 ```
@@ -253,7 +253,7 @@ sudo certbot --nginx
 
 
 
-## 5. nginx設定変更
+## 5. nginx設定変更 [#sec-6]
 
 **1. websocketの有効化**  
 
@@ -361,7 +361,7 @@ sudo systemctl --no-pager status nginx
 ```
 > Active: active (running)であること
 
-## 6. SSL証明書自動更新
+## 6. SSL証明書自動更新 [#sec-7]
 
 1.SSL証明書自動更新タイマー確認  
 このプログラムでSSL証明書が自動更新されます。
@@ -370,7 +370,7 @@ systemctl status snap.certbot.renew.timer
 ```
 > 緑色で「active (waiting)」になっていることを確認
 
-## 2. nginx自動リロード設定
+## 2. nginx自動リロード設定 [#sec-8]
 
 SSL証明書更新後に nginx を再読み込みする deploy hook を作成します。
 

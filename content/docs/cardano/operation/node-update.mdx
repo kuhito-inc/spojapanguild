@@ -132,7 +132,7 @@ PreProd-Testnet / cardano-node 10.7.1 / cardano-cli 10.16.0.0 / SJG-TOOL 4.1.2
 
 
 
-## 1. 依存環境アップデート
+## 1. 依存環境アップデート [#sec-1]
 
 **現在のノードバージョンを変数に代入**
 ```bash
@@ -140,7 +140,7 @@ current_node=$(cardano-node version | grep cardano-node)
 echo $current_node
 ```
 
-### 1-1. システムのアップデートと依存関係のインストール
+### 1-1. システムのアップデートと依存関係のインストール [#sec-2]
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -149,7 +149,7 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
 ```
 
-### 1-2. 依存関係バージョン確認
+### 1-2. 依存関係バージョン確認 [#sec-3]
 
 **cabalバージョン確認**
 ```bash
@@ -362,7 +362,7 @@ Version: 0.3.14
 
 
 
-### 1-3. CNCLIバージョン確認(BPのみ)
+### 1-3. CNCLIバージョン確認(BPのみ) [#sec-4]
 
 CNCLIバージョン確認
 ```bash
@@ -404,7 +404,7 @@ cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
 
 
 
-## 2. ノードアップデート
+## 2. ノードアップデート [#sec-5]
 
 <Callout type="info" title="バイナリファイルインストール方法の違いについて">
 
@@ -421,7 +421,7 @@ cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
 <Tab value="ビルド済みバイナリを使用する場合">
 
 
-### 2-1. バイナリダウンロード
+### 2-1. バイナリダウンロード [#sec-6]
 
 旧バイナリの削除
 ```bash
@@ -461,7 +461,7 @@ git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
 sudo systemctl stop cardano-node
 ```
 
-### 2-2. バイナリインストール
+### 2-2. バイナリインストール [#sec-7]
 
 **バイナリーファイルをシステムフォルダーへコピー**
 
@@ -616,7 +616,7 @@ tar zxvf cardano-node-10.7.1-linux-amd64.tar.gz ./bin/snapshot-converter
 </Tab>
 </Tabs>
 
-### 2-3. 設定ファイル更新
+### 2-3. 設定ファイル更新 [#sec-8]
 
 既存ファイルのバックアップ
 ```bash
@@ -786,7 +786,7 @@ exit
 </AccordionsYellow>
 
 
-### 2-4. DB更新
+### 2-4. DB更新 [#sec-9]
 
 <Tabs items={["全ノード"]}>
 <Tab value="全ノード">
@@ -865,7 +865,7 @@ exit
 </Tab>
 </Tabs>
 
-### 2-5. サーバー再起動
+### 2-5. サーバー再起動 [#sec-10]
 
 **作業フォルダリネーム**
 
@@ -908,9 +908,9 @@ sudo journalctl --unit=cardano-node --follow
 
 
 
-## 3. 依存関係作業
+## 3. 依存関係作業 [#sec-11]
 
-### 3-1. リレー/BP共通
+### 3-1. リレー/BP共通 [#sec-12]
 
 **gLiveView更新**
 ```bash
@@ -952,7 +952,7 @@ Koios gLiveView v1.32.0
 ```
 
 
-### 3-2. BPサービス確認
+### 3-2. BPサービス確認 [#sec-13]
 
 <AccordionsYellow type="single">
   <Accordion id="node-update-blocknotify-missing" title="blocknotify（SPO Block Notify）未導入・未更新の場合">
@@ -960,7 +960,7 @@ Koios gLiveView v1.32.0
 <Tabs items={["未導入の方で今後も導入予定が無い方", "新規導入または更新する方"]}>
 <Tab value="未導入の方で今後も導入予定が無い方">
 
-[5. サービスファイル作成・登録](/docs/cardano/setup/blocklog-setup#5-サービスファイル作成登録)を再実行してください。（エイリアス設定は不要です）
+[5. サービスファイル作成・登録](/docs/cardano/setup/blocklog-setup#sec-5)を再実行してください。（エイリアス設定は不要です）
 
 </Tab>
 <Tab value="新規導入または更新する方">
@@ -1008,7 +1008,7 @@ cnclilog
 
 
 
-### 3-3. Grafanaアラートの対象メトリクス変更
+### 3-3. Grafanaアラートの対象メトリクス変更 [#sec-14]
 
 左ペインの「Alerting」→「Alert rules」→「ノード監視」→「BPリレー接続監視」のメトリクスを変更して保存します。  
 `cardano_node_metrics_peers_connectedPeers_int`から  
@@ -1018,7 +1018,7 @@ cardano_node_metrics_peerSelection_ActivePeers
 へと変更してください。
 
 
-## 4. エアギャップアップデート
+## 4. エアギャップアップデート [#sec-15]
 <Callout type="info" title="SFTP機能ソフト導入">
 
 R-loginの転送機能が遅いので、大容量ファイルをダウン・アップロードする場合は、SFTP接続可能なソフトを使用すると効率的です。（FileZilaなど）  

@@ -11,7 +11,7 @@ title: "リレーサーバー移行（旧VPS会社→新VPS会社）"
 </Callout>
 
 
-## 1. 新リレーセットアップ
+## 1. 新リレーセットアップ [#sec-1]
 <Callout type="info" title="はじめにお読みください">
 
 1. サーバ独自機能に留意してください。
@@ -22,19 +22,19 @@ title: "リレーサーバー移行（旧VPS会社→新VPS会社）"
 
 
 
-### 1-1. Ubuntu初期設定
+### 1-1. Ubuntu初期設定 [#sec-2]
 新サーバーで[Ubuntu初期設定](/docs/cardano/setup/ubuntu-setup)を実施します。  
 
 
-### 1-2. ノードセットアップ
+### 1-2. ノードセットアップ [#sec-3]
 1. [1. 依存関係インストール](/docs/cardano/setup/node-setup#1) 〜
 [7. gLiveViewのインストール](/docs/cardano/setup/node-setup#7-gliveview)まで実施します。
 2. [2. トポロジーファイル設定変更](/docs/cardano/setup/relay-bp-setup#2)の「**`リレーノードの場合`**」を実施します。
 
 
-## 2. BP設定修正
+## 2. BP設定修正 [#sec-4]
 
-### 2-1. ファイアウォール設定変更
+### 2-1. ファイアウォール設定変更 [#sec-5]
 
 <Callout type="info" title="AWSなどufwを使用しない場合">
 
@@ -61,7 +61,7 @@ sudo ufw reload
 </Tab>
 </Tabs>
 
-### 2-2. トポロジーファイル修正
+### 2-2. トポロジーファイル修正 [#sec-6]
 <Tabs items={["BP"]}>
 <Tab value="BP">
 
@@ -94,7 +94,7 @@ cd $NODE_HOME/scripts
 </Tab>
 </Tabs>
 
-## 3. Grafana/Prometheus設定
+## 3. Grafana/Prometheus設定 [#sec-7]
 
 <Tabs items={["新リレーでGrafanaも運用する場合", "新リレーでGrafanaを運用しない場合"]}>
 <Tab value="新リレーでGrafanaも運用する場合">
@@ -179,13 +179,13 @@ Grafanaに新リレーのメトリクス(Slotなど)が表示されているか�
 </Tab>
 </Tabs>
 
-## 4. プール情報更新
+## 4. プール情報更新 [#sec-8]
 DNS運用の場合は不要ですが、IP運用の方は、[運用証明書(pool.cert)の更新](/docs/cardano/operation/cert-update)を用いて、チェーン登録中のリレーIPを変更します。  
 
 ---
-## 5. 補足
+## 5. 補足 [#sec-9]
 
-### 5-1. Tracemempool無効化
+### 5-1. Tracemempool無効化 [#sec-10]
 
 <Tabs items={["新リレー"]}>
 <Tab value="新リレー">
@@ -240,11 +240,11 @@ AWSやVSPによっては管理画面でセキュリティ設定(ファイアウ�
 </Callout>
 
 
-### 5-2. 旧リレーRSYNC設定済の場合
+### 5-2. 旧リレーRSYNC設定済の場合 [#sec-11]
 1. `rsyncd.conf` `rsync_ed25519.pub`を旧リレーのcnodeから新リレーのcnodeへ移動してください。
 2. 転送元サーバーの`~/.ssh/config`の旧リレーIPを新リレーIPに変更してください。
 
-### 5-3. Mithril-Signer再セットアップ
+### 5-3. Mithril-Signer再セットアップ [#sec-12]
 
 旧サーバーでMithril-Signer-Relayを実行していた場合は、新サーバーでも再セットアップしてください。  
 [Mithril Signerノードの設定、更新](/docs/cardano/operation/mithril-signer-node-setup-and-updates)
