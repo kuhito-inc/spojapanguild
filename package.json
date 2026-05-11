@@ -5,7 +5,7 @@
   "packageManager": "pnpm@10.28.2",
   "scripts": {
     "build": "next build",
-    "dev": "next dev --webpack",
+    "dev": "next dev",
     "docs:absolutize-links": "node scripts/absolutize-docs-links.mjs",
     "start": "next start",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
