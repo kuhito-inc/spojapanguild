@@ -2,8 +2,6 @@
 title: "アドレス生成"
 ---
 
-# **アドレス生成**
-
 <Callout type="error" title="注意">
 
 プール登録後、以下の手順をやり直しすると変更手続きが面倒になるのでご注意ください。
@@ -13,7 +11,7 @@ title: "アドレス生成"
 
 
 
-## **1. プロトコルパラメータの取得**
+## 1. プロトコルパラメータの取得
 
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
@@ -37,15 +35,10 @@ paymentキーは支払い用アドレスに使用され、stakeキーはプー�
 
 
 
-## **2. 支払いアドレスキーの作成**
+## 2. 支払いアドレスキーの作成
 
 <Tabs items={["エアギャップオフラインマシン"]}>
 <Tab value="エアギャップオフラインマシン">
-
-
-
-</Tab>
-</Tabs>
 
 ```bash
 cd $NODE_HOME
@@ -53,15 +46,13 @@ cardano-cli latest address key-gen \
     --verification-key-file payment.vkey \
     --signing-key-file payment.skey
 ```
-## **3. ステークアドレスキーの作成**
-
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
-
-
 
 </Tab>
 </Tabs>
+## 3. ステークアドレスキーの作成
+
+<Tabs items={["エアギャップオフラインマシン"]}>
+<Tab value="エアギャップオフラインマシン">
 
 ```bash
 cardano-cli latest stake-address key-gen \
@@ -69,15 +60,13 @@ cardano-cli latest stake-address key-gen \
     --signing-key-file stake.skey
 ```
 
-## **4. ステークアドレスの作成**
+</Tab>
+</Tabs>
+
+## 4. ステークアドレスの作成
 
 <Tabs items={["エアギャップオフラインマシン"]}>
 <Tab value="エアギャップオフラインマシン">
-
-
-
-</Tab>
-</Tabs>
 
 ```bash
 cardano-cli latest stake-address build \
@@ -86,14 +75,12 @@ cardano-cli latest stake-address build \
     $NODE_NETWORK
 ```
 
-## **5. 支払い用アドレスの作成**
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
-
-
-
 </Tab>
 </Tabs>
+
+## 5. 支払い用アドレスの作成
+<Tabs items={["エアギャップオフラインマシン"]}>
+<Tab value="エアギャップオフラインマシン">
 
 ```bash
 cardano-cli latest address build \
@@ -105,14 +92,6 @@ cardano-cli latest address build \
 
 上書き・削除されないようパーミッションを変更する。
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
-
-
-
-</Tab>
-</Tabs>
-
 ```bash
 chmod 400 payment.vkey
 chmod 400 payment.skey
@@ -121,6 +100,9 @@ chmod 400 stake.skey
 chmod 400 stake.addr
 chmod 400 payment.addr
 ```
+
+</Tab>
+</Tabs>
 
 | ファイル      | 用途                          |
 | ----------- | ------------------------------------ |
@@ -144,7 +126,7 @@ chmod 400 payment.addr
 
 
 
-## **6. 支払い用アドレスへ入金**
+## 6. 支払い用アドレスへ入金
 
 次のステップは、あなたの支払いアドレスに送金する手順です。
 

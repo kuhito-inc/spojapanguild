@@ -2,8 +2,6 @@
 title: "プール廃止処理"
 ---
 
-# **プール廃止処理**
-
 <Callout type="warn" title="プール廃止の流れ">
 
 
@@ -23,7 +21,7 @@ graph LR
 </Callout>
 
 
-## **1. リタイア処理**
+## 1. リタイア処理
 
 **現在のエポックの計算**
 
@@ -70,7 +68,7 @@ echo リタイア可能最長エポック: ${maxRetirementEpoch}
 * 最も遅いエポックは 338 \( eMax + 現在のエポック\)
 
 * プールはリタイア指定エポック開始時にリタイア処理されます。  
-* もし心変わりがある場合は、エポック指定エポック開始前に[運用証明書(pool.cert)の更新](../operation/cert-update.md)を送信することでリタイア手続きを無効にできます。
+* もし心変わりがある場合は、エポック指定エポック開始前に[運用証明書(pool.cert)の更新](/docs/cardano/operation/cert-update)を送信することでリタイア手続きを無効にできます。
 * プール登録料500ADAはリタイア処理エポック開始時にstake.addrに入金されます。  
 
 </Callout>
@@ -299,7 +297,7 @@ cardano-cli latest transaction submit \
 </Tab>
 </Tabs>
 
-### **1-1. リタイア確認**
+### 1-1. リタイア確認
 
 * KOIOS APIを使用してリタイア処理ステータスを確認できます。
 
@@ -322,7 +320,7 @@ EOS
 </Tab>
 </Tabs>
 
-## **2. 登録料返還確認**
+## 2. 登録料返還確認
 
 <Callout type="warn" title="注意">
 
@@ -361,12 +359,12 @@ cardano-cli latest query stake-address-info \
 
 > rewardAccountBalance: の値を確認
 
-## **3. stake.addrから引き出し**
+## 3. stake.addrから引き出し
 
-[stake.addrからpayment.addrへ送金する方法](../operation/withdrawal.md/#1-1-paymentaddr)  
+[stake.addrからpayment.addrへ送金する方法](/docs/cardano/operation/withdrawal#1-1-paymentaddr)  
 
 
-## **4. ステークキーの解除**
+## 4. ステークキーの解除
 
 <Callout type="error" title="注意">
 
@@ -598,7 +596,7 @@ cardano-cli latest transaction submit \
 </Tab>
 </Tabs>
 
-## **5. 全額引き出し（payment.addr）**
+## 5. 全額引き出し（payment.addr）
 
 まずは、最新のスロット番号を取得し **invalid-hereafter** パラメータを正しく設定します。
 

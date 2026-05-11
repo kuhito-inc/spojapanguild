@@ -2,8 +2,6 @@
 title: "運用証明書(pool.cert)の更新"
 ---
 
-# **運用証明書(pool.cert)の更新**
-
 <Callout type="info" title="概要">
 
 * 誓約、固定手数料、変動手数料、リレー情報、メタデータを変更する場合に実施します。
@@ -118,37 +116,31 @@ graph LR
 
 
 BPとエアギャップハッシュ値確認
-<Tabs items={["ブロックプロデューサーノード"]}>
+<Tabs items={["ブロックプロデューサーノード", "エアギャップオフラインマシン"]}>
 <Tab value="ブロックプロデューサーノード">
 
-
-
-</Tab>
-</Tabs>
-
 ```bash
 cd $NODE_HOME
 echo $(cat poolMetaDataHash.txt)
 ```
 
-<Tabs items={["エアギャップオフラインマシン"]}>
+</Tab>
 <Tab value="エアギャップオフラインマシン">
 
-
-
-</Tab>
-</Tabs>
-
 ```bash
 cd $NODE_HOME
 echo $(cat poolMetaDataHash.txt)
 ```
+
 > ハッシュ値が異なっている場合は、BPのpoolMetaDataHash.txtがエアギャップに正しくコピーされていません。
+
+</Tab>
+</Tabs>
 
 </Tab>
 <Tab value="誓約、手数料、リレー情報のみ更新の場合">
 
-
+このタブではプールメタデータの変更はありません。**登録証明書トランザクションを作成する**以降の手順へ進んでください。
 
 </Tab>
 </Tabs>

@@ -2,8 +2,6 @@
 title: "Calidusキー生成"
 ---
 
-# **Calidusキー生成**
-
 <Callout type="info" title="概要">
 
 - ステークプールの所有権を証明するための署名技術
@@ -15,9 +13,9 @@ title: "Calidusキー生成"
 
 
 
-## **1. cardano-signerインストール**
+## 1. cardano-signerインストール
 
-### **1-1. ブロックプロデューサー**
+### 1-1. ブロックプロデューサー
 
 **ダウンロード**
 <Tabs items={["ブロックプロデューサーノード"]}>
@@ -58,7 +56,7 @@ cardano-signer --version
 </Tab>
 </Tabs>
 
-### **1-2. エアギャップ**
+### 1-2. エアギャップ
 
 <Callout type="warn" title="ファイル転送">
 
@@ -95,7 +93,7 @@ cardano-signer --version
 </Tab>
 </Tabs>
 
-## **2. Calidusキー作成**
+## 2. Calidusキー作成
 
 <Callout type="error" title="Calidusキーとjsonファイルの取り扱いについて">
 
@@ -115,7 +113,7 @@ cardano-signer --version
     mkdir -p $NODE_HOME/calidus
     ```
     3. 作成したディレクトリに`myCalidusKey`**ペアキー(myCalidusKey.skey、myCalidusKey.vkey)のみ**をコピーします。
-    4. [3.メタデータ作成](../operation/calidus-key-generation.md/#3)から実行します。
+    4. [3.メタデータ作成](/docs/cardano/operation/calidus-key-generation#3)から実行します。
 
 **`myCalidusKey`ペアキー発行**
 
@@ -135,7 +133,7 @@ cardano-signer keygen --path calidus \
 </Tab>
 </Tabs>
 
-## **3. メタデータ作成**
+## 3. メタデータ作成
 
 **プール秘密鍵で署名したメタデータの作成**  
 <Tabs items={["エアギャップマシン"]}>
@@ -154,7 +152,7 @@ chmod a-rwx $HOME/cold-keys
 </Tab>
 </Tabs>
 
-## **4. オンチェーン登録**
+## 4. オンチェーン登録
 
 最新のスロット番号を取得します。
 
@@ -408,13 +406,13 @@ cardano-cli latest transaction submit \
 
 > Transacsion Successfully submittedと表示されれば成功
 
-## **5. オンチェーン確認**
+## 5. オンチェーン確認
 ```bash
 curl -s "https://api.koios.rest/api/v1/pool_calidus_keys?pool_id_bech32=eq.$(cat $NODE_HOME/pool.id-bech32)" | jq .
 ```
 > 戻り値に、`"pool_status": "registered"`の項目があれば登録成功
 
-## **6. Calidusキー転送**
+## 6. Calidusキー転送
 
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
@@ -438,7 +436,7 @@ graph LR
 </Callout>
 
 
-## **7. ニーモニックフレーズを使い、Eternlでウォレット作成**
+## 7. ニーモニックフレーズを使い、Eternlでウォレット作成
 
 エアギャップにて以下のコマンドを実行し、ニーモニックフレーズを紙などにメモします。
 <Tabs items={["エアギャップ"]}>

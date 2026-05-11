@@ -2,7 +2,6 @@
 title: "エアギャップ環境構築"
 ---
 
-# **エアギャップ環境構築**
 <Callout type="info" title="エアギャップマシンとは">
 
 エアギャップマシンとは、ネットワークから完全に隔離されたオフライン環境で動作する専用マシンを指します。  
@@ -21,7 +20,7 @@ title: "エアギャップ環境構築"
 
 
 
-## **方針**
+## 方針
 <Callout type="info" title="前提">
 
 エアギャップ環境としての安全性を確保するため、本マニュアルでは、USBブートにより Ubuntu 24.04 を物理マシンへネイティブインストール し、<mark>**既存OSを削除した単一OS構成**</mark>で運用することを前提とします。
@@ -32,7 +31,7 @@ Liveブート、デュアルブート構成、ならびに ホストOSに依存�
 
 
 
-## **エアギャップマシンの構築手順**
+## エアギャップマシンの構築手順
 <Callout type="error" title="注意点">
 
 Ubuntuインストール対象のエアギャップマシンはインストール中もネットワークに繋がないでください
@@ -49,26 +48,26 @@ UbuntuをインストールするPC（既存OSが消去されても問題ないP
 
 
 
-### **1. Ubuntu Desktopイメージの取得**
+### 1. Ubuntu Desktopイメージの取得
 Ubuntu **`Desktop`** イメージファイルをダウンロードします。
 
 [**Ubuntu 24.04.* (Noble Numbat)**](https://releases.ubuntu.com/noble)  
 ※ ダウンロード完了まで少しかかるのでしばらくお待ちください。
 
 
-### **2. USBブートディスク作成（balenaEtcher）**
+### 2. USBブートディスク作成（balenaEtcher）
 
-#### **前提条件**
+#### 前提条件
 <Callout type="info" title="ヒント">
 
 - 初期化しても問題ない容量**`12GB`**以上のUSBメモリデバイス  
 - `Windows`または`macOS`が動作するPC  
-- [1. Ubuntu Desktopイメージの取得](../setup/air-gapped-setup.md/#1-ubuntu-desktop)で取得したISOイメージファイル
+- [1. Ubuntu Desktopイメージの取得](/docs/cardano/setup/air-gapped-setup#1-ubuntu-desktop)で取得したISOイメージファイル
 
 </Callout>
 
 
-#### **`balenaEtcher`の使用概要**
+#### `balenaEtcher`の使用概要
 balenaEtcherは、無料かつオープンソースのUSB書き込みツールであり、Ubuntuインストールに使用するブート可能なUSBメディアを安全かつ簡単に作成できます。
 
 ##### **2-1. Etcherのインストール**
@@ -156,7 +155,7 @@ macOS環境では、USBメディアが「読み取れません」といった警
 
 
 
-### **3. USBブートによるUbuntuの起動**
+### 3. USBブートによるUbuntuの起動
 1. エアギャップマシンとして使用するPCに先ほど書き込んだUSBを挿入します。    
 2. コンピューターを起動します。  
 3. 表示されたメニューから「**`Try or Install Ubuntu`**」を選択し、Enterキーを押下します。  
@@ -166,7 +165,7 @@ macOS環境では、USBメディアが「読み取れません」といった警
 
 ![](/images/airgap/ubuntu-desktop-24.04.3/1_ubuntu-24.04.3-install.png)
 
-#### **3-1. インストーラーのセットアップ**
+#### 3-1. インストーラーのセットアップ
 ※ 以降の画像は一例であり、環境によって表示が異なる場合があります。  
 
 1. 言語を選択。  
@@ -193,7 +192,7 @@ macOS環境では、USBメディアが「読み取れません」といった警
 8. 不要なドライバやバイナリを最小化するため、サードパーティ製ソフトウェアはインストールしません。  
 ![](/images/airgap/ubuntu-desktop-24.04.3/9_ubuntu-24.04.3-install.png)
 
-#### **3-2. ディスクのセットアップ**
+#### 3-2. ディスクのセットアップ
 1. 「`ディスクを削除してUbuntuをインストールする`」を選択します。
 ![](/images/airgap/ubuntu-desktop-24.04.3/10_ubuntu-24.04.3-install.png)
 
@@ -207,7 +206,7 @@ macOS環境では、USBメディアが「読み取れません」といった警
 4. インストールの準備が完了したので確認し、「`インストール`」を選択します。  
 ![](/images/airgap/ubuntu-desktop-24.04.3/13_ubuntu-24.04.3-install.png)
 
-#### **3-3. インストールの完了**
+#### 3-3. インストールの完了
 1. インストール完了画面を待機し、完了後「`今すぐ再起動`」を選択します。
 ![](/images/airgap/ubuntu-desktop-24.04.3/14_ubuntu-24.04.3-install.png)
 
@@ -218,7 +217,7 @@ macOS環境では、USBメディアが「読み取れません」といった警
 3. ログイン画面でパスワードを入力します。
 ![](/images/airgap/ubuntu-desktop-24.04.3/16_ubuntu-24.04.3-install.png)
 
-#### **3-4. 追加設定**
+#### 3-4. 追加設定
 1. 以下の画面が表示されたら右上の「`次へ`」を選択します。  
 ![](/images/airgap/ubuntu-desktop-24.04.3/17_ubuntu-24.04.3-install.png)
 
@@ -234,14 +233,14 @@ macOS環境では、USBメディアが「読み取れません」といった警
 5. 追加設定が完了しました。    
 ![](/images/airgap/ubuntu-desktop-24.04.3/21_ubuntu-24.04.3-install.png)
 
-#### **3-5. ターミナルの設定**
+#### 3-5. ターミナルの設定
 1. ターミナルの設定をするため左下のアイコンを選択し、「`端末`」アイコンを選択します。  
 ![](/images/airgap/ubuntu-desktop-24.04.3/22_ubuntu-24.04.3-install.png)
 
 2. ターミナルを右クリックして、「`ダッシュボードにピン留め`」を選択します。  
 ![](/images/airgap/ubuntu-desktop-24.04.3/23_ubuntu-24.04.3-install.png)
 
-#### **3-6. 各種設定**
+#### 3-6. 各種設定
 1. ブラケットモードの無効化設定をします。  
 ```bash
 echo 'set enable-bracketed-paste off' >> ~/.inputrc
@@ -255,7 +254,7 @@ exit
 3. ディスプレイ設定（任意）  
 好みに応じて、画面を右クリックして「`Display Settings`」を開き、「`Scale`」を「`200%`」に設定します。
 
-#### **3-7. 通信機能の完全無効化**
+#### 3-7. 通信機能の完全無効化
 エアギャップ・オフラインマシンとして運用するため、`Wi-Fi` / `Bluetooth` / `有線通信`を含むすべてのネットワーク機能を`OS`レベルで無効化します。  
 ※ 機内モードは再起動後に解除されるため使用しません。
 
@@ -358,11 +357,11 @@ systemctl status bluetooth --no-pager
 以上の設定によりエアギャップ環境の構築が完了しました。
 
 
-### **4. 旧エアギャップからの移行**
+### 4. 旧エアギャップからの移行
 
 旧エアギャップ（VirtualBox等）から移行する場合の手順です。
 
-#### **4-1. 環境変数の設定**
+#### 4-1. 環境変数の設定
 ```
 echo 'export NODE_HOME="$HOME/cnode"' >> ~/.bashrc
 echo 'export NODE_NETWORK="--mainnet"' >> ~/.bashrc
@@ -408,20 +407,18 @@ mkdir -p ${NODE_HOME}
 </Callout>
 
 
-#### **4-2. ファイルの移動**
+#### 4-2. ファイルの移動
 
 **パーミッション変更**
 <Tabs items={["VirtualBox側"]}>
 <Tab value="VirtualBox側">
 
-
-
-</Tab>
-</Tabs>
-
 ```
 chmod u+rx $HOME/cold-keys
 ```
+
+</Tab>
+</Tabs>
 
 **ディレクトリコピー**  
 VirtualBox側から以下のディレクトリをコピーして新エアギャップの$HOME直下に移動してください。
@@ -435,17 +432,15 @@ VirtualBox側から以下のディレクトリをコピーして新エアギャ�
 <Tabs items={["新エアギャップ側"]}>
 <Tab value="新エアギャップ側">
 
-
-
-</Tab>
-</Tabs>
-
 ```
 chmod a-rx $HOME/cold-keys
 ```
 
-#### **4-3. cardano-cliのインストール**
+</Tab>
+</Tabs>
 
-[バイナリーファイルコピー](../operation/node-update.md#4)を参照してください。
+#### 4-3. cardano-cliのインストール
+
+[バイナリーファイルコピー](/docs/cardano/operation/node-update#4)を参照してください。
 
 ---

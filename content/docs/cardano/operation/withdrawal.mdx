@@ -2,14 +2,12 @@
 title: "資金引き出し"
 ---
 
-# **資金引き出し**
-
-## **1. stake.addrからの引き出し**
+## 1. stake.addrからの引き出し
 
 <Callout type="info" title="概要">
 
 * 報酬は `stake.addr` アドレスに蓄積されていきます。  
-* [委任代表者（DRep）への委任](../operation/delegating-to-a-drep.md)を実施し、ステークアドレスがDRepへ委任されていること。  
+* [委任代表者（DRep）への委任](/docs/cardano/operation/delegating-to-a-drep)を実施し、ステークアドレスがDRepへ委任されていること。  
 * **1回のトランザクションで引き出せる金額は残高全額のみです。**  
 (分割して引き出すことはできません)  
 * **トランザクション手数料はpayment.addrから引き落とされます。**
@@ -31,7 +29,7 @@ title: "資金引き出し"
 
 
 
-### **1-1. payment.addrへ送金する方法**
+### 1-1. payment.addrへ送金する方法
 
 
 現在のスロットを算出します
@@ -278,7 +276,7 @@ cardano-cli latest query utxo \
 ```
 
 
-### **1-2. 任意のアドレスへ送金する方法**
+### 1-2. 任意のアドレスへ送金する方法
 
 現在のスロットNoを算出します。
 
@@ -531,7 +529,7 @@ cardano-cli latest query utxo \
 
 
 
-## **2. Payment.addrからの引き出し**
+## 2. Payment.addrからの引き出し
 <Callout type="info" title="概要">
 
 payment.addrから任意のアドレスへ送信する例です

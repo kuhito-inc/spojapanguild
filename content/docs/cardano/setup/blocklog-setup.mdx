@@ -2,8 +2,6 @@
 title: "ブロックログ設定"
 ---
 
-# **ブロックログ設定**
-
 <Callout type="info" title="ブロックログについて">
 
 このツールはウロボロスにおける自プールのブロック生成スケジュールを事前に取得するツールです。  
@@ -12,7 +10,7 @@ title: "ブロックログ設定"
 </Callout>
 
 
-## **1. インストール要件**
+## 1. インストール要件
 
 <Callout type="info" title="設定サーバー">
 
@@ -63,7 +61,7 @@ title: "ブロックログ設定"
 </Callout>
 
 
-## **2. CNCLIインストール**
+## 2. CNCLIインストール
 
 <Callout type="info" title="CNCLIについて">
 
@@ -116,7 +114,7 @@ cncli --version
 ```
 > cncli v6.7.0
 
-## **3. sqlite3のインストール**
+## 3. sqlite3のインストール
 ```bash
 sudo apt install sqlite3
 ```
@@ -126,7 +124,7 @@ sqlite3 --version
 > 3.31.1以上のバージョンがインストールされていれば問題ありません。
 
 
-## **4. 依存ファイルのダウンロード**
+## 4. 依存ファイルのダウンロード
 
 ```bash
 cd $NODE_HOME/scripts
@@ -185,7 +183,7 @@ printf "\nプールID(bech32)は \e[32m${pool_bech32}\e[m です\n\n"
 ```
 
 <strong><span style={{color: "red"}}>ご自身のプールID `2種類`が表示されていることを確認してください</span></strong>  
-プールIDが表示されていない場合は、[こちらの手順](../setup/stake-pool-register.md/#4)を実行してください。  
+プールIDが表示されていない場合は、[こちらの手順](/docs/cardano/setup/stake-pool-register#4)を実行してください。  
 
 **cncli.shファイルの修正**
 ```bash
@@ -196,7 +194,7 @@ sed -i $NODE_HOME/scripts/cncli.sh \
 -e '1,30s!#POOL_VRF_VKEY=""!POOL_VRF_VKEY="${CNODE_HOME}/vrf.vkey"!'
 ```
 
-## **5. サービスファイル作成・登録**
+## 5. サービスファイル作成・登録
 ```bash
 mkdir -p $NODE_HOME/service
 cd $NODE_HOME/service
@@ -374,7 +372,7 @@ source $HOME/.bashrc
 </Callout>
 
 
-## **6. ブロックチェーンとDBを同期**
+## 6. ブロックチェーンとDBを同期
 
 cncliログ確認
 ```bash
@@ -458,7 +456,7 @@ Ctrl+cで閉じます
 </Tab>
 </Tabs>
 
-## **7. ブロックログを表示する**
+## 7. ブロックログを表示する
 
 このツールでは上記で設定してきたプログラムを組み合わせ、割り当てられたスロットリーダーに対してのブロック生成結果をデータベースに格納し、確認することができます。
 
@@ -514,9 +512,9 @@ echo $LANG
 ```
 
 
-## **8. ブロック生成スケジュールと通知**
+## 8. ブロック生成スケジュールと通知
 
-[SPO BlockNotify設定](../setup/blocknotify-setup.md)を導入することでブロックログDBに保存されるブロック生成ステータスを`LINE`/`Slack`/`Discord`/`Telegram`に通知することができます。  
+[SPO BlockNotify設定](/docs/cardano/setup/blocknotify-setup)を導入することでブロックログDBに保存されるブロック生成ステータスを`LINE`/`Slack`/`Discord`/`Telegram`に通知することができます。  
 
 <Callout type="info" title="ブロック生成スケジュール取得のタイミング">
 
@@ -551,7 +549,7 @@ echo $LANG
 </Callout>
 
 
-## **9. CNCLI更新手順**
+## 9. CNCLI更新手順
 
 <Callout type="warn" title="注意">
 
@@ -596,7 +594,7 @@ cnclilog
 >100% syncedになったことを確認
 
 
-### **9-1. スケジュールにないブロックが生成される場合**
+### 9-1. スケジュールにないブロックが生成される場合
 
 <Callout type="info" title="ヒント">
 

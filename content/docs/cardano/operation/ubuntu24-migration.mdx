@@ -2,8 +2,6 @@
 title: "Ubuntu22.04から24.04へ移行"
 ---
 
-# **Ubuntu22.04から24.04へ移行**
-
 <Callout type="info" title="アップグレード前の確認事項">
 
 
@@ -15,9 +13,9 @@ title: "Ubuntu22.04から24.04へ移行"
 
 
 
-## **1. 事前準備**
+## 1. 事前準備
 
-### **1-1. スナップショットの作成**
+### 1-1. スナップショットの作成
 
 <Callout type="error" title="スナップショットの作成">
 
@@ -27,7 +25,7 @@ title: "Ubuntu22.04から24.04へ移行"
 </Callout>
 
 
-### **1-2. SSH鍵の種類を確認する**
+### 1-2. SSH鍵の種類を確認する
 
 SSH接続用のローカルパソコンに保存されている、SSH秘密鍵ファイルの種類を確認してください。
 
@@ -36,15 +34,15 @@ SSH接続用のローカルパソコンに保存されている、SSH秘密鍵�
 
 のどちらか
 
-### **1-3. SSHターミナルバージョン最新化**
+### 1-3. SSHターミナルバージョン最新化
 
 WindowsでR-loginをご利用の場合は、[最新のRLogin](https://github.com/kmiya-culti/RLogin/releases/)を使用して下さい。
 
-### **1-4. 作業対象サーバログイン**
+### 1-4. 作業対象サーバログイン
 
 <Callout type="info" title="接続方法">
 
-[1-4. 作業対象サーバログイン](../operation/ubuntu24-migration.md/#1-4)〜[1-9. Ubuntuバージョン確認](../operation/ubuntu24-migration.md/#1-9-ubuntu)は通常のSSH接続で作業してください。
+[1-4. 作業対象サーバログイン](/docs/cardano/operation/ubuntu24-migration#1-4)〜[1-9. Ubuntuバージョン確認](/docs/cardano/operation/ubuntu24-migration#1-9-ubuntu)は通常のSSH接続で作業してください。
 
 </Callout>
 
@@ -93,17 +91,7 @@ rm ~/.ssh/ssh_ed25519.pub
 
 </Callout>
 
-
-
-<Tabs items={["ssh_ed25519の場合"]}>
-<Tab value="ssh_ed25519の場合">
-
-
-
-</Tab>
-</Tabs>
-
-### **1-5. ノード停止**
+### 1-5. ノード停止
 ```bash
 sudo systemctl stop cardano-node
 ```
@@ -113,7 +101,7 @@ sudo systemctl stop cardano-node
 sudo systemctl disable cardano-node
 ```
 
-### **1-6. Python依存関係の正常化**
+### 1-6. Python依存関係の正常化
 
 `update-alternatives`でpythonを管理しているか確認します。
 ```bash
@@ -262,18 +250,18 @@ sudo apt update
 </Callout>
 
 
-### **1-7. システムアップデート**
+### 1-7. システムアップデート
 ```bash
 sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y
 ```
 
-### **1-8. LTSアップグレード設定の確認**
+### 1-8. LTSアップグレード設定の確認
 ```bash
 grep Prompt /etc/update-manager/release-upgrades
 ```
 > Prompt=lts であること
 
-### **1-9. Ubuntuバージョン確認**
+### 1-9. Ubuntuバージョン確認
 
 現在のバージョンを確認します。
 ```bash
@@ -345,7 +333,7 @@ apt-mark showhold
     apt list --upgradable
     ```
 
-### **1-10. リレーサーバーにGrafanaを搭載している場合の対応**
+### 1-10. リレーサーバーにGrafanaを搭載している場合の対応
 
 <Callout type="warn" title="Grafana搭載サーバー">
 
@@ -379,12 +367,12 @@ sudo apt update
 </Callout>
 
 
-### **1-11. サーバー再起動**
+### 1-11. サーバー再起動
 ```bash
 sudo reboot
 ```
 
-## **2. Ubuntuアップグレード**
+## 2. Ubuntuアップグレード
 
 <Callout type="warn" title="アップグレードの注意点">
 
@@ -421,7 +409,7 @@ sudo ufw status numbered
 
 
 
-### **2-1. アップグレード実行**
+### 2-1. アップグレード実行
 
 <Callout type="warn" title="接続パターン">
 
@@ -453,7 +441,7 @@ tmux a -t ubuntu-upgrade
 </Callout>
 
 
-### **2-2. アップグレードメッセージ**
+### 2-2. アップグレードメッセージ
 以下、確認メッセージ例です。  
 <span style={{color: "red"}}>ご利用のサーバーによって表示内容が異なる場合があります。</span>  
 表示された内容をよく読んで下さい。
@@ -640,17 +628,17 @@ If you select 'y' the system will be restarted.
 Continue [yN]  y      # y 入力後Enter
 ``` 
 
-## **3. アップグレード確認(SSH接続)**
+## 3. アップグレード確認(SSH接続)
 
 <Callout type="info" title="接続方法">
 
 
-[3. アップグレード確認(SSH接続)](../operation/ubuntu24-migration.md/#3-ssh)〜[5. ノード再インストール](../operation/ubuntu24-migration.md/#5)はSSH接続で作業してください。
+[3. アップグレード確認(SSH接続)](/docs/cardano/operation/ubuntu24-migration#3-ssh)〜[5. ノード再インストール](/docs/cardano/operation/ubuntu24-migration#5)はSSH接続で作業してください。
 
 </Callout>
 
 
-### **3-1. 現在のUbuntuバージョン確認**
+### 3-1. 現在のUbuntuバージョン確認
 
 ```bash
 lsb_release -d
@@ -665,18 +653,18 @@ lsb_release -d
 </Callout>
 
 
-### **3-2. ブラケットペーストモードOFF**
+### 3-2. ブラケットペーストモードOFF
 ```bash
 grep -qxF 'set enable-bracketed-paste off' ~/.inputrc || echo 'set enable-bracketed-paste off' >> ~/.inputrc
 ```
 
-### **3-3. SSH再接続**
+### 3-3. SSH再接続
 ```bash
 exit
 ```
 > SSHで再接続してください。
 
-### **3-4. リレーサーバーにGrafanaを搭載している場合の対応**
+### 3-4. リレーサーバーにGrafanaを搭載している場合の対応
 
 <Callout type="warn" title="Grafana搭載サーバー">
 
@@ -736,7 +724,7 @@ apt policy grafana
 
 
 
-## **4. 依存関係再インストール**
+## 4. 依存関係再インストール
 
 システムアップデート
 ```bash
@@ -935,7 +923,7 @@ blocknotify
 
 <Callout type="info" title="最新バージョンにアップデート">
 
-現在の最新バージョンはv2.5.*なのでそれ以下の方は、[4. アップデート手順](../setup/blocknotify-setup.md/#4)を実施して更新してください。
+現在の最新バージョンはv2.5.*なのでそれ以下の方は、[4. アップデート手順](/docs/cardano/setup/blocknotify-setup#4)を実施して更新してください。
 
 </Callout>
 
@@ -969,7 +957,7 @@ sudo ufw status numbered
 </Callout>
 
 
-## **5. sysctlの設定**
+## 5. sysctlの設定
 
 <Tabs items={["リレー", "BP"]}>
 <Tab value="リレー">
@@ -1104,12 +1092,12 @@ cat $HOME/sysctl-before-cardano-*.txt
 </Callout>
 
 
-## **6. ノード再インストール**
+## 6. ノード再インストール
 
 <span style={{color: "red"}}>ソースコードからビルドした`cardano-node`/`cardano-cli`を使用していた場合、もしくはノードアップデートする場合に以下の手順を実行してください。</span>
 <Callout type="info" title="ヒント">
 
-[1. 依存環境アップデート](../operation/node-update.md/#1) ~ [3. 依存関係作業](../operation/node-update.md/#3)  
+[1. 依存環境アップデート](/docs/cardano/operation/node-update#1) ~ [3. 依存関係作業](/docs/cardano/operation/node-update#3)  
 
 </Callout>
 

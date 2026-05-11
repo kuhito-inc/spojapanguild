@@ -2,8 +2,6 @@
 title: "Grafanaアラート設定"
 ---
 
-# **Grafanaアラート設定**
-
 <Callout type="info" title="概要">
 
 サーバー異常状態発生時に任意のアプリへ通知を送信する設定です。  
@@ -12,33 +10,33 @@ title: "Grafanaアラート設定"
 </Callout>
 
 
-## **1. 事前確認**
+## 1. 事前確認
 
 * grafana version 12.4.1以上
-* Grafana [SJG最新ダッシュボード](../setup/monitoring-setup.md/#3-grafana)適用済み
+* Grafana [SJG最新ダッシュボード](/docs/cardano/setup/monitoring-setup#3-grafana)適用済み
 
-### **1-1. Grafanaバージョン確認**
+### 1-1. Grafanaバージョン確認
 
 ```bash
 grafana-cli --version
 ```
 
-### **1-2. システムパッケージの更新**
+### 1-2. システムパッケージの更新
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
 
-## **2. 通知先アプリの設定**
+## 2. 通知先アプリの設定
 
 <Callout type="info" title="通知先アプリの設定">
 
 アラートの通知先はLINE/Discord/Telegram/Slackを複数指定することが可能です。  
-ブロック生成ステータス通知の[2. 通知アプリの設定](../setup/blocknotify-setup.md/#2)で設定した手順と同様に、通知先名などを変えてトークンを発行してください。  
+ブロック生成ステータス通知の[2. 通知アプリの設定](/docs/cardano/setup/blocknotify-setup#2)で設定した手順と同様に、通知先名などを変えてトークンを発行してください。  
 
 </Callout>
 
 
-## **3. 通知テンプレート設定**
+## 3. 通知テンプレート設定
 
 * 左ペインの「`Alerting`」→「`Contact points`」を選択し、「`Notification Templates`」タブの「`Add notification template group`」を選択
 ![](/images/grafana-alert/grafana-alert-settings_1.png)
@@ -62,7 +60,7 @@ sudo apt update && sudo apt upgrade -y
 ```
 ![](/images/grafana-alert/grafana-alert-settings_2.png)
 
-## **4. 通知先設定**
+## 4. 通知先設定
 * 「`Contact Points`」タブを選択
 * 「`Create contact point`」を選択
 ![](/images/grafana-alert/grafana-alert-settings_3.png)
@@ -70,7 +68,7 @@ sudo apt update && sudo apt upgrade -y
 * 「`Create contact point`」→「`Name *`」に任意の通知名「`Self-Alert`」を入力
 * 「`Integration`」→「通知先(Discord,Telegram,Slack等)」を選択し、情報を入力
 > ここではDiscordを選択しています。
-* [2. 通知アプリの設定](../setup/blocknotify-setup.md/#2)で取得した通知アプリごとのトークンIDやWebhookURLを入力
+* [2. 通知アプリの設定](/docs/cardano/setup/blocknotify-setup#2)で取得した通知アプリごとのトークンIDやWebhookURLを入力
 > LINEはAPIの仕様変更に伴い選択肢から除外されています。
 * 「`Optional * settings`」→「`Message Content`」→「`Edit Message Content`」→「`Select notification template`」→「`Choose notification template`」欄から、「`mymessage`」を選択し、「`Save`」
 * 「`Save contact point`」を選択
@@ -104,14 +102,14 @@ sudo apt update && sudo apt upgrade -y
 * 「`Update default policy`」を選択
 ![](/images/grafana-alert/grafana-alert-settings_6.png)
 
-## **5. アラートルールの作成**
+## 5. アラートルールの作成
 
 通知の基準となるアラートルールを作成します。  
 
 * 左ペインの「`Alerting`」→「`Alert rules`」→「`New alert rule`」の順に選択します。
 ![](/images/grafana-alert/grafana-alert-settings_7.png)
 
-### **5-1. ノードスロット監視**
+### 5-1. ノードスロット監視
 
 <Callout type="info" title="ヒント">
 
@@ -187,7 +185,7 @@ cardano_node_metrics_slotInEpoch_int{alias="block-producing-node"}
 * 「`Save`」を選択
 
 
-### **5-2. BP→リレー接続監視**
+### 5-2. BP→リレー接続監視
 上記で作成したルールをコピーします。
 ![](/images/grafana-alert/grafana-alert-settings_12.png)
 
@@ -209,7 +207,7 @@ cardano_node_metrics_peerSelection_ActivePeers
 * 「`Custom annotation name and content`」→「`...content`」→「`BPからリレーへの接続が確認できません。接続状況を確認してください。`」を入力
 * 「`Save`」を選択
 
-### **5-3. チェーン密度監視**
+### 5-3. チェーン密度監視
 上記で作成したルールをコピーします。
 ![](/images/grafana-alert/grafana-alert-settings_12.png)
 
@@ -231,7 +229,7 @@ cardano_node_metrics_density_real{alias="relaynode1"} * 100
 * 「`Save`」を選択
 
 
-### **5-4. ノードタイム監視**
+### 5-4. ノードタイム監視
 上記で作成したルールをコピーします。
 ![](/images/grafana-alert/grafana-alert-settings_12.png)
 
@@ -276,7 +274,7 @@ node_timex_maxerror_seconds{alias="relaynode2"} * 1000
 * 「`Save`」を選択
 
 
-### **5-5. KES残り日数監視**
+### 5-5. KES残り日数監視
 上記で作成したルールをコピーします。
 ![](/images/grafana-alert/grafana-alert-settings_12.png)
 
@@ -298,7 +296,7 @@ KESキーの期限が迫っています。ブロック生成予定のないタ�
 * 「`Save`」を選択
 
 
-### **5-6. ディスク使用率監視**
+### 5-6. ディスク使用率監視
 上記で作成したルールをコピーします。
 ![](/images/grafana-alert/grafana-alert-settings_12.png)
 
@@ -345,18 +343,18 @@ Relay1のディスク使用率が90%を超えています。100%に達する前�
 * 「`Save`」を選択
 
 
-## **6. 通知内容URLカスタマイズ**
+## 6. 通知内容URLカスタマイズ
 
 <Callout type="info" title="注意">
 
-* 事前に[Grafanaセキュリティ強化](../operation/grafana-security.md)を実施してください。
+* 事前に[Grafanaセキュリティ強化](/docs/cardano/operation/grafana-security)を実施してください。
 * 以下はGrafanaインストールサーバーで実施してください。
 
 </Callout>
 
 
 
-`xxxx.bbb.com`を[Grafanaセキュリティ強化](../operation/grafana-security.md/#1)で取得したドメイン(サブドメイン)に置き換えて実行  
+`xxxx.bbb.com`を[Grafanaセキュリティ強化](/docs/cardano/operation/grafana-security#1)で取得したドメイン(サブドメイン)に置き換えて実行  
 `https://`は不要
 ```
 domain=xxxx.bbb.com

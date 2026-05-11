@@ -2,8 +2,6 @@
 title: "カタリスト有権者登録"
 ---
 
-# **カタリスト有権者登録**
-
 <Callout type="info" title="概要">
 
 * このマニュアルは、プールのpayment.addrを有権者登録する方法です。  
@@ -15,7 +13,7 @@ title: "カタリスト有権者登録"
 </Callout>
 
 
-## **1. 事前準備インストール**
+## 1. 事前準備インストール
 
 **<span style={{color: "red"}}>以下の依存関係はBPサーバーにインストールしてください</span>**  
 
@@ -25,7 +23,7 @@ title: "カタリスト有権者登録"
 | :---------- | :---------- | :---------- |
 | v1.1.3 | v1.13.0 | v0.5.0 |
 
-### **1-1. Bech32インストール**
+### 1-1. Bech32インストール
 
 ダウンロード
 <Tabs items={["ブロックプロデューサーノード"]}>
@@ -80,7 +78,7 @@ bech32 -v
 > 戻り値 1.1.3
 
 
-### **1-2. cardano-signerインストール**
+### 1-2. cardano-signerインストール
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
 
@@ -166,7 +164,7 @@ cardano-signer help | grep -m 1 "cardano-signer"
 </Tab>
 </Tabs>
 
-### **1-3. catalyst-toolboxインストール**
+### 1-3. catalyst-toolboxインストール
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
 
@@ -215,9 +213,9 @@ catalyst-toolbox --version
 </Tab>
 </Tabs>
 
-## **2. 有権者登録作業**
+## 2. 有権者登録作業
 
-### **2-1. SJGTOOL起動**
+### 2-1. SJGTOOL起動
 
 ![](/images/catalyst_vote/catalyst1.jpg)
 
@@ -246,7 +244,7 @@ Fund11から開始予定のWeb版Catalyst投票センターを使用する際に
 </Callout>
 
 
-### **2-2. QRコード作成後**
+### 2-2. QRコード作成後
 
 QRコードが発行できたら`$HOME/CatalystVoting`ディレクトリ内ファイルの整理をお願いします。
 

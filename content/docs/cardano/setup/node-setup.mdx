@@ -2,8 +2,6 @@
 title: "ノードセットアップ"
 ---
 
-# **ノードセットアップ**
-
 <Callout type="info" title="インストールバージョン">
 
 | Node | CLI | GHC | Cabal | CNCLI |
@@ -24,7 +22,7 @@ title: "ノードセットアップ"
 </Callout>
 
 
-## **1. 依存関係インストール**
+## 1. 依存関係インストール
 
 ターミナルを起動し、以下のコマンドを入力しましょう！
 
@@ -43,7 +41,7 @@ sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd 
 tmux new -s build
 ```
 
-### **1-1. Libsodiumインストール**
+### 1-1. Libsodiumインストール
 
 ```bash
 mkdir -p $HOME/git
@@ -83,7 +81,7 @@ sudo make install
 ```
 
 
-### **1-2. Secp256k1ライブラリインストール**
+### 1-2. Secp256k1ライブラリインストール
 
 ```
 cd $HOME/git
@@ -123,7 +121,7 @@ Testsuite summary for libsecp256k1 0.3.2
 sudo make install
 ```
 
-### **1-3. blstインストール**
+### 1-3. blstインストール
 
 1.blstダウンロード
 ```bash
@@ -174,7 +172,7 @@ cat /usr/local/lib/pkgconfig/libblst.pc | grep Version
 > Version 0.3.14
 
 
-### **1-4. GHCUPインストール**
+### 1-4. GHCUPインストール
 インストール変数設定
 ```bash
 cd $HOME
@@ -231,7 +229,7 @@ GHCバージョン：「9.6.7」であることを確認してください。
 
 
 
-## **2. ソースコードからビルド**
+## 2. ソースコードからビルド
 
 <Callout type="info" title="確認">
 
@@ -357,7 +355,7 @@ source $HOME/.bashrc
 ```
 
 
-## **3. ノード設定ファイルの修正**
+## 3. ノード設定ファイルの修正
 
 ノード構成に必要な設定ファイルを取得します。  
 config.json、genesis.json、topology.json
@@ -386,7 +384,7 @@ echo export CARDANO_NODE_SOCKET_PATH="$NODE_HOME/db/socket" >> $HOME/.bashrc
 source $HOME/.bashrc
 ```
 
-## **4. ノード起動スクリプトの作成**
+## 4. ノード起動スクリプトの作成
 
 起動スクリプトには、ディレクトリ、ポート番号、DBパス、構成ファイルパス、トポロジーファイルパスなど、カルダノノードを実行するために必要な変数が含まれています。
 
@@ -448,7 +446,7 @@ EOF
 </Tab>
 </Tabs>
 
-## **5. ノード起動**
+## 5. ノード起動
 
 起動スクリプトに実行権限を付与し、ブロックチェーンの同期を開始します。 
    
@@ -491,7 +489,7 @@ chmod +x startBlockProducingNode.sh
 Ctrl+C
 ```
 
-## **6. 自動起動の設定(systemd)**
+## 6. 自動起動の設定(systemd)
 
 先程のスクリプトだけでは、ターミナル画面を閉じるとノードが終了してしまうので、スクリプトをサービスとして登録し、自動起動するように設定しましょう。
 
@@ -608,7 +606,7 @@ journalctl -u cardano-node -f
 ```
 > コマンド入力に戻る場合は「Ctrl＋C」（この場合ノードは終了しません）
 
-### **6-1. 便利なエイリアス設定**
+### 6-1. 便利なエイリアス設定
 <Callout type="info" title="エイリアス設定">
 
 スクリプトへのパスを通し、任意の単語で起動出来るようにする。
@@ -634,7 +632,7 @@ cnstop ・・・ノード停止
 
 
 
-## **7. gLiveViewのインストール**
+## 7. gLiveViewのインストール
 
 cardano-nodeはログが流れる画面だけでは何が表示されているのかよくわかりません。  
 それを視覚的に確認できるツールが**gLiveView**です。
@@ -734,18 +732,18 @@ source $HOME/.bashrc
 
 <span style={{color: "red"}}>＜Mithril-ClientによるDB同期＞</span>  
 `Mithril-Client`を使用することで、約2日かかっていた初回のDB同期時間を約30分以内にまで短縮することができます。  
-手順はこちら→[DB同期(Mithril)](../operation/mithril-client.md)
+手順はこちら→[DB同期(Mithril)](/docs/cardano/operation/mithril-client)
 
 </Callout>
 
 
 
-## **8. エアギャップマシンのセットアップ**
+## 8. エアギャップマシンのセットアップ
 
-### **8-1. `cardano-cli`バイナリのコピー**
-リレーサーバーで[バイナリファイルのコピー](../operation/node-update.md/#4)をします。
+### 8-1. `cardano-cli`バイナリのコピー
+リレーサーバーで[バイナリファイルのコピー](/docs/cardano/operation/node-update#4)をします。
 
-### **8-2. 環境変数の設定**
+### 8-2. 環境変数の設定
 ```bash
 echo 'export NODE_HOME="$HOME/cnode"' >> ~/.bashrc
 echo 'export NODE_NETWORK="--mainnet"' >> ~/.bashrc
@@ -789,7 +787,7 @@ mkdir -p ${NODE_HOME}
 </Callout>
 
 
-### **8-3. 反映確認**
+### 8-3. 反映確認
 ```bash
 echo "NODE_HOME=${NODE_HOME}"
 echo "NODE_NETWORK=${NODE_NETWORK}"

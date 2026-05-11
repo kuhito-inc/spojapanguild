@@ -2,9 +2,7 @@
 title: "最終チェック"
 ---
 
-# **最終チェック**
-
-## **1. Txの確認**
+## 1. Txの確認
 
 <Callout type="error" title="重要な確認事項">
 
@@ -16,15 +14,13 @@ title: "最終チェック"
 <Tabs items={["リレーノード/BP"]}>
 <Tab value="リレーノード/BP">
 
-
-
-</Tab>
-</Tabs>
-
 ```bash
 cd $NODE_HOME/scripts
 ./gLiveView.sh
 ```
+
+</Tab>
+</Tabs>
 
 <Callout type="info" title="Info">
 
@@ -36,7 +32,7 @@ cd $NODE_HOME/scripts
 ![](/images/glive-tx.png)
 
 
-## **2. Tracemempool無効**
+## 2. Tracemempool無効
 
 <Callout type="error" title="重要な最終調整">
 
@@ -72,11 +68,11 @@ journalctl --unit=cardano-node --follow
 ```
 
 
-## **3. ブロック生成可能状態チェック**
+## 3. ブロック生成可能状態チェック
 
 **SPO JAPAN GUILD TOOLを導入する**
 
-導入手順は**プール構築マニュアル内の[SJGツール導入設定](../operation/sjg-tool-setup.md)**をご参照ください
+導入手順は**プール構築マニュアル内の[SJGツール導入設定](/docs/cardano/operation/sjg-tool-setup)**をご参照ください
 
 **TOOLを実行する**
 
@@ -88,7 +84,7 @@ gtool
 
 <Callout type="info" title="！重要！">
 
-[プール運用マニュアル](../operation/index.md)を必ず確認し、プール運営について学習してください。
+[プール運用マニュアル](/docs/cardano/operation)を必ず確認し、プール運営について学習してください。
 
 </Callout>
 

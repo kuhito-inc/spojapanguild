@@ -2,8 +2,6 @@
 title: "Mithril Signerノードの設定、更新"
 ---
 
-# **Mithril Signerノードの設定、更新**
-
 このマニュアルは、Stake Pool Operator（SPO）がCardano メインネット上で `Mithril Signer` を安全に運用するための設定および更新手順をまとめたものです。  
 
 <Callout type="info" title="インストールバージョン">
@@ -15,9 +13,9 @@ title: "Mithril Signerノードの設定、更新"
 </Callout>
 
 
-## **1. Mithril Signerの設定**
+## 1. Mithril Signerの設定
 
-### **1-1. BPにMithril Signerのインストール**
+### 1-1. BPにMithril Signerのインストール
 
 <Callout type="info" title="補足">
 
@@ -30,11 +28,6 @@ title: "Mithril Signerノードの設定、更新"
 
 <Tabs items={["ブロックプロデューサー"]}>
 <Tab value="ブロックプロデューサー">
-
-
-
-</Tab>
-</Tabs>
 
 システムのアップデート
 ```bash
@@ -62,15 +55,7 @@ mithril-signer -V
 ```
 > mithril-signer 1.0.0
 
-#### **ENV変数の設定**
-
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
-
-
-
-</Tab>
-</Tabs>
+#### ENV変数の設定
 
 パラメータ値算出
 ```bash
@@ -104,15 +89,7 @@ METRICS_SERVER_PORT=61234
 EOF
 ```
 
-#### **サービスファイル作成**
-
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
-
-
-
-</Tab>
-</Tabs>
+#### サービスファイル作成
 
 ```bash
 cat > $HOME/mithril/mithril-signer.service << EOF
@@ -151,7 +128,10 @@ sudo systemctl daemon-reload
 sudo systemctl enable mithril-signer
 ```
 
-### **1-2. Mithrilリレーノードのセットアップ**
+</Tab>
+</Tabs>
+
+### 1-2. Mithrilリレーノードのセットアップ
 
 <Callout type="info" title="説明">
 
@@ -163,11 +143,6 @@ Mithril Signer はアグリゲーターとの通信を行いますが、**セキ
 
 <Tabs items={["リレーノード"]}>
 <Tab value="リレーノード">
-
-
-
-</Tab>
-</Tabs>
 
 システムのアップデート
 ```bash
@@ -239,17 +214,7 @@ sudo chown squid -R /opt/squid/var/
 sudo chgrp squid -R /opt/squid/var/
 ```
 
-#### **`squid`のサービスファイル作成**
-
-<Tabs items={["リレーノード"]}>
-<Tab value="リレーノード">
-
-
-
-</Tab>
-</Tabs>
-
-Mithril用の`squid`設定ファイルの作成
+#### `squid`のサービスファイル作成
 ```bash
 cat > $HOME/squid.service << EOF
 [Unit]
@@ -361,13 +326,11 @@ sudo systemctl status squid --no-pager
 ```
 > Activeが `active (running)` になっていること
 
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
-
-
-
 </Tab>
 </Tabs>
+
+<Tabs items={["ブロックプロデューサー"]}>
+<Tab value="ブロックプロデューサー">
 
 `mithril-signer`の起動
 ```bash
@@ -381,16 +344,14 @@ journalctl -u mithril-signer -f --output=cat
 以上で、署名者登録が完了しました。  
 スナップショットに署名するのは2エポック後からとなります。
 
-### **1-3. Mithril-Signerの動作確認**
+</Tab>
+</Tabs>
+
+### 1-3. Mithril-Signerの動作確認
 インストール後にアグリゲーターに正常に登録されているかを確認します。
 
 <Tabs items={["ブロックプロデューサー"]}>
 <Tab value="ブロックプロデューサー">
-
-
-
-</Tab>
-</Tabs>
 
 ```bash
 cd $HOME/mithril
@@ -416,16 +377,14 @@ PARTY_ID=$(cat $NODE_HOME/pool.id-bech32) AGGREGATOR_ENDPOINT=https://aggregator
 
 </Callout>
 
+</Tab>
+</Tabs>
 
-### **1-4. 便利なエイリアス設定**
+
+### 1-4. 便利なエイリアス設定
 
 <Tabs items={["ブロックプロデューサー"]}>
 <Tab value="ブロックプロデューサー">
-
-
-
-</Tab>
-</Tabs>
 
 <Callout type="info" title="エイリアス設定">
 
@@ -442,16 +401,14 @@ mithril ・・・ログ表示
 
 </Callout>
 
-
-### **1-5. Grafanaダッシュボード設定**
-
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
-
-
-
 </Tab>
 </Tabs>
+
+
+### 1-5. Grafanaダッシュボード設定
+
+<Tabs items={["ブロックプロデューサー", "Grafana導入サーバー"]}>
+<Tab value="ブロックプロデューサー">
 
 `xxx.xxx.xxx.xx`をGrafana導入サーバーのIPに置き換えて実行
 ```bash
@@ -461,13 +418,8 @@ sudo ufw allow from xxx.xxx.xxx.xx to any port 61234
 sudo ufw reload
 ```
 
-<Tabs items={["Grafana導入サーバー"]}>
-<Tab value="Grafana導入サーバー">
-
-
-
 </Tab>
-</Tabs>
+<Tab value="Grafana導入サーバー">
 
 `Prometheus`設定ファイルの編集
 ```bash
@@ -509,13 +461,11 @@ FAILED: parsing YAML file /etc/prometheus/prometheus.yml: yaml: line XX: did not
 sudo systemctl restart prometheus.service
 ```
 
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
-
-
-
 </Tab>
 </Tabs>
+
+<Tabs items={["ブロックプロデューサー"]}>
+<Tab value="ブロックプロデューサー">
 
 Mithril-signer用のダッシュボードファイルをダウンロード
 ```bash
@@ -527,6 +477,9 @@ curl -s -o $NODE_HOME/Mithril-Signer-on-SJG-Grafana-dashboard.json https://raw.g
 sed -i $NODE_HOME/Mithril-Signer-on-SJG-Grafana-dashboard.json \
     -e "s/bech32_id_of_your_pool/$(cat $NODE_HOME/pool.id-bech32)/g"
 ```
+
+</Tab>
+</Tabs>
 
 <Callout type="info" title="ファイル転送">
 
@@ -551,17 +504,12 @@ Grafanaの左メニューから「`Dashboards`」を開き、「`New`」→「`I
 設定内容を確認後、「`Import`」を選択するとダッシュボードが読み込まれます。
 
 
-## **2. Mithril Signerの更新**
+## 2. Mithril Signerの更新
 
-### **2-1. BPのMithril Signer更新**
+### 2-1. BPのMithril Signer更新
 
 <Tabs items={["ブロックプロデューサー"]}>
 <Tab value="ブロックプロデューサー">
-
-
-
-</Tab>
-</Tabs>
 
 システムのアップデート
 ```bash
@@ -622,16 +570,13 @@ journalctl -u mithril-signer -f --output=cat
 
 </Callout>
 
+</Tab>
+</Tabs>
 
-### **2-2. リレーノードのMithril Signer更新**
+### 2-2. リレーノードのMithril Signer更新
 
 <Tabs items={["リレーノード"]}>
 <Tab value="リレーノード">
-
-
-
-</Tab>
-</Tabs>
 
 **`Squid`のアップデート**
 
@@ -718,3 +663,8 @@ cd $HOME
 rm squid-7.5.tar.gz
 rm -rf squid-7.5
 ```
+
+</Tab>
+</Tabs>
+
+---

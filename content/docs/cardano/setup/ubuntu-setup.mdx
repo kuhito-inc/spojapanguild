@@ -2,8 +2,6 @@
 title: "Ubuntu初期設定"
 ---
 
-# **Ubuntu初期設定**
-
 <Callout type="info" title="ヒント">
 
 この手順は、エアギャップオフラインマシンのUbuntuでは実施する必要はございません。
@@ -19,7 +17,7 @@ title: "Ubuntu初期設定"
 
 
 
-## **1. サーバーログイン（初回のみ / root）**
+## 1. サーバーログイン（初回のみ / root）
 
 <Callout type="warn" title="重要">
 
@@ -37,7 +35,7 @@ title: "Ubuntu初期設定"
 | **パスワード** | 契約時に送付される初期 root パスワード |
 
 
-## **2. ユーザーアカウント作成**
+## 2. ユーザーアカウント作成
 <Callout type="info" title="ヒント">
 
 日常運用では`root`アカウントを使用せず、sudo権限を付与した一般ユーザーで操作します。
@@ -99,7 +97,7 @@ echo "\$nrconf{restart} = 'a';" | sudo tee /etc/needrestart/conf.d/50local.conf
 echo "\$nrconf{blacklist_rc} = [qr(^cardano-node\\.service$) => 0, qr(^cnode-blocknotify\\.service$) => 0, qr(^cnode-cncli-sync\\.service$) => 0,];" | sudo tee -a /etc/needrestart/conf.d/50local.conf
 ```
 
-## **3. SSH設定変更**
+## 3. SSH設定変更
 
 <Callout type="info" title="SSH強化設定ルール">
 
@@ -129,7 +127,7 @@ mkdir -p ~/.ssh
 
 <Callout type="warn" title="ファイル転送">
 
-[事前準備](../setup/index.md/#_2)で生成した`authorized_keys`を対象サーバーの`$HOME/.ssh`ディレクトリにコピーします。
+[事前準備](/docs/cardano/setup#_2)で生成した`authorized_keys`を対象サーバーの`$HOME/.ssh`ディレクトリにコピーします。
 ```mermaid
 graph LR
     A[ローカルのホストマシン] -->|authorized_keys| B[対象サーバー];
@@ -222,7 +220,7 @@ LISTEN 0 4096 [::]:<設定したSSH Port>
 </Callout>
 
 
-## **4. ファイアウォール有効化**
+## 4. ファイアウォール有効化
 
 標準のファイアウォール（UFW）を使用して、インバウンドのアクセス可能なポートを限定します。
 
@@ -271,7 +269,7 @@ sudo ufw status
 以下の戻り値があればOK
 > Status: active
 
-## **5. システム更新**
+## 5. システム更新
 
 <Callout type="info" title="重要">
 
@@ -305,7 +303,7 @@ sudo dpkg-reconfigure --priority=low unattended-upgrades
 > `YES`を選択し、Enterを押下
 
 
-## **6. rootアカウントの無効化設定**
+## 6. rootアカウントの無効化設定
 `root`アカウントを無効化します。
 > サーバーのセキュリティ維持のため、頻繁に root アカウントでログインしないでください。
 
@@ -329,7 +327,7 @@ sudo passwd -u root
 
 
 
-## **7. 共有メモリのセキュリティ強化**
+## 7. 共有メモリのセキュリティ強化
 
 システムで共有されるメモリを保護します。
 
@@ -344,7 +342,7 @@ tail -n 1 /etc/fstab
 ```
 > `tmpfs /dev/shm tmpfs ro,noexec,nosuid 0 0`が最終行に入力されていることを確認します。
 
-## **8. Fail2banのインストール**
+## 8. Fail2banのインストール
 
 <Callout type="info" title="Fail2banについて">
 
@@ -364,7 +362,7 @@ sudo nano /etc/fail2ban/jail.local
 ```
 
 ファイルの最後に次の行を追加し保存します。
-> コマンド中の (SSHポートを入力してください) については[3. SSH設定変更](../setup/ubuntu-setup.md/#3-ssh)で設定したSSHポートを入力してください。(**)は不要です。
+> コマンド中の (SSHポートを入力してください) については[3. SSH設定変更](/docs/cardano/setup/ubuntu-setup#3-ssh)で設定したSSHポートを入力してください。(**)は不要です。
 
 ```bash
 [sshd]
@@ -389,7 +387,7 @@ sudo systemctl status fail2ban --no-pager
 ```
 > `Active: active (running)`となっていることを確認してください。
 
-## **9. Chronyの設定**
+## 9. Chronyの設定
 
 chronyをインストールします。
 ```bash
@@ -475,7 +473,7 @@ chronyc tracking
 </Callout>
 
 
-## **10. sysctlの設定**
+## 10. sysctlの設定
 
 <Tabs items={["リレー", "BP"]}>
 <Tab value="リレー">
@@ -610,7 +608,7 @@ cat $HOME/sysctl-before-cardano-*.txt
 </Callout>
 
 
-## **補足：SSH2段階認証（任意作業・上級者向け）**
+## 補足：SSH2段階認証（任意作業・上級者向け）
 
 <Callout type="error" title="注意">
 
@@ -782,7 +780,7 @@ kbdinteractiveauthentication yes
 authenticationmethods publickey,keyboard-interactive
 ```
 
-### **最終確認（必須）**
+### 最終確認（必須）
 
 既存の SSH セッションは切断せず、**別ターミナルから新規接続**を行い、以下を必ず確認してください。
 
@@ -793,7 +791,7 @@ authenticationmethods publickey,keyboard-interactive
 以下の実効値が表示されていれば、設定は正しく反映されています。
 
 
-## **SSH 2FA（Google Authenticator）完全クリーンアップ**
+## SSH 2FA（Google Authenticator）完全クリーンアップ
 
 SSH 側：2FA 強制を解除
 ```bash

@@ -2,8 +2,6 @@
 title: "ガバナンスアクション（SPO投票）"
 ---
 
-# **ガバナンスアクション（SPO投票）**
-
 <Callout type="info" title="概要">
 
 - この投票手順はガバナンスアクションのSPO投票のみに使用できます。
@@ -32,7 +30,7 @@ mkdir -p $NODE_HOME/governance
 </Tab>
 </Tabs>
 
-## **1. 投票ファイル作成**
+## 1. 投票ファイル作成
 
 <Callout type="info" title="投票例">
 
@@ -80,36 +78,29 @@ graph LR
 </Callout>
 
 
-**ハッシュ値確認**
+**ハッシュ値確認**  
 エアギャップとBPで`vote.file`ファイルハッシュを比較します。  
 <span style={{color: "red"}}>必ずハッシュ値が一致していることを確認してください</span>
 
-<Tabs items={["エアギャップ"]}>
+<Tabs items={["エアギャップ", "BP"]}>
 <Tab value="エアギャップ">
 
-
-
-</Tab>
-</Tabs>
-
 ```bash
 sha256sum $NODE_HOME/governance/vote.file
 ```
 
-<Tabs items={["BP"]}>
+</Tab>
 <Tab value="BP">
 
-
-
-</Tab>
-</Tabs>
-
 ```bash
 sha256sum $NODE_HOME/governance/vote.file
 ```
 
+</Tab>
+</Tabs>
 
-## **2. トランザクションファイル作成**
+
+## 2. トランザクションファイル作成
 <Tabs items={["BP"]}>
 <Tab value="BP">
 
@@ -171,35 +162,28 @@ graph LR
 </Callout>
 
 
-**ハッシュ値確認**
+**ハッシュ値確認**  
 BPとエアギャップで`vote-tx.raw`ファイルハッシュを比較します。  
 <span style={{color: "red"}}>必ずハッシュ値が一致していることを確認してください</span>
 
-<Tabs items={["BP"]}>
+<Tabs items={["BP", "エアギャップ"]}>
 <Tab value="BP">
 
-
-
-</Tab>
-</Tabs>
-
 ```bash
 sha256sum $NODE_HOME/governance/vote-tx.raw
 ```
 
-<Tabs items={["エアギャップ"]}>
+</Tab>
 <Tab value="エアギャップ">
 
-
-
-</Tab>
-</Tabs>
-
 ```bash
 sha256sum $NODE_HOME/governance/vote-tx.raw
 ```
 
-## **3. 署名ファイル作成**
+</Tab>
+</Tabs>
+
+## 3. 署名ファイル作成
 <Tabs items={["エアギャップ"]}>
 <Tab value="エアギャップ">
 
@@ -227,35 +211,28 @@ graph LR
 </Callout>
 
 
-**ハッシュ値確認**
+**ハッシュ値確認**  
 エアギャップとBPで`vote-tx.signed`ファイルハッシュを比較します。  
 <span style={{color: "red"}}>必ずハッシュ値が一致していることを確認してください</span>
 
-<Tabs items={["エアギャップ"]}>
+<Tabs items={["エアギャップ", "BP"]}>
 <Tab value="エアギャップ">
 
-
-
-</Tab>
-</Tabs>
-
 ```bash
 sha256sum $NODE_HOME/governance/vote-tx.signed
 ```
 
-<Tabs items={["BP"]}>
+</Tab>
 <Tab value="BP">
 
-
-
-</Tab>
-</Tabs>
-
 ```bash
 sha256sum $NODE_HOME/governance/vote-tx.signed
 ```
 
-## **4. 投票トランザクション送信**
+</Tab>
+</Tabs>
+
+## 4. 投票トランザクション送信
 <Tabs items={["BP"]}>
 <Tab value="BP">
 

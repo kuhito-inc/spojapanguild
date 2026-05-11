@@ -2,8 +2,6 @@
 title: "Grafanaセキュリティ強化"
 ---
 
-# **Grafanaセキュリティ強化**
-
 <Callout type="info" title="概要">
 
 このマニュアルではGrafanaのリモートアクセスセキュリティを強化するためHTTPS化とリバースプロキシの導入設定を行います。
@@ -12,9 +10,9 @@ title: "Grafanaセキュリティ強化"
 
 
 
-## **事前確認**
+## 事前確認
 
-以下の手順は、[監視ツール設定](../setup/monitoring-setup.md)で設定したGrafana導入サーバーで実施してください。
+以下の手順は、[監視ツール設定](/docs/cardano/setup/monitoring-setup)で設定したGrafana導入サーバーで実施してください。
 
 ～作業の流れ～
 
@@ -33,7 +31,7 @@ title: "Grafanaセキュリティ強化"
 </Callout>
 
 
-## **1. ドメイン(サブドメイン)の取得**
+## 1. ドメイン(サブドメイン)の取得
 
 <Callout type="info" title="確認">
 
@@ -78,7 +76,7 @@ DDNS Nowは完全無料・定期通知不要・サービス保障稼働率100%�
 </Tab>
 </Tabs>
 
-## **2. nginxのインストール**
+## 2. nginxのインストール
 
 **インストール**
 
@@ -130,7 +128,7 @@ sudo ufw reload
 
 
 
-`xxxx.bbb.com`を[1. ドメイン(サブドメイン)の取得](../operation/grafana-security.md/#1)で取得したドメイン(サブドメイン)に置き換えて実行します。
+`xxxx.bbb.com`を[1. ドメイン(サブドメイン)の取得](/docs/cardano/operation/grafana-security#1)で取得したドメイン(サブドメイン)に置き換えて実行します。
 
 ```bash
 domain=xxxx.bbb.com
@@ -199,7 +197,7 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-## **3. certbotをインストール**
+## 3. certbotをインストール
 
 snapが利用可能か確認
 
@@ -219,7 +217,7 @@ sudo snap install --classic certbot
 sudo ln -sf /snap/bin/certbot /usr/bin/certbot
 ```
 
-## **4. 無料SSL証明書(Let’s Encrypt)を取得**
+## 4. 無料SSL証明書(Let’s Encrypt)を取得
 ```bash
 sudo certbot --nginx
 ```
@@ -255,7 +253,7 @@ sudo certbot --nginx
 
 
 
-## **5. nginx設定変更**
+## 5. nginx設定変更
 
 **1. websocketの有効化**  
 
@@ -263,7 +261,7 @@ sudo certbot --nginx
 echo $domain
 ```
 > 戻り値が設定したドメインであること。  
-> そうでなければ、変数domainに[1. ドメイン(サブドメイン)の取得](../operation/grafana-security.md/#1)で取得したドメイン(サブドメイン)を代入してください。
+> そうでなければ、変数domainに[1. ドメイン(サブドメイン)の取得](/docs/cardano/operation/grafana-security#1)で取得したドメイン(サブドメイン)を代入してください。
 
 **仮想ホストファイルの編集**
 
@@ -363,7 +361,7 @@ sudo systemctl --no-pager status nginx
 ```
 > Active: active (running)であること
 
-## **6. SSL証明書自動更新**
+## 6. SSL証明書自動更新
 
 1.SSL証明書自動更新タイマー確認  
 このプログラムでSSL証明書が自動更新されます。

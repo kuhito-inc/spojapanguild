@@ -2,12 +2,10 @@
 title: "監視ツール設定"
 ---
 
-# **監視ツール設定**
-
 プロメテウスはターゲットに指定したメトリックHTTPエンドポイントをスクレイピングし、情報を収集する監視ツールです。[オフィシャルドキュメントはこちら](https://prometheus.io/docs/introduction/overview/)  
 グラファナは収集されたデータを視覚的に表示させるダッシュボードツールです。
 
-## **1. インストール**
+## 1. インストール
 
 <Callout type="info" title="概要">
 
@@ -126,7 +124,7 @@ sudo ufw reload
 </Tab>
 </Tabs>
 
-## **2. 設定ファイルの作成**
+## 2. 設定ファイルの作成
 
 Grafana稼働サーバーにインストールしたPrometheusの設定ファイルを作成します。  
 ここに記載されたサーバーのデータを取得します。
@@ -192,14 +190,12 @@ EOF
 <Tabs items={["Grafana稼働サーバー"]}>
 <Tab value="Grafana稼働サーバー">
 
-
+```bash
+sudo promtool check config $HOME/prometheus.yml
+```
 
 </Tab>
 </Tabs>
-
-  ```
-  sudo promtool check config $HOME/prometheus.yml
-  ```
 <Callout type="info" title="戻り値確認">
 
 構文エラーなしの場合
@@ -314,7 +310,7 @@ node_exporter, version 1.7.0
 </Callout>
 
 
-### **2-1. 既存の設定ファイルを更新する場合**
+### 2-1. 既存の設定ファイルを更新する場合
 
 <Callout type="info" title="既存ファイルの更新">
 
@@ -327,14 +323,12 @@ sudo nano /etc/prometheus/prometheus.yml
 <Tabs items={["Grafana稼働サーバー"]}>
 <Tab value="Grafana稼働サーバー">
 
-
+```bash
+sudo promtool check config /etc/prometheus/prometheus.yml
+```
 
 </Tab>
 </Tabs>
-
-  ```
-  sudo promtool check config /etc/prometheus/prometheus.yml
-  ```
 
 <Callout type="info" title="戻り値確認">
 
@@ -366,7 +360,7 @@ sudo systemctl restart prometheus.service
 </Callout>
 
 
-## **3. Grafanaダッシュボードの設定**
+## 3. Grafanaダッシュボードの設定
 
 1. ローカルPCのブラウザから http://Grafana稼働サーバーIPアドレス:3000 を開きます。
 2. ログイン名・PWは **admin** / **admin**
@@ -406,8 +400,8 @@ sed -i \
 
 以下の追加設定も実施してください。
 
-* [Grafanaアラート設定](../operation/grafana-alert.md)
-* [Grafanaセキュリティ強化](../operation/grafana-security.md)
+* [Grafanaアラート設定](/docs/cardano/operation/grafana-alert)
+* [Grafanaセキュリティ強化](/docs/cardano/operation/grafana-security)
 
 </Callout>
 

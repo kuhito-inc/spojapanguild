@@ -2,7 +2,6 @@
 title: "プール運用マニュアル"
 ---
 
-# **プール運用マニュアル**
 このマニュアルは、Cardanoステークプールの運用に必要なパラメーター、鍵ファイルの役割、日々の運用タスク、重要な注意点を体系的にまとめたものです。  
 実践的で安全な運用ができるように構成されています。
 
@@ -14,7 +13,7 @@ title: "プール運用マニュアル"
 
 
 
-## **パラメーターの理解**
+## パラメーターの理解
 主要なパラメーター一覧：
 
 | 項目      | 値        | 用途        |
@@ -33,7 +32,7 @@ title: "プール運用マニュアル"
 | **maxKESEvolutions** | `62` | KESを進化（evolve）できる回数の上限 |
 
 
-## **スロットの理解**
+## スロットの理解
 - スロット（Slot） = ジェネシスからの通算スロット番号  
 - スロットエポック（Slot epoch） = エポック内でのスロット番号  
 - 1スロット＝1秒（slotLength）  
@@ -41,7 +40,7 @@ title: "プール運用マニュアル"
   → 432,000 / 60 = 7200分 / 60 = 120時間 / 24 = 5日
 
 
-## **ブロック生成スロットリーダー**
+## ブロック生成スロットリーダー
 スロットリーダーは、委任量（ステーク量）に応じた確率で、各スロットごとにランダムに決定されます。  
 1エポック内で、ブロック生成が可能なスロットは約5％です。（432,000 * 0.05 = 21,600スロット）  
 
@@ -78,7 +77,7 @@ VRFの比較は完全にランダムであるため、ステーク量による�
 
 
 
-## **KES**
+## KES
 <Callout type="info" title="説明">
 
 
@@ -91,7 +90,7 @@ KESは、**`Key Evolving Signatures`**の略です。
 
 
 
-## **VRF**
+## VRF
 <Callout type="info" title="説明">
 
 
@@ -104,10 +103,10 @@ Praosではスロットリーダーのスケジュールが非公開で、ノー
 
 
 
-## **各種鍵ファイルの役割と保管場所**
+## 各種鍵ファイルの役割と保管場所
 
 
-### **証明書および鍵ファイルの詳細**
+### 証明書および鍵ファイルの詳細
 :lock:・・・ロック必須・再作成不可・紛失不可  
 :arrows_clockwise:・・・更新時書き換え・再作成可能  
 🔴・・・BP起動で使用  
@@ -144,11 +143,11 @@ Praosではスロットリーダーのスケジュールが非公開で、ノー
 | **Calidus-MnemonicsKey.json**    | Calidusニーモニックファイル | エアギャップ ／ USB | :arrows_clockwise: |
 | **myCalidusRegistrationMetadata.json**    | Calidus登録メタデータファイル | エアギャップ ／ USB | :arrows_clockwise: |
 
-> Calidus関連ファイル（`myCalidusKey.vkey`、`myCalidusKey.skey`、`Calidus-MnemonicsKey.json`、`myCalidusRegistrationMetadata.json`）は、[Calidusキー生成](../operation/calidus-key-generation.md)を実施した場合に作成されるファイルです。  
+> Calidus関連ファイル（`myCalidusKey.vkey`、`myCalidusKey.skey`、`Calidus-MnemonicsKey.json`、`myCalidusRegistrationMetadata.json`）は、[Calidusキー生成](/docs/cardano/operation/calidus-key-generation)を実施した場合に作成されるファイルです。  
 > Calidusを利用しない場合、本ファイル群は存在しません。
 
 
-### **ノード起動用の設定ファイル**
+### ノード起動用の設定ファイル
 | ファイル      | 用途                          |
 | ----------- | ------------------------------------ |
 | **mainnet-byron-genesis.json**       | Byron設定ファイル  |
@@ -159,7 +158,7 @@ Praosではスロットリーダーのスケジュールが非公開で、ノー
 | **mainnet-topology.json**    | トポロジーファイル |
 
 
-### **スクリプトファイルおよびその他のファイル**
+### スクリプトファイルおよびその他のファイル
 | ファイル      | 用途                          | 推奨保管場所 | 重要度 |
 | ----------- | ------------------------------------ | ---------------- | :------: | 
 | **startRelayNode1.sh**       | リレー用ノード起動スクリプト  | リレー | :arrows_clockwise: |
@@ -175,7 +174,7 @@ Praosではスロットリーダーのスケジュールが非公開で、ノー
 | **tx.signed**       | トランザクション署名付きファイル | 使用後削除可 | - |
 
 
-## **運用タスクチェックリスト**
+## 運用タスクチェックリスト
 <Callout type="info" title="各作業">
 
 <Callout type="info" title="**日次作業**">
@@ -196,7 +195,7 @@ Praosではスロットリーダーのスケジュールが非公開で、ノー
 
 <Callout type="info" title="**3か月毎作業**">
 
-- [KESの更新](../operation/kes-update.md)（KES鍵の再生成および証明書更新）
+- [KESの更新](/docs/cardano/operation/kes-update)（KES鍵の再生成および証明書更新）
 
 </Callout>
 
