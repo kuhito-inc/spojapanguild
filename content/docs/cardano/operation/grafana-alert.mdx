@@ -44,7 +44,7 @@ sudo apt update && sudo apt upgrade -y
 * 任意のテンプレート名「`SJG`」を入力
 * 以下の内容を「`Template group`」に入力
 * 「`Save`」を選択
-```
+```bash
 {{ define "myalert" }}{{ range .Annotations.SortedPairs }}{{ if ne .Name "datasource_uid" }}{{ if ne .Name "grafana_state_reason" }}{{ if ne .Name "ref_id" }}{{ if ne .Name "description" }}{{ .Name }}: {{ .Value }}{{ end }}{{ end }}{{ end }}{{ end }}{{ end }}{{ end }}
 
 {{ define "mymessage" }}
@@ -356,7 +356,7 @@ Relay1のディスク使用率が90%を超えています。100%に達する前�
 
 `xxxx.bbb.com`を[Grafanaセキュリティ強化](/docs/cardano/operation/grafana-security#1)で取得したドメイン(サブドメイン)に置き換えて実行  
 `https://`は不要
-```
+```bash
 domain=xxxx.bbb.com
 ```
 

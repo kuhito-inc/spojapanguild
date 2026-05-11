@@ -37,7 +37,7 @@ sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd 
 
 新しいTMUXセッションを開きます。
 
-```
+```bash
 tmux new -s build
 ```
 
@@ -76,19 +76,19 @@ Testsuite summary for libsodium 1.0.18
 
 
 **インストールコマンドの実行**
-```
+```bash
 sudo make install
 ```
 
 
 ### 1-2. Secp256k1ライブラリインストール [#sec-3]
 
-```
+```bash
 cd $HOME/git
 git clone https://github.com/bitcoin-core/secp256k1.git
 ```
 
-```
+```bash
 cd secp256k1/
 git checkout acf5c55
 ./autogen.sh
@@ -117,7 +117,7 @@ Testsuite summary for libsecp256k1 0.3.2
 
 
 **インストールコマンドの実行**
-```
+```bash
 sudo make install
 ```
 
@@ -166,7 +166,7 @@ sudo chmod u=rw,go=r /usr/local/{lib/{libblst.a,pkgconfig/libblst.pc},include/{b
 ```
 
 バージョン確認
-```
+```bash
 cat /usr/local/lib/pkgconfig/libblst.pc | grep Version
 ```
 > Version 0.3.14
@@ -300,7 +300,7 @@ git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
 
 TMUXセッションを閉じる
 
-```
+```bash
 exit
 ```
 
@@ -328,7 +328,7 @@ echo export CARDANO_NODE_NETWORK_ID=mainnet >> $HOME/.bashrc
 <Tabs items={["Preview(テストネット)", "PreProd(テストネット)"]}>
 <Tab value="Preview(テストネット)">
 
-```
+```bash
 echo export NODE_CONFIG=preview >> $HOME/.bashrc
 echo export NODE_NETWORK='"--testnet-magic 2"' >> $HOME/.bashrc
 echo export CARDANO_NODE_NETWORK_ID=2 >> $HOME/.bashrc
@@ -337,7 +337,7 @@ echo export CARDANO_NODE_NETWORK_ID=2 >> $HOME/.bashrc
 </Tab>
 <Tab value="PreProd(テストネット)">
 
-```
+```bash
 echo export NODE_CONFIG=preprod >> $HOME/.bashrc
 echo export NODE_NETWORK='"--testnet-magic 1"' >> $HOME/.bashrc
 echo export CARDANO_NODE_NETWORK_ID=1 >> $HOME/.bashrc
@@ -351,7 +351,7 @@ echo export CARDANO_NODE_NETWORK_ID=1 >> $HOME/.bashrc
 
 
 bashrc再読み込み
-```
+```bash
 source $HOME/.bashrc
 ```
 
@@ -761,7 +761,7 @@ mkdir -p ${NODE_HOME}
 <Tabs items={["Preview", "PreProd"]}>
 <Tab value="Preview">
 
-```
+```bash
 echo 'export NODE_HOME="$HOME/cnode"' >> $HOME/.bashrc
 echo 'export NODE_NETWORK="--testnet-magic 2"' >> $HOME/.bashrc
 echo 'export CARDANO_NODE_NETWORK_ID=2' >> $HOME/.bashrc
@@ -773,7 +773,7 @@ mkdir -p ${NODE_HOME}
 </Tab>
 <Tab value="PreProd">
 
-```
+```bash
 echo 'export NODE_HOME="$HOME/cnode"' >> $HOME/.bashrc
 echo 'export NODE_NETWORK="--testnet-magic 1"' >> $HOME/.bashrc
 echo 'export CARDANO_NODE_NETWORK_ID=1' >> $HOME/.bashrc

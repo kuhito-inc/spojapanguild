@@ -32,7 +32,7 @@ title: "ブロックログ設定"
 
 <Callout type="info" title="プログラム構成図">
 
-``` mermaid
+```mermaid
     flowchart TB
         a1[cardano-node] --> a2[logファイル]
         a3 --> a5[leaderlog.service]
@@ -502,7 +502,7 @@ source $HOME/.bashrc
 | **Invalid**    | プールはブロックの作成に失敗しました。base64でエンコードされたエラーメッセージがlogmonitorに表示されます |
  
 Invalidのエラー内容は次のコードでデコードできます 
-```
+```bash
 echo (base64コードを入れる) | base64 -d | jq -r
 ```
 

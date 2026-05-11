@@ -32,7 +32,7 @@ title: "運用証明書(pool.cert)の更新"
 変数にプールメタデータ値を設定し実行してください
 > 文字列は`''`で囲ってください  
 > extendedを設定していない場合は `''`のままで大丈夫です
-```
+```bash
 name=''
 description=''
 ticker=''
@@ -79,24 +79,24 @@ cardano-cli latest stake-pool metadata-hash --pool-metadata-file poolMetaData.js
 オンラインファイルハッシュ値確認
 > `https:****.**.**`をメタデータファイルのURLに置き換えてから実行してください
 
-```
+```bash
 cd $NODE_HOME
 wget -O onlineMetaData.json https:****.**.**
 ```
 
 オンラインメタデータハッシュ値
-```
+```bash
 cardano-cli latest stake-pool metadata-hash --pool-metadata-file onlineMetaData.json > onlineMetaDataHash.txt
 ```
 
 ハッシュ値
-```
+```bash
 printf "\n　サーバー:$(cat poolMetaDataHash.txt)\nオンライン:$(cat onlineMetaDataHash.txt)\n\n"
 ```
 >ハッシュ値が一致する必要があります。異なる場合はホストサーバーへ正しくアップロードされているかご確認ください。
 
 ハッシュ値が一致したら、確認用ファイルを削除する。
-```
+```bash
 rm onlineMetaDataHash.txt
 rm onlineMetaData.json
 ```
@@ -107,7 +107,7 @@ rm onlineMetaData.json
 <Callout type="warn" title="ファイル転送">
 
 BPの``poolMetaDataHash.txt`` をエアギャップマシンのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[BP] -->|poolMetaDataHash.txt| B[エアギャップ];
 ```
@@ -214,7 +214,7 @@ cardano-cli latest stake-address stake-delegation-certificate \
 <Callout type="warn" title="ファイル転送">
 
 エアギャップの`pool.cert`と`deleg.cert`をブロックプロデューサーのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|pool.cert / deleg.cert| B[BP];
 ```
@@ -352,7 +352,7 @@ cardano-cli latest transaction build-raw \
 <Callout type="warn" title="ファイル転送">
 
 BPの`tx.raw` をエアギャップマシンのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[BP] -->|tx.raw| B[エアギャップ];
 ```
@@ -383,7 +383,7 @@ chmod a-rwx $HOME/cold-keys
 <Callout type="warn" title="ファイル転送">
 
 エアギャップの`tx.signed` をBPのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|tx.signed| B[BP];
 ```

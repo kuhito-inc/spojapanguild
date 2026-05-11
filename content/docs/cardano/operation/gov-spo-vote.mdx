@@ -70,7 +70,7 @@ cardano-cli latest governance vote create \
 <Callout type="warn" title="ファイル転送">
 
 エアギャップの`vote.file`をBPの`~/cnode/governance/`ディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|vote.file| B[BP];
 ```
@@ -154,7 +154,7 @@ cardano-cli latest transaction build \
 <Callout type="warn" title="ファイル転送">
 
 BPの`vote-tx.raw`をエアギャップマシンの`~/cnode/governance/`ディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[BP] -->|vote-tx.raw| B[エアギャップ];
 ```
@@ -203,7 +203,7 @@ chmod a-rwx $HOME/cold-keys
 <Callout type="warn" title="ファイル転送">
 
 エアギャップの`vote-tx.signed`をBPの`~/cnode/governance/`ディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|vote-tx.signed| B[BP];
 ```

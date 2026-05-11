@@ -359,7 +359,7 @@ systemctl status bluetooth --no-pager
 旧エアギャップ（VirtualBox等）から移行する場合の手順です。
 
 #### 4-1. 環境変数の設定 [#sec-18]
-```
+```bash
 echo 'export NODE_HOME="$HOME/cnode"' >> ~/.bashrc
 echo 'export NODE_NETWORK="--mainnet"' >> ~/.bashrc
 echo 'export CARDANO_NODE_NETWORK_ID=mainnet' >> ~/.bashrc
@@ -376,7 +376,7 @@ mkdir -p ${NODE_HOME}
 <Tabs items={["Preview", "PreProd"]}>
 <Tab value="Preview">
 
-```
+```bash
 echo 'export NODE_HOME="$HOME/cnode"' >> $HOME/.bashrc
 echo 'export NODE_NETWORK="--testnet-magic 2"' >> $HOME/.bashrc
 echo 'export CARDANO_NODE_NETWORK_ID=2' >> $HOME/.bashrc
@@ -389,7 +389,7 @@ mkdir -p ${NODE_HOME}
 </Tab>
 <Tab value="PreProd">
 
-```
+```bash
 echo 'export NODE_HOME="$HOME/cnode"' >> $HOME/.bashrc
 echo 'export NODE_NETWORK="--testnet-magic 1"' >> $HOME/.bashrc
 echo 'export CARDANO_NODE_NETWORK_ID=1' >> $HOME/.bashrc
@@ -412,7 +412,7 @@ mkdir -p ${NODE_HOME}
 <Tabs items={["VirtualBox側"]}>
 <Tab value="VirtualBox側">
 
-```
+```bash
 chmod u+rx $HOME/cold-keys
 ```
 
@@ -431,7 +431,7 @@ VirtualBox側から以下のディレクトリをコピーして新エアギャ�
 <Tabs items={["新エアギャップ側"]}>
 <Tab value="新エアギャップ側">
 
-```
+```bash
 chmod a-rx $HOME/cold-keys
 ```
 

@@ -9,6 +9,7 @@
     "docs:absolutize-links": "node scripts/absolutize-docs-links.mjs",
     "docs:english-anchors": "node scripts/english-anchor-docs.mjs",
     "docs:fix-relative-fragments": "node scripts/fix-relative-doc-fragments.mjs",
+    "docs:infer-fence-lang": "node scripts/infer-code-fence-lang.mjs",
     "start": "next start",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx"

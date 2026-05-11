@@ -255,7 +255,7 @@ source $HOME/.bashrc
 このアップデートに伴い、envファイルの修正が必要となります。
 v2.x.x以上をすでにインストールされていて、プールのKES秘密鍵のファイル名がkes.skeyの場合は以下のコードを1回だけ実行してください。
 違うファイル名をご利用の場合は任意に書き換えてください。
-```
+```bash
 sed -i $NODE_HOME/scripts/env \
 -e '1,116s!#POOL_HOTKEY_SK_FILENAME="hot.skey"!POOL_HOTKEY_SK_FILENAME="kes.skey"!'
 ```

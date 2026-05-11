@@ -22,7 +22,7 @@ cardano-cli latest stake-address registration-certificate \
 <Callout type="warn" title="ファイル転送">
 
 エアギャップマシンの`stake.cert` をBPのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|stake.cert| B[BP];
 ```
@@ -177,7 +177,7 @@ cardano-cli latest transaction build-raw \
 <Callout type="warn" title="ファイル転送">
 
 BPの`tx.raw`をエアギャップマシンのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[BP] -->|tx.raw| B[エアギャップ];
 ```
@@ -208,7 +208,7 @@ cardano-cli latest transaction sign \
 
 エアギャップマシンの`tx.signed`をBPのcnodeディレクトリにコピーします。
 
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|tx.signed| B[BP];
 ```

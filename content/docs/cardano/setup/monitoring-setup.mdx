@@ -16,7 +16,7 @@ title: "監視ツール設定"
 
 
 **構成図**
-``` mermaid
+```mermaid
     flowchart TB
         bp[ローカルPC] -- 3000ポート開放 --> a1[Grafana] 
         a2[prometheus] -- Grafana稼働サーバーのIP指定で<br />9100/12798ポート開放 --> ide2[BP] & ide3[リレー2]
@@ -212,7 +212,7 @@ Checking /home/$USER/prometheus.yml
 ```
 
 構文エラーだった場合は、$HOME/prometheus.ymlを開いて余分なスペースや記号の有無などを確認し、修正してください。
-```
+```bash
 sudo nano $HOME/prometheus.yml
 ```
 > 修正したら、`Ctrl + O`で保存し、Enter。その後`Ctrl + X`で閉じます。
@@ -314,7 +314,7 @@ node_exporter, version 1.7.0
 
 <Callout type="info" title="既存ファイルの更新">
 
-```
+```bash
 sudo nano /etc/prometheus/prometheus.yml
 ```
 > 修正したら、`Ctrl + O`で保存し、Enter。その後`Ctrl + X`で閉じます。
@@ -353,7 +353,7 @@ Checking /etc/prometheus/prometheus.yml
 
 
 **サービスの再起動**
-```
+```bash
 sudo systemctl restart prometheus.service
 ```
 

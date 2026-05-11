@@ -5,7 +5,7 @@ title: "プール廃止処理"
 <Callout type="warn" title="プール廃止の流れ">
 
 
-``` mermaid
+```mermaid
 graph LR
     A[1-リタイア処理] -->|500ADA返還| B(2-登録料返還確認);
     C[3-stake.addrから全額引出処理] -->|全額| D(3-payment.addr着金確認);
@@ -93,7 +93,7 @@ cardano-cli latest stake-pool deregistration-certificate \
 
 エアギャップの`pool.dereg`をBPのcnodeディレクトリにコピー
 
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|pool.dereg| B[BP];
 ```
@@ -231,7 +231,7 @@ cardano-cli latest transaction build-raw \
 
 BPの`tx.raw`をエアギャップオフラインマシンのcnodeディレクトリにコピー
 
-``` mermaid
+```mermaid
 graph LR
     A[BP] -->|tx.raw| B[エアギャップ];
 ```
@@ -269,7 +269,7 @@ chmod a-rwx $HOME/cold-keys
 
 エアギャップの`tx.signed` を ブロックプロデューサノードのcnodeディレクトリにコピーします。
 
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|tx.signed| B[BP];
 ```
@@ -329,7 +329,7 @@ EOS
 
 エアギャップの`stake.addr` を BPのcnodeディレクトリにコピーします。
 
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|stake.addr| B[BP];
 ```
@@ -392,7 +392,7 @@ cardano-cli latest stake-address deregistration-certificate \
 
 エアギャップの`stake-dereg.cert` を ブロックプロデューサノードのcnodeディレクトリにコピーします。
 
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|stake-dereg.cert| B[BP];
 ```
@@ -542,7 +542,7 @@ cardano-cli latest transaction build-raw \
 <Callout type="warn" title="ファイル転送">
 
 BPの`tx.raw` をエアギャップマシンのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[BP] -->|tx.raw| B[エアギャップ];
 ```
@@ -572,7 +572,7 @@ cardano-cli latest transaction sign \
 <Callout type="warn" title="ファイル転送">
 
 エアギャップの`tx.signed` をBPのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|tx.signed| B[BP];
 ```
@@ -748,7 +748,7 @@ cardano-cli latest transaction build-raw \
 
 BPの`tx.raw` をエアギャップオフラインマシンのcnodeディレクトリにコピーします。
 
-``` mermaid
+```mermaid
 graph LR
     A[BP] -->|tx.raw| B[エアギャップ];
 ```
@@ -780,7 +780,7 @@ cardano-cli latest transaction sign \
 
 エアギャップの`tx.signed` をBPのcnodeディレクトリにコピーします。
 
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|tx.signed| B[BP];
 ```

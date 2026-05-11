@@ -6,7 +6,7 @@ title: "BP用キー生成"
 <Callout type="info" title="事前確認">
 
 以下の項目を実施する前にBPノードが起動しているか確認してください。
-```
+```bash
 cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 ```
 
@@ -83,7 +83,7 @@ cardano-cli latest node key-gen \
     --operational-certificate-issue-counter node.counter
 ```
 アクセス権を読み取り専用に更新します。
-```
+```bash
 chmod 400 node.vkey
 chmod 400 node.skey
 ```
@@ -142,7 +142,7 @@ echo startKesPeriod: ${startKesPeriod}
 <Callout type="warn" title="ファイル転送">
 
 BPの`kes.skey`と`kes.vkey` をエアギャップマシンのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[BP] -->|kes.skey / kes.vkey| B[エアギャップ];
 ```
@@ -205,11 +205,11 @@ read -p "BPで算出したstartKesPeriodを入力してください:" kes
 > そこでBPで算出した`startKesPeriod`の数字を入力します
 
 入力した数字が戻り値に表示されているか確認し証明書を作成します。
-```
+```bash
 echo "入力した数字は $kes です"
 ```
 
-```
+```bash
 cardano-cli latest node issue-op-cert \
     --kes-verification-key-file kes.vkey \
     --cold-signing-key-file $HOME/cold-keys/node.skey \
@@ -225,7 +225,7 @@ cardano-cli latest node issue-op-cert \
 
 エアギャップマシンの`node.cert` をBPのcnodeディレクトリにコピーします。
 
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|node.cert| B[BP];
 ```
@@ -281,7 +281,7 @@ cardano-cli latest node key-gen-VRF \
 ```
 
 vrfキーのアクセス権を読み取り専用に更新します。
-```
+```bash
 chmod 400 vrf.skey
 chmod 400 vrf.vkey
 ```
@@ -308,7 +308,7 @@ sudo systemctl stop cardano-node
 ```
 
 ノードポート番号を確認します。
-```
+```powershell
 PORT=`grep "PORT=" $NODE_HOME/startBlockProducingNode.sh`
 b_PORT=${PORT#"PORT="}
 echo "BPポートは ${b_PORT} です"

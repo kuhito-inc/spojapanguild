@@ -185,7 +185,7 @@ EOF
 </Tabs>
 
 メタデータJSONの確認
-```
+```bash
 jq . $NODE_HOME/poolMetaData.json
 ```
 
@@ -215,10 +215,10 @@ cardano-cli latest stake-pool metadata-hash --pool-metadata-file poolMetaData.js
 <Callout type="warn" title="ファイル転送">
 
 BPにある`vrf.vkey`と`poolMetaDataHash.txt` をエアギャップマシンのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[BP] -->| vrf.vkey / poolMetaDataHash.txt | B[エアギャップ];
-``` 
+```
 
 </Callout>
 
@@ -393,7 +393,7 @@ cardano-cli latest stake-address stake-delegation-certificate \
 <Callout type="warn" title="ファイル転送">
 
 エアギャップマシンの`pool.cert`と`deleg.cert`をBPのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|pool.cert / deleg.cert| B[BP];
 ```
@@ -442,7 +442,7 @@ cat balance.out
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
 
-```
+```bash
 tx_in=""
 total_balance=0
 while read -r utxo; do
@@ -552,7 +552,7 @@ cardano-cli latest transaction build-raw \
 
 BPの`tx.raw`をエアギャップマシンのcnodeディレクトリにコピーします。
 
-``` mermaid
+```mermaid
 graph LR
     A[BP] -->|tx.raw| B[エアギャップ];
 ```
@@ -582,7 +582,7 @@ cardano-cli latest transaction sign \
 <Callout type="warn" title="ファイル転送">
 
 エアギャップマシンの`tx.signed`をBPのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|tx.signed| B[BP];
 ```
@@ -626,7 +626,7 @@ chmod a-rwx $HOME/cold-keys
 <Callout type="warn" title="ファイル転送">
 
 エアギャップマシンの`pool.id-bech32`と`pool.id`をBPのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|pool.id-bech32 / pool.id| B[BP];
 ```
@@ -638,7 +638,7 @@ graph LR
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
 
-```
+```bash
 curl -s -X POST "https://api.koios.rest/api/v1/pool_info" \
     -H "Accept: application/json" \
     -H "Content-Type: application/json" \
@@ -652,7 +652,7 @@ curl -s -X POST "https://api.koios.rest/api/v1/pool_info" \
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
 
-```
+```bash
 cd $NODE_HOME
 cat pool.id-bech32;echo
 ```

@@ -338,7 +338,7 @@ cardano-node v10.5.3対応 [インストール](./cardano/setup/node-setup.md) /
 * [**ノードインストール**](./cardano/setup/node-setup.md) cnreload実行コマンド変更
 
 既存設定値修正コマンド
-```
+```bash
 sed -i 's/alias cnreload="kill -HUP $(pidof cardano-node)"/alias cnreload="pkill -HUP cardano-node"/g' $HOME/.bashrc
 source $HOME/.bashrc
 ```

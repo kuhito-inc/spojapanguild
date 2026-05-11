@@ -58,12 +58,12 @@ sed -i $NODE_HOME/${NODE_CONFIG}-config.json \
 </Tabs>
 
 **ノードを再起動する**
-```
+```bash
 sudo systemctl reload-or-restart cardano-node
 ```
 
 ノードログにエラーが出ていないか確認する
-```
+```bash
 journalctl --unit=cardano-node --follow
 ```
 
@@ -76,7 +76,7 @@ journalctl --unit=cardano-node --follow
 
 **TOOLを実行する**
 
-```
+```bash
 gtool
 ```
 >[2] ブロック生成状態チェック を選択する

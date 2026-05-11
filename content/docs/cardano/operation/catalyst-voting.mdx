@@ -95,7 +95,7 @@ binディレクトリへコピー
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
 
-```
+```bash
 sudo cp $HOME/git/cardano-signer /usr/local/bin/cardano-signer
 ```
 
@@ -106,7 +106,7 @@ sudo cp $HOME/git/cardano-signer /usr/local/bin/cardano-signer
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
 
-```
+```bash
 cardano-signer help | grep -m 1 "cardano-signer"
 ```
 
@@ -122,10 +122,10 @@ cardano-signer help | grep -m 1 "cardano-signer"
 <Callout type="warn" title="ファイル転送">
 
 BPにある`cardano-signer`をエアギャップオフラインマシンの$HOME/git/ディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[BP] -->|cardano-signer| B[エアギャップ];
-``` 
+```
 
 </Callout>
 
@@ -134,7 +134,7 @@ graph LR
 <Tabs items={["エアギャップ"]}>
 <Tab value="エアギャップ">
 
-```
+```bash
 sudo cp $HOME/git/cardano-signer /usr/local/bin/cardano-signer
 ```
 
@@ -145,7 +145,7 @@ sudo cp $HOME/git/cardano-signer /usr/local/bin/cardano-signer
 <Tabs items={["エアギャップ"]}>
 <Tab value="エアギャップ">
 
-```
+```bash
 sudo chmod 755 /usr/local/bin/cardano-signer
 ```
 
@@ -156,7 +156,7 @@ sudo chmod 755 /usr/local/bin/cardano-signer
 <Tabs items={["エアギャップ"]}>
 <Tab value="エアギャップ">
 
-```
+```bash
 cardano-signer help | grep -m 1 "cardano-signer"
 ```
 > cardano-signer 1.32.0
@@ -168,7 +168,7 @@ cardano-signer help | grep -m 1 "cardano-signer"
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
 
-```
+```bash
 cd $HOME/git
 git clone https://github.com/input-output-hk/catalyst-core.git
 cd catalyst-core
@@ -182,7 +182,7 @@ Rustパッケージアップデート
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
 
-```
+```bash
 rustup update
 ```
 
@@ -193,7 +193,7 @@ rustup update
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
 
-```
+```bash
 cd src/catalyst-toolbox
 cargo install --path . --force
 ```
@@ -205,7 +205,7 @@ cargo install --path . --force
 <Tabs items={["ブロックプロデューサーノード"]}>
 <Tab value="ブロックプロデューサーノード">
 
-```
+```bash
 catalyst-toolbox --version
 ```
 > catalyst-toolbox 0.5.0
@@ -221,10 +221,10 @@ catalyst-toolbox --version
 
 有権者登録の流れ
 
-``` mermaid
+```mermaid
     graph LR
         A[依存関係チェック] --> B[投票用キー作成] --> C[メタデータ作成] --> D[Tx作成/送信] --> E[QRコード作成];
-``` 
+```
 
 <Callout type="error" title="作成ファイルについて">
 

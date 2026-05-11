@@ -61,7 +61,7 @@ cardano-signer --version
 <Callout type="warn" title="ファイル転送">
 
 BPの`$HOME/git`にある`cardano-signer`をエアギャップマシンの`$HOME/git`にコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[BP] -->|cardano-signer| B[エアギャップ];
 ```
@@ -259,7 +259,7 @@ EOF
 <Callout type="warn" title="ファイル転送">
 
 BPの`$NODE_HOME`にある`wallet_balance.sh`と`params.json`をエアギャップマシンのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[BP] -->|wallet_balance.sh / params.json| B[エアギャップ];
 ```
@@ -371,7 +371,7 @@ cardano-cli latest transaction sign \
 <Callout type="warn" title="ファイル転送">
 
 エアギャップの`tx.signed` をBPのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|tx.signed| B[BP];
 ```
@@ -428,7 +428,7 @@ mkdir -p $NODE_HOME/calidus
 <Callout type="warn" title="ファイル転送">
 
 エアギャップの`myCalidusKey.skey`をBPのcnode/calidusディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|myCalidusKey.skey| B[BP];
 ```

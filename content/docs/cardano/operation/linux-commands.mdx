@@ -3,75 +3,75 @@ title: "Linuxコマンド集"
 ---
 
 ## ノード停止 [#sec-1]
-```
+```bash
 sudo systemctl stop cardano-node
 ```
 
 ※[エイリアス](/docs/cardano/setup/node-setup#6-1)設定済みの場合
-```
+```bash
 cnstop
 ```
 
 ## ノード起動 [#sec-2]
-```
+```bash
 sudo systemctl start cardano-node
 ```
 
 ※[エイリアス](/docs/cardano/setup/node-setup#6-1)設定済みの場合
-```
+```bash
 cnstart
 ```
 
 ## ノード再起動 [#sec-3]
-```
+```bash
 sudo systemctl reload-or-restart cardano-node
 ```
 
 ※[エイリアス](/docs/cardano/setup/node-setup#6-1)設定済みの場合
-```
+```bash
 cnrestart
 ```
 
 ## サーバ再起動 [#sec-4]
-```
+```bash
 sudo reboot
 ```
 > ノードを停止してから実行してください。
 
 ## プロセス確認 [#sec-5]
-```
+```bash
 ps aux | grep cardano-node
 ```
 > Cardano ノードのサービス確認
 
 ## ネットワーク確認 [#sec-6]
-```
+```bash
 networkctl status -a
 ```
 
 ## ネットワーク疎通確認 [#sec-7]
-```
+```bash
 nc -vz <IP> <Port>
 ```
 
 ## ブロックログ各サービス再起動 [#sec-8]
-```
+```bash
 sudo systemctl reload-or-restart cnode-cncli-sync.service
 ```
 > (cncli / leaderlog / validate)
 
-```
+```bash
 sudo systemctl reload-or-restart cnode-logmonitor.service
 ```
 > logmonitor
 
 ## SPO Block Notifyサービス再起動 [#sec-9]
-```
+```bash
 sudo systemctl reload-or-restart cnode-blocknotify.service
 ```
 
 ## パラメータファイル更新 [#sec-10]
-```
+```powershell
 cd $NODE_HOME
 date=`date +\%Y\%m\%d`
 mv params.json params-$date.json
@@ -82,40 +82,40 @@ cardano-cli latest query protocol-parameters \
 > バックアップ及び更新、確認
 
 ## TraceMempoolをTrueからFalseにする [#sec-11]
-```
+```bash
 cd $NODE_HOME
 sed -i ${NODE_CONFIG}-config.json \
     -e "s/TraceMempool\": true/TraceMempool\": false/g"
 ```
 - ノード再起動し設定を反映する
-```
+```bash
 sudo systemctl reload-or-restart cardano-node
 ```
 
 ## TraceMempoolをFalseからTrueにする [#sec-12]
 
-```
+```bash
 cd $NODE_HOME
 sed -i ${NODE_CONFIG}-config.json \
     -e "s/TraceMempool\": false/TraceMempool\": true/g"
 ```
 - ノード再起動し設定を反映する
-```
+```bash
 sudo systemctl reload-or-restart cardano-node
 ```
 
 ## 既存のスワップファイル削除 [#sec-13]
-```
+```bash
 cd $HOME
 sudo swapoff /swapfile
 sudo rm /swapfile
 ```
 
 ## スワップファイル作成 [#sec-14]
-```
+```bash
 sudo systemctl stop cardano-node
 ```
-```
+```bash
 cd $HOME
 sudo fallocate -l 8G /swapfile
 sudo chmod 600 /swapfile
@@ -129,13 +129,13 @@ echo 'vm.vfs_cache_pressure=50' | sudo tee -a /etc/sysctl.conf
 cat /proc/sys/vm/vfs_cache_pressure
 cat /proc/sys/vm/swappiness
 ```
-```
+```bash
 sudo reboot
 ```
 > 8GBのスワップを設定するコマンド
 
 ## SSH接続 [#sec-15]
-```
+```bash
 ssh -i /Users/ローカルユーザ名/ローカル格納先/id_rsa 接続先ユーザ名@接続先IP -p ポート番号
 ```
 
