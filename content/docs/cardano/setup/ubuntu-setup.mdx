@@ -81,11 +81,9 @@ exit
 </Callout>
 
 
-**`Ubuntu 22.04`以降の設定**
-
 ブラケットペースト機能を無効化します。
 ```bash
-echo "set enable-bracketed-paste off" >> ~/.inputrc
+grep -qxF 'set enable-bracketed-paste off' ~/.inputrc || echo 'set enable-bracketed-paste off' >> ~/.inputrc
 ```
 > 設定反映のため、ターミナルから一度ログアウトして再ログインしてください。
 
@@ -127,7 +125,7 @@ mkdir -p ~/.ssh
 
 <Callout type="warn" title="ファイル転送">
 
-[事前準備](/docs/cardano/setup#_2)で生成した`authorized_keys`を対象サーバーの`$HOME/.ssh`ディレクトリにコピーします。
+[SSH鍵作成](/docs/cardano/setup#sec-3)で生成した`authorized_keys`を対象サーバーの`$HOME/.ssh`ディレクトリにコピーします。
 ```mermaid
 graph LR
     A[ローカルのホストマシン] -->|authorized_keys| B[対象サーバー];
@@ -179,9 +177,14 @@ gatewayports no
 ```bash
 sudo systemctl status ssh.socket
 ```
-> active (running)になっていることを確認します。
+```yaml title="期待される表示例：" noCopy
+● ssh.socket - OpenBSD Secure Shell server socket
+~~~
+     Active: active (running) 
+```
 
-<Callout type="info" title="activeではない場合">
+<AccordionsYellow type="single">
+  <Accordion id="ubuntu-setup-ssh-socket-not-active" title="activeではない場合">
 
 ```bash
 sudo systemctl enable --now ssh.socket
@@ -189,9 +192,14 @@ sudo systemctl enable --now ssh.socket
 ```bash
 sudo systemctl status ssh.socket
 ```
-> active (running)になっていることを確認します。
+```yaml title="期待される表示例：" noCopy
+● ssh.socket - OpenBSD Secure Shell server socket
+~~~
+     Active: active (running) 
+```
 
-</Callout>
+  </Accordion>
+</AccordionsYellow>
 
 
 問題がなければ、SSHサービスを再起動します。
@@ -211,7 +219,7 @@ LISTEN 0 4096 0.0.0.0:<設定したSSH Port>
 LISTEN 0 4096 [::]:<設定したSSH Port>  
 ```
 
-<Callout type="info" title="ターミナルソフト設定について">
+<Callout type="warning" title="ターミナルソフト設定について">
 
 - 現在起動中のターミナルは接続したままにしてもう一つ起動してください。
 - 接続設定のSSHポート番号を変更し秘密鍵を設定しサーバーへログインできるか確認して下さい。
@@ -226,20 +234,14 @@ LISTEN 0 4096 [::]:<設定したSSH Port>
 
 <Callout type="warn" title="注意事項">
 
-<Callout type="info" title="設定前の注意事項">
+- **設定前の注意事項**
 
-ご利用のVPSによっては管理画面からファイアウォールを設定する必要があります。（例AWS系など）  
+ご利用のVPSによっては管理画面からファイアウォールを設定する必要があります。（例：AWS系など）  
 その場合は以下の設定を行わず、VPSマイページ管理画面などから個別に設定してください。
 
-</Callout>
+- **さくらVPSをご利用の場合**
 
-
-<Callout type="info" title="さくらVPSをご利用の場合">
-
-管理画面からパケットフィルターを、”利用しない”に設定してください。    
-
-</Callout>
-
+管理画面からパケットフィルターを、`利用しない`に設定してください。    
 
 </Callout>
 
@@ -266,12 +268,13 @@ sudo ufw --force enable
 ```bash
 sudo ufw status
 ```
-以下の戻り値があればOK
-> Status: active
+```yaml title="期待される表示例：" noCopy
+Status: active
+```
 
 ## 5. システム更新 [#sec-5]
 
-<Callout type="info" title="重要">
+<Callout type="warning" title="重要">
 
 不正アクセスを予防するには、システムに最新のパッチを適用することが重要です。
 
@@ -342,18 +345,18 @@ echo 'tmpfs /dev/shm tmpfs ro,noexec,nosuid 0 0' | sudo tee -a /etc/fstab
 ```bash
 tail -n 1 /etc/fstab
 ```
-> `tmpfs /dev/shm tmpfs ro,noexec,nosuid 0 0`が最終行に入力されていることを確認します。
+
+```yaml title="期待される表示例：" noCopy
+tmpfs /dev/shm tmpfs ro,noexec,nosuid 0 0
+```
 
 ## 8. Fail2banのインストール [#sec-8]
-
-<Callout type="info" title="Fail2banについて">
 
 Fail2banは、ログファイルを監視し、ログイン試行に失敗した特定のパターンを監視する侵入防止システムです。  
 特定のIPアドレスから、指定された時間内に一定数のログイン失敗が検知された場合、Fail2banはそのIPアドレスからのアクセスをブロックします。
 
-</Callout>
 
-
+インストールを行います。
 ```bash
 sudo apt install nano fail2ban -y
 ```
@@ -388,7 +391,12 @@ sudo systemctl enable --now fail2ban
 ```bash
 sudo systemctl status fail2ban --no-pager
 ```
-> `Active: active (running)`となっていることを確認してください。
+```yaml title="期待される表示例：" noCopy
+● fail2ban.service - Fail2Ban Service
+~~~
+     Active: active (running)
+```
+
 
 ## 9. Chronyの設定 [#sec-9]
 
@@ -615,7 +623,7 @@ cat $HOME/sysctl-before-cardano-*.txt
 <Callout type="error" title="注意">
 
 本設定は必須ではありません。  
-ただし、本手順を実施したサーバーでは、SSHログインに2FAを要求します（= `Google Authenticator` 未設定ユーザーはログインできません）。  
+本手順を実施したサーバーでは、SSHログインに2FAを要求します（= `Google Authenticator` 未設定ユーザーはログインできません）。  
 本番サーバー（VPS 等）で適用する場合は、必ず復旧手段（クラウドコンソール等）と予備セッションを確保してから実施してください。
 
 </Callout>

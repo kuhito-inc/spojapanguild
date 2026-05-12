@@ -10,32 +10,21 @@ title: "ノードセットアップ"
 
 </Callout>
 
-    
-    
-<Callout type="error" title="コマンド実行時の注意点">
-
-* Ubuntuコマンド初心者の方は、コードボックスに複数行のコマンドがある場合でも、コマンドを1行づつコピーして実行するようにしてください。ただし `cat > xxx << EOF`のボックスについてはコードボックスのコピーボタンを使用してコマンドラインに貼り付けてください。
-* 複数行のコードをコードボックスのコピーボタンを使用してコマンドラインに貼り付ける場合、途中のコマンドでエラーが表示されている場合がありますので見落とさないようご注意ください。また、最後の行が自動実行されないため確認の上Enterを押してコードを実行してください。
-* 複数行のsudoコマンドを一度に貼り付けてsudoパスワードを求められた場合、1行目のコマンドしか実行されませんので残りのコマンドを再度実行してください。
-* Ubuntu24.04の場合、複数行のsudoコマンドを1度に貼り付けると1行目しか実行されませんので、必ず1行ずつ貼り付けて実行してください。
-
-</Callout>
-
 
 ## 1. 依存関係インストール [#sec-1]
 
-ターミナルを起動し、以下のコマンドを入力しましょう！
-
-まずはじめに、パッケージを更新しUbuntuを最新の状態に保ちます。
+パッケージを更新し、`Ubuntu`を最新の状態に保ちます。
 
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
+
+依存関係をインストールします。
 ```bash
 sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
 ```
 
-新しいTMUXセッションを開きます。
+新しい`TMUX`セッションを開きます。
 
 ```bash
 tmux new -s build
@@ -134,7 +123,7 @@ git checkout v0.3.14
 
 2.設定ファイル作成
 
-```bash title="このボックスはすべてコピーして実行してください"
+```bash
 cat > libblst.pc << EOF
 prefix=/usr/local
 exec_prefix=\${prefix}
@@ -169,8 +158,9 @@ sudo chmod u=rw,go=r /usr/local/{lib/{libblst.a,pkgconfig/libblst.pc},include/{b
 ```bash
 cat /usr/local/lib/pkgconfig/libblst.pc | grep Version
 ```
-> Version 0.3.14
-
+```yaml title="期待される表示例：" noCopy
+Version: 0.3.14
+```
 
 ### 1-4. GHCUPインストール [#sec-5]
 インストール変数設定
@@ -216,27 +206,29 @@ ghcup set ghc 9.6.7
 
 ```bash
 cabal update
+```
+```bash
 cabal --version
 ghc --version
 ```
+```yaml title="期待される表示例：" noCopy
+cabal-install version 3.12.1.0
+compiled using version 3.12.1.0 of the Cabal library 
+```
+```yaml title="期待される表示例：" noCopy
+The Glorious Glasgow Haskell Compilation System, version 9.6.7
+```
 
-<Callout type="info" title="チェック">
+<Callout type="warning" title="確認">
 
-Cabalバージョン：「3.12.1.0」  
-GHCバージョン：「9.6.7」であることを確認してください。
+Cabalバージョン：`3.12.1.0`  
+GHCバージョン：`9.6.7`  
+であることを確認してください。
 
 </Callout>
-
 
 
 ## 2. ソースコードからビルド [#sec-6]
-
-<Callout type="info" title="確認">
-
-IOGは現在ARMアーキテクチャ用のバイナリファイルを提供していません。Raspberry Piを使用してプールを構築する場合は、ARM用コンパイラでコンパイルする必要があります。
-
-</Callout>
-
 
 
 Gitからソースコードをダウンロードし、最新のタグに切り替えます。
@@ -257,18 +249,12 @@ cabal update
 cabal configure --with-compiler=ghc-9.6.7
 ```
 
-カルダノノードをビルドします。
+Cardanoノードをビルドします。
 
 ```sh
 cabal build all cardano-cli
 ```
-
-<Callout type="info" title="ヒント">
-
-サーバスペックによって、ビルド完了までに数分から数時間かかる場合があります。
-
-</Callout>
-
+> サーバスペックによって、ビルド完了までに数分から数時間かかる場合があります。
 
 
 **cardano-cli**ファイルと **cardano-node**ファイルをbinディレクトリにコピーします。
@@ -285,28 +271,27 @@ sudo cp $(./scripts/bin-path.sh cardano-node) /usr/local/bin/cardano-node
 **cardano-cli** と **cardano-node**のバージョンが最新Gitタグバージョンであることを確認してください。
 
 ```bash
-cardano-cli version
 cardano-node version
+cardano-cli version
 ```
 
-以下の戻り値を確認します。  
 ```yaml title="期待される表示例：" noCopy
-cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
-
 cardano-node 10.7.1 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+git rev 045bc187a36ef0cbd236db902b85dd8f202fb059  
+
+cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
+git rev 045bc187a36ef0cbd236db902b85dd8f202fb059  
 ```
 
-TMUXセッションを閉じる
+`TMUX`セッションを閉じます。
 
 ```bash
 exit
 ```
 
 
-環境変数を設定しパスを通します。  
-ノード設定ファイルは **$NODE\_HOME**(例：/home/user/cnode) に設定されます。
+環境変数を設定し、パスを通します。  
+> ノード設定ファイルは `$NODE_HOME`(例：`/home/user/cnode`) に設定されます。
 
 ```bash
 echo PATH="$HOME/.local/bin:$PATH" >> $HOME/.bashrc
@@ -315,7 +300,7 @@ echo export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH" >> $HOME
 echo export NODE_HOME=$HOME/cnode >> $HOME/.bashrc
 ```
 
-環境変数に接続ネットワークを指定します。
+環境変数に接続ネットワークを設定します。
 ```bash
 echo export NODE_CONFIG=mainnet >> $HOME/.bashrc
 echo export NODE_NETWORK='"--mainnet"' >> $HOME/.bashrc
@@ -350,7 +335,7 @@ echo export CARDANO_NODE_NETWORK_ID=1 >> $HOME/.bashrc
 </AccordionsBlue>
 
 
-bashrc再読み込み
+`bashrc`を再読み込みします。
 ```bash
 source $HOME/.bashrc
 ```
@@ -358,28 +343,24 @@ source $HOME/.bashrc
 
 ## 3. ノード設定ファイルの修正 [#sec-7]
 
-ノード構成に必要な設定ファイルを取得します。  
-config.json、genesis.json、topology.json
-
+ノード構成に必要な設定ファイルをダウンロードします。  
 ```bash
 mkdir -p $NODE_HOME
 cd $NODE_HOME
-wget -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
-wget -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
-wget -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
-wget -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
-wget -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
-wget -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
 
-BPとリレーで実行
+ファイルをダウンロードします。
 ```bash
+wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
+wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
+wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
+wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
 wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
+wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
 
-
-環境変数を追加し、.bashrcファイルを更新します。
-
+環境変数を設定します。
 ```bash
 echo export CARDANO_NODE_SOCKET_PATH="$NODE_HOME/db/socket" >> $HOME/.bashrc
 source $HOME/.bashrc
@@ -387,8 +368,7 @@ source $HOME/.bashrc
 
 ## 4. ノード起動スクリプトの作成 [#sec-8]
 
-起動スクリプトには、ディレクトリ、ポート番号、DBパス、構成ファイルパス、トポロジーファイルパスなど、カルダノノードを実行するために必要な変数が含まれています。
-
+起動スクリプトには、ディレクトリ、ポート番号、DBパス、構成ファイルパス、トポロジーファイルパスなど、Cardanoノードを実行するために必要な変数が含まれています。
 
 <Tabs items={["リレーノード", "ブロックプロデューサーノード"]}>
 <Tab value="リレーノード">
@@ -399,7 +379,7 @@ PORT=6000
 ```
 
 起動スクリプトファイルを作成する
-```bash title="このボックスはすべてコピーして実行してください"
+```bash
 cat > $NODE_HOME/startRelayNode1.sh << EOF 
 #!/bin/bash
 DIRECTORY=$NODE_HOME
@@ -419,18 +399,20 @@ EOF
 
 <Callout type="error" title="注意">
 
-* BPノードポートはセキュリティを高めるために、49513～65535までの任意番号を設定してください。ここで設定する番号は1-3で設定した<span style={{color: "red"}}>SSHポート番号とは別の番号</span>を設定してください.
+* BPノードポートはセキュリティを高めるために、`49513`～`65535`までの任意番号を設定してください。  
+ここで設定する番号は、`SSH`ポート番号とは別の番号を設定してください。
 
 </Callout>
 
 
-BPノードで使用するポート番号を指定してターミナルで実行します。
+BPノードで使用するポート番号を設定します。
 ```bash
 PORT=xxxxx
 ```
+> `xxxxx`には、`49513`～`65535`までの任意番号を設定してください。
 
-起動スクリプトファイルを作成する
-```bash title="このボックスはすべてコピーして実行してください"
+起動スクリプトファイルを作成します。
+```bash
 cat > $NODE_HOME/startBlockProducingNode.sh << EOF 
 #!/bin/bash
 DIRECTORY=$NODE_HOME
@@ -450,9 +432,7 @@ EOF
 ## 5. ノード起動 [#sec-9]
 
 起動スクリプトに実行権限を付与し、ブロックチェーンの同期を開始します。 
-   
-**リレーノードから実施します。**
-
+> リレーノードから実施してください。
 
 <Tabs items={["リレーノード", "ブロックプロデューサーノード"]}>
 <Tab value="リレーノード">
@@ -477,12 +457,7 @@ chmod +x startBlockProducingNode.sh
 </Tab>
 </Tabs>
 
-<Callout type="info" title="Info">
-
-ログ内に`Chain extended, new tip: xxxx`のログが流れていたら正常です。
-
-</Callout>
-
+> ログ内に`Chain extended, new tip: xxxx`のログが流れていれば、正常です。
 
 
 一旦ノードを停止します。
@@ -492,27 +467,23 @@ Ctrl+C
 
 ## 6. 自動起動の設定(systemd) [#sec-10]
 
-先程のスクリプトだけでは、ターミナル画面を閉じるとノードが終了してしまうので、スクリプトをサービスとして登録し、自動起動するように設定しましょう。
+先程のスクリプトだけでは、ターミナル画面を閉じるとノードが終了してしまうので、スクリプトをサービスとして登録し、自動起動するように設定します。
 
-<Callout type="info" title="ノード起動にsystemdを使用するメリット">
+<Callout type="info" title="ノード起動にsystemdを使う理由">
 
-
-1. メンテナンスや停電など、自動的にサーバーが再起動したときノードを自動起動します。
-2. クラッシュしたノードプロセスを自動的に再起動します。
-3. ノードの稼働時間とパフォーマンスを向上させます。
+- サーバー再起動後もノードが自動起動  
+- プロセスが異常終了したときに自動で再起動（ユニットの `Restart` 設定に従う）
 
 </Callout>
 
 
-
-以下のコードを実行して、ユニットファイルを作成します。
-
+ユニットファイルを作成します。
 
 <Tabs items={["リレーノード", "ブロックプロデューサーノード"]}>
 <Tab value="リレーノード">
 
 
-```bash title="このボックスはすべてコピーして実行してください"
+```bash
 cat > $NODE_HOME/cardano-node.service << EOF 
 # The Cardano Node Service (part of systemd)
 # file: /etc/systemd/system/cardano-node.service 
@@ -546,7 +517,7 @@ EOF
 <Tab value="ブロックプロデューサーノード">
 
 
-```bash title="このボックスはすべてコピーして実行してください"
+```bash
 cat > $NODE_HOME/cardano-node.service << EOF 
 # The Cardano Node Service (part of systemd)
 # file: /etc/systemd/system/cardano-node.service 
@@ -579,38 +550,32 @@ EOF
 </Tab>
 </Tabs>
 
-`/etc/systemd/system`にユニットファイルをコピーして、権限を付与します。
-
+`/etc/systemd/system`にユニットファイルをコピーし、権限を付与します。
 ```bash
 sudo cp $NODE_HOME/cardano-node.service /etc/systemd/system/cardano-node.service
 ```
-
 ```bash
 sudo chmod 644 /etc/systemd/system/cardano-node.service
 ```
 
-次のコマンドを実行して、OS起動時にサービスの自動起動を有効にします。
-
+OS起動時にサービスの自動起動を有効にします。
 ```bash
 sudo systemctl daemon-reload
 ```
 ```bash
-sudo systemctl enable cardano-node
+sudo systemctl enable --now cardano-node
 ```
-```bash
-sudo systemctl start cardano-node
-```
-**システム起動後に、ログモニターを表示します**
 
-```text
+システム起動後にログモニターを表示します。
+```bash
 journalctl -u cardano-node -f
 ```
-> コマンド入力に戻る場合は「Ctrl＋C」（この場合ノードは終了しません）
+> コマンド入力に戻る場合は「`Ctrl+C`」（この場合ノードは終了しません）
 
-### 6-1. 便利なエイリアス設定 [#sec-11]
+## 6-1. 便利なエイリアス設定 [#sec-11]
 <Callout type="info" title="エイリアス設定">
 
-スクリプトへのパスを通し、任意の単語で起動出来るようにする。
+スクリプトへのパスを通し、任意の単語で起動出来るようにします。
 ```bash
 echo alias cnode='"journalctl -u cardano-node -f"' >> $HOME/.bashrc
 echo alias cnstart='"sudo systemctl start cardano-node"' >> $HOME/.bashrc
@@ -620,7 +585,7 @@ echo alias cnreload='"pkill -HUP cardano-node"' >> $HOME/.bashrc
 source $HOME/.bashrc
 ```
 
-単語を入力するだけで、起動状態(ログ)を確認できます。  
+単語を入力するだけで、ノードの起動状態(ログ)を確認できます。  
 ```yaml title="期待される表示例：" noCopy
 cnode ・・・ログ表示
 cnstart ・・・ノード起動

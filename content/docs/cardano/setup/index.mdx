@@ -73,18 +73,19 @@ where ssh
 ```
 > PATHが表示されていること
 
-<Callout type="info" title="表示されない場合">
+<AccordionsBlue type="single">
+  <Accordion id="setup-index-win-openssh-not-found" title="表示されない場合">
 
-
-表示されない場合は、管理者モードで以下を実行してください。  
-> `Win + R` を押下し、`cmd`と入力後、`Ctrl + Shift + Enter`→「`はい`」を選択
+1. `Win + R` を押下し、`cmd`と入力後、`Ctrl + Shift + Enter`→「`はい`」を選択
 ```cmd
 powershell -Command "Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0"
 ```
-> 追加後、`where ssh`を実行し、PATHが表示されていることを確認。  
-> OpenSSH の追加のみ管理者権限が必要です。以降は通常モードの cmd で実行してください。
+2. 追加後、`where ssh`を実行し、PATHが表示されていることを確認。  
+> OpenSSH の追加のみ管理者権限が必要です。  
+> 以降は通常モードの `cmd` で実行してください。
 
-</Callout>
+  </Accordion>
+</AccordionsBlue>
 
 
 **2. SSH鍵生成**  
