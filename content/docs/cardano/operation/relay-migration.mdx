@@ -29,7 +29,7 @@ title: "リレーサーバー移行（旧VPS会社→新VPS会社）"
 ### 1-2. ノードセットアップ [#sec-3]
 1. [1. 依存関係インストール](/docs/cardano/setup/node-setup#1) 〜
 [7. gLiveViewのインストール](/docs/cardano/setup/node-setup#7-gliveview)まで実施します。
-2. [2. トポロジーファイル設定変更](/docs/cardano/setup/relay-bp-setup#2)の「**`リレーノードの場合`**」を実施します。
+2. [2. トポロジーファイル設定変更](/docs/cardano/setup/relay-bp-setup#2)の「**`リレーの場合`**」を実施します。
 
 
 ## 2. BP設定修正 [#sec-4]
@@ -99,7 +99,7 @@ cd $NODE_HOME/scripts
 <Tabs items={["新リレーでGrafanaも運用する場合", "新リレーでGrafanaを運用しない場合"]}>
 <Tab value="新リレーでGrafanaも運用する場合">
 
-[監視ツール設定](/docs/cardano/setup/monitoring-setup)のリレーノード1タブと[3. Grafanaダッシュボードの設定](/docs/cardano/setup/monitoring-setup#3-grafana)を実行する。
+[監視ツール設定](/docs/cardano/setup/monitoring-setup)のリレー1タブと[3. Grafanaダッシュボードの設定](/docs/cardano/setup/monitoring-setup#3-grafana)を実行する。
 
 <Callout type="info" title="Grafana追加設定">
 

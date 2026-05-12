@@ -370,10 +370,10 @@ source $HOME/.bashrc
 
 起動スクリプトには、ディレクトリ、ポート番号、DBパス、構成ファイルパス、トポロジーファイルパスなど、Cardanoノードを実行するために必要な変数が含まれています。
 
-<Tabs items={["リレーノード", "BP"]}>
-<Tab value="リレーノード">
+<Tabs items={["リレー", "BP"]}>
+<Tab value="リレー">
 
-リレーノードで使用するポート番号を指定してターミナルで実行します。
+リレーで使用するポート番号を指定してターミナルで実行します。
 ```bash
 PORT=6000
 ```
@@ -432,10 +432,10 @@ EOF
 ## 5. ノード起動 [#sec-9]
 
 起動スクリプトに実行権限を付与し、ブロックチェーンの同期を開始します。 
-> リレーノードから実施してください。
+> リレーから実施してください。
 
-<Tabs items={["リレーノード", "BP"]}>
-<Tab value="リレーノード">
+<Tabs items={["リレー", "BP"]}>
+<Tab value="リレー">
 
 
 ```bash
@@ -479,8 +479,8 @@ Ctrl+C
 
 ユニットファイルを作成します。
 
-<Tabs items={["リレーノード", "BP"]}>
-<Tab value="リレーノード">
+<Tabs items={["リレー", "BP"]}>
+<Tab value="リレー">
 
 
 ```bash
@@ -623,13 +623,13 @@ chmod 755 gLiveView.sh
 
 `env` ファイル内の定義を修正します。
 
-<Tabs items={["リレーノード", "BP"]}>
-<Tab value="リレーノード">
+<Tabs items={["リレー", "BP"]}>
+<Tab value="リレー">
 
 ```bash
 PORT=`grep "PORT=" $NODE_HOME/startRelayNode1.sh`
 b_PORT=${PORT#"PORT="}
-echo "リレーノードポートは${b_PORT}です"
+echo "リレーポートは${b_PORT}です"
 ```
 
 </Tab>
