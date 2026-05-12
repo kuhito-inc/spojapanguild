@@ -39,7 +39,7 @@ P2P では接続先の多くはノードが自動で選びます。
 
 ## 2. トポロジーファイルの変更 [#sec-3]
 
-<Callout type="info" title="`${NODE_CONFIG}-topology.json`">
+<Callout type="info" title="${NODE_CONFIG}-topology.json">
 
 
 - **リレー** … 自BP・他リレーなど、固定したい相手を `localRoots` に記載。
@@ -49,30 +49,28 @@ P2P では接続先の多くはノードが自動で選びます。
 </Callout>
 
 
-<Callout type="warn" title="同期が 100% になってから">
-
+同期が 100% になってから以降の手順を実施してください。
 
 ```bash
 cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 ```
-
-`"syncProgress": "100.00"` になるまで待ってから進めてください。
-
-</Callout>
+```yaml title="期待される表示例：" noCopy
+"syncProgress": "100.00"
+```
 
 
 ### 2-1. 主な項目 [#sec-4]
 
 | 項目 | 説明 |
 | --- | --- |
-| `localRoots` | 常に維持したいピアのグループ（**グループ間で同じピアを重ねない**） |
-| `accessPoints` | IP または DNS とポート |
-| `advertise` | Peer Sharing でその接続先を他ノードへ知らせてよいか。BP や内部用リレーなど、公開したくない接続先は `false`に設定 |
-| `trustable` | `bootstrapPeers: null` の場合、初期接続先として信頼するピアには通常 `true` を指定。自BP・自リレーなど、自分で管理しているピアは通常 `true` に設定。 |
-| `hotValency` | そのグループの Hot 接続数（旧 `valency` と同義） |
-| `diffusionMode` | UFW 等で通信元を制限している場合、`InitiatorOnly` は不要です。`diffusionMode` を省略すると `InitiatorAndResponder` になります。 |
-| `peerSnapshotFile` | 手順例どおりパスを書く（運用で `null` にする場合は別途確認） |
-| `useLedgerAfterSlot` | リレーは手順例の値、BP は **`-1`** |
+| **localRoots** | 常に維持したいピアのグループ（**グループ間で同じピアを重ねない**） |
+| **accessPoints** | IP または DNS とポート |
+| **advertise** | Peer Sharing でその接続先を他ノードへ知らせてよいか。BP や内部用リレーなど、公開したくない接続先は `false`に設定 |
+| **trustable** | `bootstrapPeers: null` の場合、初期接続先として信頼するピアには通常 `true` を指定。自BP・自リレーなど、自分で管理しているピアは通常 `true` に設定。 |
+| **hotValency** | そのグループの Hot 接続数（旧 `valency` と同義） |
+| **diffusionMode** | UFW 等で通信元を制限している場合、`InitiatorOnly` は不要です。`diffusionMode` を省略すると `InitiatorAndResponder` になります。 |
+| **peerSnapshotFile** | 手順例どおりパスを書く（運用で `null` にする場合は別途確認） |
+| **useLedgerAfterSlot** | リレーは手順例の値、BP は **`-1`** |
 
 ### 2-2. 手順 [#sec-5]
 
@@ -92,122 +90,126 @@ sudo ufw allow 6000/tcp
 sudo ufw reload
 ```
 
-[4. ノード起動スクリプトの作成](/docs/cardano/setup/node-setup#__tabbed_3_2) で決めた**ノード用ポート**に合わせること。  
-コードの **`+`（注釈）** を開いて内容を確認してください。
+[4. ノード起動スクリプトの作成](/docs/cardano/setup/node-setup#sec-8) で決めた**ノード用ポート**に合わせること。  
+行末の「`＋`」で注釈を表示できます。
 
 <Tabs items={["リレー1", "リレー2"]}>
 <Tab value="リレー1">
 
-
-```yaml
-cat > $NODE_HOME/${NODE_CONFIG}-topology.json << EOF
-{
-  "bootstrapPeers": [
-    {
-      "address": "backbone.cardano.iog.io",
-      "port": 3001
-    },
-    {
-      "address": "backbone.mainnet.cardanofoundation.org",
-      "port": 3001
-    },
-    {
-      "address": "backbone.mainnet.emurgornd.com",
-      "port": 3001
-    }
-  ],
-  "localRoots": [
-    {
-      "accessPoints": [
-        {
-          "address": "BPのIP",#(1)!
-          "port": 00000 #(2)!
-        }
-      ],
-      "advertise": false,#(3)!
-      "trustable": true,
-      "hotValency": 1
-    },
-    {
-      "accessPoints": [
-        {
-          "address": "リレー2のIP or DNS",#(4)!
-          "port": 6000 #(5)!
-        }
-      ],
-      "advertise": true,
-      "trustable": true,
-      "hotValency": 1
-    }
-  ],
-  "publicRoots": [],
-  "useLedgerAfterSlot": 182044807
-}
-EOF
-```
-
-1. BP の IP。
-2. BP のポート。
-3. BP は必ず `advertise: false`。
-4. リレー2 の IP または DNS。
-5. リレー2 のポート。
+<AnnotatedCode
+  code={[
+    'cat > ${NODE_HOME}/${NODE_CONFIG}-topology.json << EOF',
+    '{',
+    '  "bootstrapPeers": [',
+    '    {',
+    '      "address": "backbone.cardano.iog.io",',
+    '      "port": 3001',
+    '    },',
+    '    {',
+    '      "address": "backbone.mainnet.cardanofoundation.org",',
+    '      "port": 3001',
+    '    },',
+    '    {',
+    '      "address": "backbone.mainnet.emurgornd.com",',
+    '      "port": 3001',
+    '    }',
+    '  ],',
+    '  "localRoots": [',
+    '    {',
+    '      "accessPoints": [',
+    '        {',
+    '          "address": "BPのIP",',
+    '          "port": 00000',
+    '        }',
+    '      ],',
+    '      "advertise": false,',
+    '      "trustable": true,',
+    '      "hotValency": 1',
+    '    },',
+    '    {',
+    '      "accessPoints": [',
+    '        {',
+    '          "address": "リレー2のIP or DNS",',
+    '          "port": 6000',
+    '        }',
+    '      ],',
+    '      "advertise": true,',
+    '      "trustable": true,',
+    '      "hotValency": 1',
+    '    }',
+    '  ],',
+    '  "publicRoots": [],',
+    '  "useLedgerAfterSlot": 185500763',
+    '}',
+    'EOF',
+  ].join('\n')}
+  annotations={{
+    21: 'BP の IP。',
+    22: 'BP のポート。`grep PORT=` `startBlockProducingNode.sh` の値に合わせてください（例は `00000`）。',
+    25: 'BP 宛の localRoot は必ず `advertise: false` とします。',
+    32: 'リレー2 の IP アドレスまたは DNS。',
+    33: 'リレー2 のポート。リレー2 ノード側に設定したポートへ合わせてください。',
+  }}
+/>
 
 </Tab>
 <Tab value="リレー2">
 
-
-```yaml
-cat > $NODE_HOME/${NODE_CONFIG}-topology.json << EOF
-{
-  "bootstrapPeers": [
-    {
-      "address": "backbone.cardano.iog.io",
-      "port": 3001
-    },
-    {
-      "address": "backbone.mainnet.cardanofoundation.org",
-      "port": 3001
-    },
-    {
-      "address": "backbone.mainnet.emurgornd.com",
-      "port": 3001
-    }
-  ],
-  "localRoots": [
-    {
-      "accessPoints": [
-        {
-          "address": "BPのIP",#(1)!
-          "port": 00000 #(2)!
-        }
-      ],
-      "advertise": false,#(3)!
-      "trustable": true,
-      "hotValency": 1
-    },
-    {
-      "accessPoints": [
-        {
-          "address": "リレー1のIP or DNS",#(4)!
-          "port": 6000 #(5)!
-        }
-      ],
-      "advertise": true,
-      "trustable": true,
-      "hotValency": 1
-    }
-  ],
-  "publicRoots": [],
-  "useLedgerAfterSlot": 182044807
-}
-EOF
-```
-
-1. BP の IP。
-2. BP のポート。
-3. BP は必ず `advertise: false`。
-4. リレー1 の IP または DNS。
-5. リレー1 のポート。
+<AnnotatedCode
+  code={[
+    'cat > ${NODE_HOME}/${NODE_CONFIG}-topology.json << EOF',
+    '{',
+    '  "bootstrapPeers": [',
+    '    {',
+    '      "address": "backbone.cardano.iog.io",',
+    '      "port": 3001',
+    '    },',
+    '    {',
+    '      "address": "backbone.mainnet.cardanofoundation.org",',
+    '      "port": 3001',
+    '    },',
+    '    {',
+    '      "address": "backbone.mainnet.emurgornd.com",',
+    '      "port": 3001',
+    '    }',
+    '  ],',
+    '  "localRoots": [',
+    '    {',
+    '      "accessPoints": [',
+    '        {',
+    '          "address": "BPのIP",',
+    '          "port": 00000',
+    '        }',
+    '      ],',
+    '      "advertise": false,',
+    '      "trustable": true,',
+    '      "hotValency": 1',
+    '    },',
+    '    {',
+    '      "accessPoints": [',
+    '        {',
+    '          "address": "リレー1のIP or DNS",',
+    '          "port": 6000',
+    '        }',
+    '      ],',
+    '      "advertise": true,',
+    '      "trustable": true,',
+    '      "hotValency": 1',
+    '    }',
+    '  ],',
+    '  "publicRoots": [],',
+    '  "useLedgerAfterSlot": 185500763',
+    '}',
+    'EOF',
+  ].join('\n')}
+  annotations={{
+    21: 'BP の IP。',
+    22: 'BP のポート。`grep PORT=` `startBlockProducingNode.sh` の値に合わせてください（例は `00000`）。',
+    25: 'BP 宛の localRoot は必ず `advertise: false` とします。',
+    32: 'リレー1 の IP アドレスまたは DNS。',
+    33: 'リレー1 のポート。リレー1 ノード側に設定したポートへ合わせてください。',
+  }}
+/>
 
 </Tab>
 </Tabs>
@@ -246,46 +248,47 @@ sudo ufw allow from <リレーサーバー2のIP> to any port ${b_PORT}
 sudo ufw reload
 ```
 
-コードの **`+`（注釈）** を開いて内容を確認してください。
+行末の「`＋`」で注釈を表示できます。
 
-```yaml
-cat > $NODE_HOME/${NODE_CONFIG}-topology.json << EOF
-{
-  "bootstrapPeers": null,
-  "localRoots": [
-    {
-      "accessPoints": [
-        {
-          "address": "リレー1のIP or DNS",#(1)!
-          "port": 6000 #(2)!
-        },
-        {
-          "address": "リレー2のIP or DNS",#(3)!
-          "port": 6000 #(4)!
-        }
-      ],
-      "advertise": false,#(5)!
-      "trustable": true,
-      "hotValency": 2 #(6)!
-    }
-  ],
-  "publicRoots": [],
-  "useLedgerAfterSlot": -1 #(7)!
-}
-EOF
-```
-
-1. リレー1 の IP または DNS。
-2. リレー1 のポート。
-3. リレー2 の IP または DNS。
-4. リレー2 のポート。
-5. `advertise: false`。
-6. 固定するリレー台数に合わせる。通常は `accessPoints` の数と同じにする。
-7. `-1` で BP モード（台帳ピアを使わない）。
+<AnnotatedCode
+  code={[
+    'cat > ${NODE_HOME}/${NODE_CONFIG}-topology.json << EOF',
+    '{',
+    '  "bootstrapPeers": null,',
+    '  "localRoots": [',
+    '    {',
+    '      "accessPoints": [',
+    '        {',
+    '          "address": "リレー1のIP or DNS",',
+    '          "port": 6000',
+    '        },',
+    '        {',
+    '          "address": "リレー2のIP or DNS",',
+    '          "port": 6000',
+    '        }',
+    '      ],',
+    '      "advertise": false,',
+    '      "trustable": true,',
+    '      "hotValency": 2',
+    '    }',
+    '  ],',
+    '  "publicRoots": [],',
+    '  "useLedgerAfterSlot": -1',
+    '}',
+    'EOF',
+  ].join('\n')}
+  annotations={{
+    8: 'リレー1 の IP アドレスまたは DNS。',
+    9: 'リレー1 ノード側に設定したポート。',
+    12: 'リレー2 の IP アドレスまたは DNS。',
+    13: 'リレー2 ノード側に設定したポート。',
+    16: 'BP は他ノードにピア情報を広めないよう `advertise: false` にします。',
+    18: 'Hot として維持したい自リレー数。`accessPoints` の数と揃えるのが一般的です。',
+    22: '`-1` で台帳ピアを使わない BP 向けモードになります。',
+  }}
+/>
 
 </Callout>
-
-
 
 
 ### 2-3. 構文チェックと再起動 [#sec-6]
@@ -297,8 +300,9 @@ jq . $NODE_HOME/${NODE_CONFIG}-topology.json
 JSON がそのまま表示されれば問題ありません。  
 `parse error` のときは `{}` `[]` `,` を確認してください。
 
+ノードを再起動します。
 ```bash
-cnrestart
+sudo systemctl reload-or-restart cardano-node
 ```
 
 ---
