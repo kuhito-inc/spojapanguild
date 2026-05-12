@@ -8,56 +8,53 @@ title: "アドレス生成"
 
 </Callout>
 
+<Callout type="warning" title="運用上のセキュリティに関する重要なアドバイス">
 
+- キーの生成はエアギャップで生成する必要があり、インターネット接続が無くても生成可能です。  
+- paymentキーは支払い用アドレスに使用され、stakeキーはプール委任アドレス用の管理に使用されます。
 
+</Callout>
 
 ## 1. プロトコルパラメータの取得 [#sec-1]
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
 cardano-cli latest query protocol-parameters \
-    $NODE_NETWORK \
-    --out-file params.json
+  $NODE_NETWORK \
+  --out-file params.json
 ```
 
 </Tab>
 </Tabs>
-
-<Callout type="info" title="運用上のセキュリティに関する重要なアドバイス">
-
-キーの生成はエアギャップオフラインマシンで生成する必要があり、インターネット接続が無くても生成可能です。  
-paymentキーは支払い用アドレスに使用され、stakeキーはプール委任アドレス用の管理に使用されます。
-
-</Callout>
-
 
 
 ## 2. 支払いアドレスキーの作成 [#sec-2]
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cd $NODE_HOME
 cardano-cli latest address key-gen \
-    --verification-key-file payment.vkey \
-    --signing-key-file payment.skey
+  --verification-key-file payment.vkey \
+  --signing-key-file payment.skey
 ```
 
 </Tab>
 </Tabs>
+
 ## 3. ステークアドレスキーの作成 [#sec-3]
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cardano-cli latest stake-address key-gen \
-    --verification-key-file stake.vkey \
-    --signing-key-file stake.skey
+  --verification-key-file stake.vkey \
+  --signing-key-file stake.skey
 ```
 
 </Tab>
@@ -65,29 +62,30 @@ cardano-cli latest stake-address key-gen \
 
 ## 4. ステークアドレスの作成 [#sec-4]
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cardano-cli latest stake-address build \
-    --stake-verification-key-file stake.vkey \
-    --out-file stake.addr \
-    $NODE_NETWORK
+  --stake-verification-key-file stake.vkey \
+  --out-file stake.addr \
+  $NODE_NETWORK
 ```
 
 </Tab>
 </Tabs>
 
 ## 5. 支払い用アドレスの作成 [#sec-5]
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cardano-cli latest address build \
-    --payment-verification-key-file payment.vkey \
-    --stake-verification-key-file stake.vkey \
-    --out-file payment.addr \
-    $NODE_NETWORK
+  --payment-verification-key-file payment.vkey \
+  --stake-verification-key-file stake.vkey \
+  --out-file payment.addr \
+  $NODE_NETWORK
 ```
 
 上書き・削除されないようパーミッションを変更する。
@@ -115,22 +113,18 @@ chmod 400 payment.addr
 
 <Callout type="error" title="注意">
 
-これらのファイルは紛失しないようにご注意ください。  
-特に`.vkey`/`.skey`を無くした場合、プール報酬や誓約金を引き出せなくなります。  
-複数の外部デバイスにバックアップを取ってください。
+これらのファイルは**紛失しないよう保管**してください。  
+特に **`*.skey`（秘密鍵）** を失った場合、ステーク報酬の受け取りや ADA の送金などができなくなることがあります。  
+複数の**外部媒体**（USB など）へバックアップし、単一故障に備えてください。
 
 </Callout>
-
-
-
-
 
 
 ## 6. 支払い用アドレスへ入金 [#sec-6]
 
 次のステップは、あなたの支払いアドレスに送金する手順です。
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 エアギャップマシンの`payment.addr`と`stake.addr` をBPのcnodeディレクトリにコピーします。
 ```mermaid
@@ -145,9 +139,9 @@ graph LR
 <Tab value="メインネット">
 
 
-<Callout type="info" title="Cardanoウォレット(メインネット)から送金が可能です">
+<Callout type="info" title="ウォレットから送金可能">
 
-* （例）ダイダロス / ヨロイウォレット / Eternl  
+* （例）Daedalus / Lace / Eternl など
 
 </Callout>
 
@@ -157,15 +151,16 @@ graph LR
 ```bash
 echo "$(cat $NODE_HOME/payment.addr)"
 ```
-<Callout type="warn" title="何ADA入金したらいい？">
+<Callout type="info" title="必要な ADA の額">
 
-初回はテストで少額から入金してください  
+初回は**少額で送金できるか確かめてから**、不足分を追加してください。
 
-payment.addrは以下の役割があるため必要分入金してください  
-●プール登録料の支払い(500ADA)  
-●ステークアドレス登録料の支払い(2ADA)  
-●トランザクション手数料の支払い(数ADA)  
-●誓約金の預け先(誓約として設定したい額)  
+`payment.addr` にはおおむね次の用途があります。**実行する手順に応じて足りる合計額**を入金してください。
+
+- ステークプール登録料（**500 ADA** が必要です）
+- ステークアドレス登録に必要な ADA（目安 **2 ADA** と手数料）
+- **トランザクション手数料**（登録作業などで複数回 Tx を送る場合があるため **数 ADA 以上** を余裕として見込む）
+- **誓約（Pledge）** として設定する額（同じウォレットの残高で満たす必要があります。登録証明書に書く誓約額に合わせてください）
 
 </Callout>
 
@@ -194,28 +189,20 @@ echo "$(cat $NODE_HOME/payment.addr)"
 
 支払い用アドレスに送金後、残高を確認してください。
 
-<Callout type="info" title="Hint">
-
-ノードをブロックチェーンと完全に同期させる必要があります。完全に同期されていない場合は、残高が表示されません。
-
-</Callout>
-
-
-
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
 cardano-cli latest query utxo \
-    --address $(cat payment.addr) \
-    $NODE_NETWORK \
-    --output-text
+  --address $(cat payment.addr) \
+  $NODE_NETWORK \
+  --output-text
 ```
 
 次のように表示されたら入金完了です。
 
-```text
+```yaml title="期待される表示例：" noCopy
                         TxHash                                 TxIx        Amount
 --------------------------------------------------------------------------------------
 9e0c10b599606a5**********************************************     0        10000000000     lovelace + TxOutDatumNone
@@ -223,5 +210,12 @@ cardano-cli latest query utxo \
 
 </Tab>
 </Tabs>
+
+<Callout type="warning" title="ノード同期の確認">
+
+ノードをブロックチェーンと完全に同期させる必要があります。  
+完全に同期されていない場合は残高が表示されませんので注意してください。
+
+</Callout>
 
 ---
