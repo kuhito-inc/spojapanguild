@@ -114,7 +114,7 @@ title: "ステークプール登録"
 <span style={{color: "red"}}>このURLの文字列が64文字以内であることを確認してください</span>
 
 
-11．**ブロックプロデューサーノード**でjsonファイルをダウンロードし、ハッシュ値を計算。  
+11．**BP**でjsonファイルをダウンロードし、ハッシュ値を計算。  
 
 <Callout type="error" title="URLを書き換えてから実行して下さい">
 
@@ -152,8 +152,8 @@ wget -O poolMetaData.json https://xxx.github.io/xxx/poolMetaData.json
 
 
 メタデータファイルの作成。
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
@@ -199,8 +199,8 @@ jq . $NODE_HOME/poolMetaData.json
 
 
 メタデータファイルのハッシュ値を計算します。
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -214,7 +214,7 @@ cardano-cli latest stake-pool metadata-hash --pool-metadata-file poolMetaData.js
 
 <Callout type="warn" title="ファイル転送">
 
-BPにある`vrf.vkey`と`poolMetaDataHash.txt` をエアギャップマシンのcnodeディレクトリにコピーします。
+BPにある`vrf.vkey`と`poolMetaDataHash.txt` をエアギャップのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
     A[BP] -->| vrf.vkey / poolMetaDataHash.txt | B[エアギャップ];
@@ -225,8 +225,8 @@ graph LR
 
 **BPとエアギャップで`vrf.vkey`ファイルハッシュを比較**
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -243,8 +243,8 @@ BPとエアギャップで表示された戻り値を比較して、ハッシュ
 </Callout>
 
 
-<Tabs items={["エアギャップマシン"]}>
-<Tab value="エアギャップマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cd $NODE_HOME
@@ -256,8 +256,8 @@ sha256sum vrf.vkey
 
 最小プールコスト(最低固定費)を出力します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 minPoolCost=$(cat $NODE_HOME/params.json | jq -r .minPoolCost)
@@ -275,7 +275,7 @@ minPoolCost(最低固定費)は 170000000 lovelace \(170 ADA\)です。
 
 
 
- **エアギャップマシンでpool.certを作成**
+ **エアギャップでpool.certを作成**
 
 !!! note annotate "pool.cert作成時の注意点▼"
     
@@ -335,8 +335,8 @@ minPoolCost(最低固定費)は 170000000 lovelace \(170 ADA\)です。
 </Callout>
 
 
-<Tabs items={["エアギャップマシン(リレー2台構成)"]}>
-<Tab value="エアギャップマシン(リレー2台構成)">
+<Tabs items={["エアギャップ(リレー2台構成)"]}>
+<Tab value="エアギャップ(リレー2台構成)">
 
 下記のスクリプトは例です。ご自身のプール運用設定値に変更してから実行してください。  
 
@@ -376,8 +376,8 @@ cardano-cli latest stake-pool registration-certificate \
 
 **自身のステークプールに委任する証明書(deleg.cert)を作成します**
 
-<Tabs items={["エアギャップマシン"]}>
-<Tab value="エアギャップマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 
 ```bash
@@ -392,7 +392,7 @@ cardano-cli latest stake-address stake-delegation-certificate \
 
 <Callout type="warn" title="ファイル転送">
 
-エアギャップマシンの`pool.cert`と`deleg.cert`をBPのcnodeディレクトリにコピーします。
+エアギャップの`pool.cert`と`deleg.cert`をBPのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
     A[エアギャップ] -->|pool.cert / deleg.cert| B[BP];
@@ -405,8 +405,8 @@ graph LR
 
 **最新のスロット番号の取得**
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -419,8 +419,8 @@ echo Current Slot: $currentSlot
 
 **payment.addrの残高を出力します**
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest query utxo \
@@ -439,8 +439,8 @@ cat balance.out
 
 **UTXOを算出します**
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 tx_in=""
@@ -464,8 +464,8 @@ echo Number of UTXOs: ${txcnt}
 
 **poolDepositを出力します**
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
@@ -478,8 +478,8 @@ echo poolDeposit: $poolDeposit
 
 **トランザクション仮ファイルを作成します**
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
@@ -498,8 +498,8 @@ cardano-cli latest transaction build-raw \
 
 **最低手数料を計算します**
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
@@ -516,8 +516,8 @@ echo fee: $fee
 
 **計算結果を出力します**
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
@@ -530,8 +530,8 @@ echo txOut: ${txOut}
 
 **トランザクションファイルを作成します**
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
@@ -550,7 +550,7 @@ cardano-cli latest transaction build-raw \
 
 <Callout type="warn" title="ファイル転送">
 
-BPの`tx.raw`をエアギャップマシンのcnodeディレクトリにコピーします。
+BPの`tx.raw`をエアギャップのcnodeディレクトリにコピーします。
 
 ```mermaid
 graph LR
@@ -562,8 +562,8 @@ graph LR
 
 **トランザクションに署名します**
 
-<Tabs items={["エアギャップマシン"]}>
-<Tab value="エアギャップマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cd $NODE_HOME
@@ -581,7 +581,7 @@ cardano-cli latest transaction sign \
 
 <Callout type="warn" title="ファイル転送">
 
-エアギャップマシンの`tx.signed`をBPのcnodeディレクトリにコピーします。
+エアギャップの`tx.signed`をBPのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
     A[エアギャップ] -->|tx.signed| B[BP];
@@ -592,8 +592,8 @@ graph LR
 
 **トランザクションを送信します**
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction submit \
@@ -610,8 +610,8 @@ cardano-cli latest transaction submit \
 
 **ステークプールIDは以下のように出力できます**
 
-<Tabs items={["エアギャップマシン"]}>
-<Tab value="エアギャップマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 chmod u+rwx $HOME/cold-keys
@@ -625,7 +625,7 @@ chmod a-rwx $HOME/cold-keys
 
 <Callout type="warn" title="ファイル転送">
 
-エアギャップマシンの`pool.id-bech32`と`pool.id`をBPのcnodeディレクトリにコピーします。
+エアギャップの`pool.id-bech32`と`pool.id`をBPのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
     A[エアギャップ] -->|pool.id-bech32 / pool.id| B[BP];
@@ -635,8 +635,8 @@ graph LR
 
 
 **以下のコマンドを実行し、プール情報が表示されればブロックチェーンに登録されています**
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 curl -s -X POST "https://api.koios.rest/api/v1/pool_info" \
@@ -649,8 +649,8 @@ curl -s -X POST "https://api.koios.rest/api/v1/pool_info" \
 </Tabs>
 
 **自分のステークプールが`Cardanoscan`に登録されているか確認します**
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME

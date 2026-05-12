@@ -26,8 +26,8 @@ title: "運用証明書(pool.cert)の更新"
 <Tabs items={["メタデータ更新を含む場合", "誓約、手数料、リレー情報のみ更新の場合"]}>
 <Tab value="メタデータ更新を含む場合">
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 変数にプールメタデータ値を設定し実行してください
 > 文字列は`''`で囲ってください  
@@ -68,8 +68,8 @@ poolMetaData.jsonをローカルマシンにダウンロードし、Githubまた
 
 **ハッシュ値確認**
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```text
 cd $NODE_HOME
@@ -106,7 +106,7 @@ rm onlineMetaData.json
 
 <Callout type="warn" title="ファイル転送">
 
-BPの``poolMetaDataHash.txt`` をエアギャップマシンのcnodeディレクトリにコピーします。
+BPの``poolMetaDataHash.txt`` をエアギャップのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
     A[BP] -->|poolMetaDataHash.txt| B[エアギャップ];
@@ -116,8 +116,8 @@ graph LR
 
 
 BPとエアギャップハッシュ値確認
-<Tabs items={["ブロックプロデューサーノード", "エアギャップオフラインマシン"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP", "エアギャップ"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -125,7 +125,7 @@ echo $(cat poolMetaDataHash.txt)
 ```
 
 </Tab>
-<Tab value="エアギャップオフラインマシン">
+<Tab value="エアギャップ">
 
 ```bash
 cd $NODE_HOME
@@ -159,8 +159,8 @@ echo $(cat poolMetaDataHash.txt)
 </Callout>
 
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cd $NODE_HOME
@@ -198,8 +198,8 @@ cardano-cli latest stake-pool registration-certificate \
 
 ステークプールに誓約します。
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cardano-cli latest stake-address stake-delegation-certificate \
@@ -213,7 +213,7 @@ cardano-cli latest stake-address stake-delegation-certificate \
 
 <Callout type="warn" title="ファイル転送">
 
-エアギャップの`pool.cert`と`deleg.cert`をブロックプロデューサーのcnodeディレクトリにコピーします。
+エアギャップの`pool.cert`と`deleg.cert`をBPのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
     A[エアギャップ] -->|pool.cert / deleg.cert| B[BP];
@@ -224,8 +224,8 @@ graph LR
 
 最新のスロット番号を取得します
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -238,8 +238,8 @@ echo Current Slot: $currentSlot
 
 payment.addrの残高を出力します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest query utxo \
@@ -257,8 +257,8 @@ cat balance.out
 </Tabs>
 
 UTXOを算出します
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 tx_in=""
@@ -283,8 +283,8 @@ echo Number of UTXOs: ${txcnt}
 build-rawトランザクションコマンドを実行します。
 
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction build-raw \
@@ -302,8 +302,8 @@ cardano-cli latest transaction build-raw \
 
 最低手数料を計算します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 fee=$(cardano-cli latest transaction calculate-min-fee \
@@ -319,8 +319,8 @@ echo fee: $fee
 
 計算結果を出力します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 txOut=$((${total_balance}-${fee}))
@@ -332,8 +332,8 @@ echo txOut: ${txOut}
 
 トランザクションファイルを構築します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction build-raw \
@@ -351,7 +351,7 @@ cardano-cli latest transaction build-raw \
 
 <Callout type="warn" title="ファイル転送">
 
-BPの`tx.raw` をエアギャップマシンのcnodeディレクトリにコピーします。
+BPの`tx.raw` をエアギャップのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
     A[BP] -->|tx.raw| B[エアギャップ];
@@ -362,8 +362,8 @@ graph LR
 
 トランザクションに署名します。
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cd $NODE_HOME
@@ -393,8 +393,8 @@ graph LR
 
 トランザクションを送信します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction submit \

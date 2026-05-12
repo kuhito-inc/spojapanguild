@@ -49,8 +49,8 @@ title: "KESの更新"
 
 
 ## 1. KES更新タイミングの確認 [#sec-1]
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 slotNumInt=`curl -s http://localhost:12798/metrics | grep cardano_node_metrics_slotNum_int | awk '{ print $2 }'`
@@ -64,8 +64,8 @@ echo "scale=6; ${slotNumInt} / 129600" | bc | awk '{printf "%.5f\n", $0}'
 
 ## 2. KESファイルのバックアップ、新規作成 [#sec-2]
 既存ファイルのバックアップ
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cp $NODE_HOME/kes.vkey $NODE_HOME/kes-bk.vkey
@@ -102,8 +102,8 @@ graph LR
 ## 4. ハッシュ値の確認 [#sec-4]
 BPとエアギャップで`kes.vkey`ファイルハッシュを比較します。  
 
-<Tabs items={["ブロックプロデューサー", "エアギャップ"]}>
-<Tab value="ブロックプロデューサー">
+<Tabs items={["BP", "エアギャップ"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -132,8 +132,8 @@ BPとエアギャップの両方で表示された戻り値を比較し、ハッ
 
 
 ## 5. オンチェーンカウンター取得 [#sec-5]
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 kesperiodinfo=$(cardano-cli latest query kes-period-info $NODE_NETWORK --op-cert-file $NODE_HOME/node.cert --out-file kesperiod.json)
@@ -188,8 +188,8 @@ cardano-cli latest text-view decode-cbor \
 </Tabs>
 
 ## 7. BPで現在の`KesPeriod`を算出 [#sec-7]
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -274,8 +274,8 @@ graph LR
 ## 10. ハッシュ値確認 [#sec-10]
 BPとエアギャップで`node.cert`のハッシュ値が一致していることを確認します。
 
-<Tabs items={["ブロックプロデューサー", "エアギャップ"]}>
-<Tab value="ブロックプロデューサー">
+<Tabs items={["BP", "エアギャップ"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -302,10 +302,10 @@ BPとエアギャップで表示された戻り値を比較し、ハッシュ値
 
 
 ## 11. ノード再起動 [#sec-11]
-この手順を完了するため、ブロックプロデューサーを再起動してください。
+この手順を完了するため、BPを再起動してください。
 
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 sudo systemctl reload-or-restart cardano-node

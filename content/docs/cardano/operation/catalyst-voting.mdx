@@ -26,8 +26,8 @@ title: "カタリスト有権者登録"
 ### 1-1. Bech32インストール [#sec-2]
 
 ダウンロード
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $HOME/git
@@ -41,8 +41,8 @@ rm $(curl -s https://api.github.com/repos/IntersectMBO/bech32/releases/latest | 
 </Tabs>
 
 ビルド
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd bech32
@@ -54,8 +54,8 @@ cabal build bech32
 </Tabs>
 
 binディレクトリへコピー
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 sudo cp $(find $HOME/git/bech32/dist-newstyle/build -type f -name "bech32") /usr/local/bin/bech32
@@ -65,8 +65,8 @@ sudo cp $(find $HOME/git/bech32/dist-newstyle/build -type f -name "bech32") /usr
 </Tabs>
 
 バージョン確認
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 bech32 -v
@@ -79,8 +79,8 @@ bech32 -v
 
 
 ### 1-2. cardano-signerインストール [#sec-3]
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $HOME/git
@@ -92,8 +92,8 @@ tar -xf cardano-signer-$(curl -s https://api.github.com/repos/gitmachtl/cardano-
 </Tabs>
 
 binディレクトリへコピー
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 sudo cp $HOME/git/cardano-signer /usr/local/bin/cardano-signer
@@ -103,8 +103,8 @@ sudo cp $HOME/git/cardano-signer /usr/local/bin/cardano-signer
 </Tabs>
 
 バージョン確認
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-signer help | grep -m 1 "cardano-signer"
@@ -121,7 +121,7 @@ cardano-signer help | grep -m 1 "cardano-signer"
 
 <Callout type="warn" title="ファイル転送">
 
-BPにある`cardano-signer`をエアギャップオフラインマシンの$HOME/git/ディレクトリにコピーします。
+BPにある`cardano-signer`をエアギャップの$HOME/git/ディレクトリにコピーします。
 ```mermaid
 graph LR
     A[BP] -->|cardano-signer| B[エアギャップ];
@@ -165,8 +165,8 @@ cardano-signer help | grep -m 1 "cardano-signer"
 </Tabs>
 
 ### 1-3. catalyst-toolboxインストール [#sec-4]
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $HOME/git
@@ -179,8 +179,8 @@ git checkout 1bdacb3
 </Tabs>
 
 Rustパッケージアップデート
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 rustup update
@@ -190,8 +190,8 @@ rustup update
 </Tabs>
 
 インストール
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd src/catalyst-toolbox
@@ -202,8 +202,8 @@ cargo install --path . --force
 </Tabs>
 
 バージョン確認
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 catalyst-toolbox --version

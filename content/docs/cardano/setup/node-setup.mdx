@@ -370,7 +370,7 @@ source $HOME/.bashrc
 
 起動スクリプトには、ディレクトリ、ポート番号、DBパス、構成ファイルパス、トポロジーファイルパスなど、Cardanoノードを実行するために必要な変数が含まれています。
 
-<Tabs items={["リレーノード", "ブロックプロデューサーノード"]}>
+<Tabs items={["リレーノード", "BP"]}>
 <Tab value="リレーノード">
 
 リレーノードで使用するポート番号を指定してターミナルで実行します。
@@ -394,7 +394,7 @@ EOF
 ```
 
 </Tab>
-<Tab value="ブロックプロデューサーノード">
+<Tab value="BP">
 
 
 <Callout type="error" title="注意">
@@ -434,7 +434,7 @@ EOF
 起動スクリプトに実行権限を付与し、ブロックチェーンの同期を開始します。 
 > リレーノードから実施してください。
 
-<Tabs items={["リレーノード", "ブロックプロデューサーノード"]}>
+<Tabs items={["リレーノード", "BP"]}>
 <Tab value="リレーノード">
 
 
@@ -445,7 +445,7 @@ chmod +x startRelayNode1.sh
 ```
 
 </Tab>
-<Tab value="ブロックプロデューサーノード">
+<Tab value="BP">
 
 
 ```bash
@@ -479,7 +479,7 @@ Ctrl+C
 
 ユニットファイルを作成します。
 
-<Tabs items={["リレーノード", "ブロックプロデューサーノード"]}>
+<Tabs items={["リレーノード", "BP"]}>
 <Tab value="リレーノード">
 
 
@@ -514,7 +514,7 @@ EOF
 ```
 
 </Tab>
-<Tab value="ブロックプロデューサーノード">
+<Tab value="BP">
 
 
 ```bash
@@ -623,7 +623,7 @@ chmod 755 gLiveView.sh
 
 `env` ファイル内の定義を修正します。
 
-<Tabs items={["リレーノード", "ブロックプロデューサーノード"]}>
+<Tabs items={["リレーノード", "BP"]}>
 <Tab value="リレーノード">
 
 ```bash
@@ -633,7 +633,7 @@ echo "リレーノードポートは${b_PORT}です"
 ```
 
 </Tab>
-<Tab value="ブロックプロデューサーノード">
+<Tab value="BP">
 
 ```bash
 PORT=`grep "PORT=" $NODE_HOME/startBlockProducingNode.sh`
@@ -692,7 +692,7 @@ source $HOME/.bashrc
 </Callout>
 
 
-## 8. エアギャップマシンのセットアップ [#sec-13]
+## 8. エアギャップのセットアップ [#sec-13]
 
 ### cardano-cli バイナリをコピー [#sec-14]
 リレーサーバーで[バイナリファイルをコピー](/docs/cardano/operation/node-update#sec-15)を実施します。

@@ -34,8 +34,8 @@ title: "資金引き出し"
 
 現在のスロットを算出します
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 currentSlot=$(cardano-cli latest query tip $NODE_NETWORK | jq -r '.slot')
@@ -47,8 +47,8 @@ echo Current Slot: $currentSlot
 
 ステークアドレスの残高を算出します
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -66,8 +66,8 @@ echo rewardBalance: $rewardBalance
 報酬の移動先となるpayment.addrを設定します。payment.addrには取引手数料を支払うための残高が必要です。
 
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 destinationAddress=$(cat payment.addr)
@@ -79,8 +79,8 @@ echo destinationAddress: $destinationAddress
 
 payment.addrの残高を算出します
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest query utxo \
@@ -99,8 +99,8 @@ cat balance.out
 
 UTXOを算出します
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 tx_in=""
@@ -127,8 +127,8 @@ tempRewardAmount=$(( ${total_balance}+${rewardBalance} ))
 
 build-raw transactionコマンドを実行します。
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction build-raw \
@@ -146,8 +146,8 @@ cardano-cli latest transaction build-raw \
 現在の最低料金を計算します。
 
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 fee=$(cardano-cli latest transaction calculate-min-fee \
@@ -163,8 +163,8 @@ echo fee: $fee
 
 変更出力を計算します。
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 txOut=$((${total_balance}-${fee}+${rewardBalance}))
@@ -176,8 +176,8 @@ echo Change Output: ${txOut}
 
 トランザクションをビルドします。
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction build-raw \
@@ -194,7 +194,7 @@ cardano-cli latest transaction build-raw \
 
 <Callout type="warn" title="ファイル転送">
 
-BPの`tx.raw` をエアギャップマシンのcnodeディレクトリにコピーします。
+BPの`tx.raw` をエアギャップのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
     A[BP] -->|tx.raw| B[エアギャップ];
@@ -206,8 +206,8 @@ graph LR
 支払いとステークの秘密鍵の両方を使用してトランザクションに署名します。
 
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cd $NODE_HOME
@@ -236,8 +236,8 @@ graph LR
 署名されたトランザクションを送信します。
 
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction submit \
@@ -251,8 +251,8 @@ cardano-cli latest transaction submit \
 資金が到着したか確認します。
 
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest query utxo \
@@ -280,8 +280,8 @@ cardano-cli latest query utxo \
 
 現在のスロットNoを算出します。
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 currentSlot=$(cardano-cli latest query tip $NODE_NETWORK | jq -r '.slot')
@@ -294,8 +294,8 @@ echo Current Slot: $currentSlot
 入金先アドレスを指定します。
 
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 destinationAddress=入金先アドレスを指定する
@@ -308,8 +308,8 @@ echo destinationAddress: $destinationAddress
 報酬アドレス残高を算出します
 
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -325,8 +325,8 @@ echo rewardBalance: $rewardBalance
 payment.addr の残高を算出
 
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest query utxo \
@@ -345,8 +345,8 @@ cat balance.out
 
 UTXOを算出します
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 tx_in=""
@@ -373,8 +373,8 @@ echo ${withdrawalString}
 
 build-raw transactionコマンドを実行します。
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction build-raw \
@@ -393,8 +393,8 @@ cardano-cli latest transaction build-raw \
 現在の最低料金を計算します。
 
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 fee=$(cardano-cli latest transaction calculate-min-fee \
@@ -411,8 +411,8 @@ echo fee: $fee
 変更出力を計算します。
 
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 txOut=$((${total_balance}-${fee}))
@@ -425,8 +425,8 @@ echo Change Output: ${txOut}
 トランザクションをビルドします。
 
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction build-raw \
@@ -444,7 +444,7 @@ cardano-cli latest transaction build-raw \
 
 <Callout type="warn" title="ファイル転送">
 
-BPの`tx.raw` をエアギャップマシンのcnodeディレクトリにコピーします。
+BPの`tx.raw` をエアギャップのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
     A[BP] -->|tx.raw| B[エアギャップ];
@@ -456,8 +456,8 @@ graph LR
 
 支払いとステークの秘密鍵の両方を使用してトランザクションに署名します。
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cd $NODE_HOME
@@ -472,7 +472,7 @@ cardano-cli latest transaction sign \
 </Tab>
 </Tabs>
 
-**tx.signed** を **ブロックプロデューサノード**のcnodeディレクトリにコピーします。
+**tx.signed** を **BP**のcnodeディレクトリにコピーします。
 
 <Callout type="warn" title="ファイル転送">
 
@@ -488,8 +488,8 @@ graph LR
 署名されたトランザクションを送信します。
 
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction submit \
@@ -506,8 +506,8 @@ cardano-cli latest transaction submit \
 資金が到着したか確認します。
 
 
-<Tabs items={["ブロックプロデューサノード"]}>
-<Tab value="ブロックプロデューサノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest query utxo \
@@ -550,8 +550,8 @@ payment.addrから任意のアドレスへ送信する例です
 最新のスロット番号を取得します
 
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -565,8 +565,8 @@ echo Current Slot: $currentSlot
 lovelace形式で送信する金額を設定します。**1 ADA** = **1,000,000 lovelace** で覚えます。
 
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 amountToSend=10000000
@@ -578,8 +578,8 @@ echo amountToSend: $amountToSend
 
 送金先のアドレスを設定します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 destinationAddress=送金先アドレス
@@ -591,8 +591,8 @@ echo destinationAddress: $destinationAddress
 
 payment.addrの残高を算出します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest query utxo \
@@ -611,8 +611,8 @@ cat balance.out
 
 UTXOを算出します
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 tx_in=""
@@ -638,8 +638,8 @@ tempBalanceAmont=$(( ${total_balance}-${amountToSend} ))
 
 build-rawトランザクションコマンドを実行します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction build-raw \
@@ -656,8 +656,8 @@ cardano-cli latest transaction build-raw \
 
 最低手数料を出力します
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 fee=$(cardano-cli latest transaction calculate-min-fee \
@@ -674,8 +674,8 @@ echo fee: $fee
 計算結果を出力します。
 
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 txOut=$((${total_balance}-${fee}-${amountToSend}))
@@ -688,8 +688,8 @@ echo Change Output: ${txOut}
 トランザクションファイルを構築します。
 
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction build-raw \
@@ -706,7 +706,7 @@ cardano-cli latest transaction build-raw \
 
 <Callout type="warn" title="ファイル転送">
 
-BPの`tx.raw` をエアギャップマシンのcnodeディレクトリにコピーします。
+BPの`tx.raw` をエアギャップのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
     A[BP] -->|tx.raw| B[エアギャップ];
@@ -717,8 +717,8 @@ graph LR
 
 トランザクションに署名します。
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cd $NODE_HOME
@@ -732,7 +732,7 @@ cardano-cli latest transaction sign \
 </Tab>
 </Tabs>
 
-**tx.signed** をブロックプロデューサーノードのcnodeディレクトリにコピーします。
+**tx.signed** をBPのcnodeディレクトリにコピーします。
 <Callout type="warn" title="ファイル転送">
 
 エアギャップの`tx.signed` をBPのcnodeディレクトリにコピーします。
@@ -747,8 +747,8 @@ graph LR
 署名されたトランザクションを送信します。
 
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction submit \
@@ -764,8 +764,8 @@ cardano-cli latest transaction submit \
 入金されているか確認します。
 
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest query utxo \

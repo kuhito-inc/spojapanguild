@@ -4,8 +4,8 @@ title: "ステークアドレス登録"
 
 ## 1. ステーク証明書の作成 [#sec-1]
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 
 ```bash
@@ -21,7 +21,7 @@ cardano-cli latest stake-address registration-certificate \
 
 <Callout type="warn" title="ファイル転送">
 
-エアギャップマシンの`stake.cert` をBPのcnodeディレクトリにコピーします。
+エアギャップの`stake.cert` をBPのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
     A[エアギャップ] -->|stake.cert| B[BP];
@@ -38,8 +38,8 @@ graph LR
 </Callout>
 
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -52,8 +52,8 @@ echo Current Slot: $currentSlot
 
 payment.addrの残高を出力します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest query utxo \
@@ -71,8 +71,8 @@ cat balance.out
 </Tabs>
 
 UTXOを算出します
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```sh
@@ -96,8 +96,8 @@ echo Number of UTXOs: ${txcnt}
 </Tabs>
 
 keyDepositの値を出力します。
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
@@ -109,8 +109,8 @@ echo keyDeposit: $keyDeposit
 </Tabs>
 
 トランザクション仮ファイルを作成します
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
@@ -127,8 +127,8 @@ cardano-cli latest transaction build-raw \
 </Tabs>
 
 現在の最低手数料を計算します。
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
@@ -144,8 +144,8 @@ echo fee: $fee
 </Tabs>
 
 計算結果を出力します。
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
@@ -157,8 +157,8 @@ echo Change Output: ${txOut}
 </Tabs>
 
 ステークアドレスを登録するトランザクションファイルを作成します。
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
@@ -176,7 +176,7 @@ cardano-cli latest transaction build-raw \
 
 <Callout type="warn" title="ファイル転送">
 
-BPの`tx.raw`をエアギャップマシンのcnodeディレクトリにコピーします。
+BPの`tx.raw`をエアギャップのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
     A[BP] -->|tx.raw| B[エアギャップ];
@@ -187,8 +187,8 @@ graph LR
 
 paymentとstakeの秘密鍵でトランザクションファイルに署名します。
 
-<Tabs items={["エアギャップマシン"]}>
-<Tab value="エアギャップマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 
 ```bash
@@ -206,7 +206,7 @@ cardano-cli latest transaction sign \
 
 <Callout type="warn" title="ファイル転送">
 
-エアギャップマシンの`tx.signed`をBPのcnodeディレクトリにコピーします。
+エアギャップの`tx.signed`をBPのcnodeディレクトリにコピーします。
 
 ```mermaid
 graph LR
@@ -218,8 +218,8 @@ graph LR
 
 署名されたトランザクションを送信します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest transaction submit \
