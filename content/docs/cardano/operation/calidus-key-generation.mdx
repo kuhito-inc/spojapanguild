@@ -12,10 +12,9 @@ title: "Calidusキー生成"
 </Callout>
 
 
-
 ## 1. cardano-signerインストール [#sec-1]
 
-### 1-1. BP [#sec-2]
+### BP [#sec-2]
 
 **ダウンロード**
 <Tabs items={["BP"]}>
@@ -56,7 +55,7 @@ cardano-signer --version
 </Tab>
 </Tabs>
 
-### 1-2. エアギャップ [#sec-3]
+### エアギャップ [#sec-3]
 
 <Callout type="warn" title="ファイル転送">
 
@@ -106,14 +105,19 @@ cardano-signer --version
 </Callout>
 
 
-??? "一つのペアキーで複数プールを登録する場合はこちら"
-    1. 1プール目のエアギャップ領域で`myCalidusKey`ペアキー発行します。
-    2. 2プール目のエアギャップ領域($NODE_HOME)にcalidusディレクトリを作成します。
-    ```bash
-    mkdir -p $NODE_HOME/calidus
-    ```
-    3. 作成したディレクトリに`myCalidusKey`**ペアキー(myCalidusKey.skey、myCalidusKey.vkey)のみ**をコピーします。
-    4. [3.メタデータ作成](/docs/cardano/operation/calidus-key-generation#3)から実行します。
+<AccordionsBlue type="single">
+  <Accordion id="calidus-multiple-pools-single-keypair" title="一つのペアキーで複数プールを登録する場合はこちら">
+
+1. 1プール目のエアギャップ領域で`myCalidusKey`ペアキー発行します。
+2. 2プール目のエアギャップ領域($NODE_HOME)にcalidusディレクトリを作成します。
+```bash
+mkdir -p $NODE_HOME/calidus
+```
+3. 作成したディレクトリに`myCalidusKey` **ペアキー(`myCalidusKey.skey`、`myCalidusKey.vkey`)のみ** をコピーします。
+4. [3.メタデータ作成](/docs/cardano/operation/calidus-key-generation#sec-5)から実行します。
+
+  </Accordion>
+</AccordionsBlue>
 
 **`myCalidusKey`ペアキー発行**
 
@@ -124,10 +128,10 @@ cardano-signer --version
 mkdir -p $NODE_HOME/calidus
 cd $NODE_HOME/calidus
 cardano-signer keygen --path calidus \
-    --out-skey myCalidusKey.skey \
-    --out-vkey myCalidusKey.vkey \
-    --json-extended \
-    --out-file Calidus-MnemonicsKey.json
+  --out-skey myCalidusKey.skey \
+  --out-vkey myCalidusKey.vkey \
+  --json-extended \
+  --out-file Calidus-MnemonicsKey.json
 ```
 
 </Tab>
@@ -142,10 +146,10 @@ cardano-signer keygen --path calidus \
 ```bash
 chmod u+rwx $HOME/cold-keys
 cardano-signer sign --cip88 \
-    --calidus-public-key $NODE_HOME/calidus/myCalidusKey.vkey \
-    --secret-key $HOME/cold-keys/node.skey \
-    --json \
-    --out-file $NODE_HOME/calidus/myCalidusRegistrationMetadata.json
+  --calidus-public-key $NODE_HOME/calidus/myCalidusKey.vkey \
+  --secret-key $HOME/cold-keys/node.skey \
+  --json \
+  --out-file $NODE_HOME/calidus/myCalidusRegistrationMetadata.json
 chmod a-rwx $HOME/cold-keys
 ```
 
@@ -206,10 +210,10 @@ payment.addrの残高を算出します。
 
 ```bash
 cardano-cli latest query utxo \
-    --address $(cat payment.addr) \
-    $NODE_NETWORK \
-    --output-text \
-    --out-file fullUtxo.out
+  --address $(cat payment.addr) \
+  $NODE_NETWORK \
+  --output-text \
+  --out-file fullUtxo.out
 ```
 ```bash
 tail -n +3 fullUtxo.out | sort -k3 -nr | sed -e '/lovelace + [0-9]/d' > balance.out
@@ -228,13 +232,13 @@ UTXOを算出します。
 tx_in=""
 total_balance=0
 while read -r utxo; do
-    in_addr=$(awk '{ print $1 }' <<< "${utxo}")
-    idx=$(awk '{ print $2 }' <<< "${utxo}")
-    utxo_balance=$(awk '{ print $3 }' <<< "${utxo}")
-    total_balance=$((${total_balance}+${utxo_balance}))
-    echo TxHash: ${in_addr}#${idx}
-    echo ADA: ${utxo_balance}
-    tx_in="${tx_in} --tx-in ${in_addr}#${idx}"
+  in_addr=$(awk '{ print $1 }' <<< "${utxo}")
+  idx=$(awk '{ print $2 }' <<< "${utxo}")
+  utxo_balance=$(awk '{ print $3 }' <<< "${utxo}")
+  total_balance=$((${total_balance}+${utxo_balance}))
+  echo TxHash: ${in_addr}#${idx}
+  echo ADA: ${utxo_balance}
+  tx_in="${tx_in} --tx-in ${in_addr}#${idx}"
 done < balance.out
 txcnt=$(cat balance.out | wc -l)
 echo Total ADA balance: ${total_balance}
@@ -289,13 +293,13 @@ source $NODE_HOME/wallet_balance.sh
 ```bash
 cd $NODE_HOME
 cardano-cli latest transaction build-raw \
-    ${tx_in} \
-    --tx-out $(cat payment.addr)+${tempBalanceAmont} \
-    --tx-out ${destinationAddress}+${amountToSend} \
-    --invalid-hereafter $(( ${currentSlot} + 10000)) \
-    --metadata-json-file $NODE_HOME/calidus/myCalidusRegistrationMetadata.json \
-    --fee 200000 \
-    --out-file tx.tmp
+  ${tx_in} \
+  --tx-out $(cat payment.addr)+${tempBalanceAmont} \
+  --tx-out ${destinationAddress}+${amountToSend} \
+  --invalid-hereafter $(( ${currentSlot} + 10000)) \
+  --metadata-json-file $NODE_HOME/calidus/myCalidusRegistrationMetadata.json \
+  --fee 200000 \
+  --out-file tx.tmp
 ```
 
 </Tab>
@@ -308,10 +312,10 @@ cardano-cli latest transaction build-raw \
 
 ```bash
 fee=$(cardano-cli latest transaction calculate-min-fee \
-    --tx-body-file tx.tmp \
-    --witness-count 1 \
-    --output-text \
-    --protocol-params-file params.json | awk '{ print $1 }')
+  --tx-body-file tx.tmp \
+  --witness-count 1 \
+  --output-text \
+  --protocol-params-file params.json | awk '{ print $1 }')
 echo fee: $fee
 ```
 
@@ -338,13 +342,13 @@ echo Change Output: ${txOut}
 
 ```bash
 cardano-cli latest transaction build-raw \
-    ${tx_in} \
-    --tx-out $(cat payment.addr)+${txOut} \
-    --tx-out ${destinationAddress}+${amountToSend} \
-    --invalid-hereafter $(( ${currentSlot} + 10000)) \
-    --metadata-json-file $NODE_HOME/calidus/myCalidusRegistrationMetadata.json \
-    --fee ${fee} \
-    --out-file tx.raw
+  ${tx_in} \
+  --tx-out $(cat payment.addr)+${txOut} \
+  --tx-out ${destinationAddress}+${amountToSend} \
+  --invalid-hereafter $(( ${currentSlot} + 10000)) \
+  --metadata-json-file $NODE_HOME/calidus/myCalidusRegistrationMetadata.json \
+  --fee ${fee} \
+  --out-file tx.raw
 ```
 
 </Tab>
@@ -358,10 +362,10 @@ cardano-cli latest transaction build-raw \
 ```bash
 cd $NODE_HOME
 cardano-cli latest transaction sign \
-    --tx-body-file tx.raw \
-    --signing-key-file payment.skey \
-    $NODE_NETWORK \
-    --out-file tx.signed
+  --tx-body-file tx.raw \
+  --signing-key-file payment.skey \
+  $NODE_NETWORK \
+  --out-file tx.signed
 ```
 
 </Tab>
@@ -397,8 +401,8 @@ echo TxID:$tx_id
 トランザクション送信
 ```bash
 cardano-cli latest transaction submit \
-    --tx-file tx.signed \
-    $NODE_NETWORK
+  --tx-file tx.signed \
+  $NODE_NETWORK
 ```
 
 </Tab>

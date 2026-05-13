@@ -5,9 +5,9 @@ title: "Ubuntu22.04から24.04へ移行"
 <Callout type="info" title="アップグレード前の確認事項">
 
 
-* 22.04 LTSのセキュリティサポートは `2027年6月頃` まで有効です。
-* 作業前に一通り熟読し、作業フローを理解して下さい。
-* OSアップグレードのため、作業は慎重に実施してください。
+- 22.04 LTSのセキュリティサポートは `2027年6月頃` まで有効です。
+- 作業前に一通り熟読し、作業フローを理解して下さい。
+- OSアップグレードのため、作業は慎重に実施してください。
 
 </Callout>
 
@@ -15,7 +15,7 @@ title: "Ubuntu22.04から24.04へ移行"
 
 ## 1. 事前準備 [#sec-1]
 
-### 1-1. スナップショットの作成 [#sec-2]
+### スナップショットの作成 [#sec-2]
 
 <Callout type="error" title="スナップショットの作成">
 
@@ -25,24 +25,24 @@ title: "Ubuntu22.04から24.04へ移行"
 </Callout>
 
 
-### 1-2. SSH鍵の種類を確認する [#sec-3]
+### SSH鍵の種類を確認する [#sec-3]
 
 SSH接続用のローカルパソコンに保存されている、SSH秘密鍵ファイルの種類を確認してください。
 
-* id_rsa
-* ssh_ed25519
+- id_rsa
+- ssh_ed25519
 
 のどちらか
 
-### 1-3. SSHターミナルバージョン最新化 [#sec-4]
+### SSHターミナルバージョン最新化 [#sec-4]
 
 WindowsでR-loginをご利用の場合は、[最新のRLogin](https://github.com/kmiya-culti/RLogin/releases/)を使用して下さい。
 
-### 1-4. 作業対象サーバログイン [#sec-5]
+### 作業対象サーバログイン [#sec-5]
 
 <Callout type="info" title="接続方法">
 
-[1-4. 作業対象サーバログイン](/docs/cardano/operation/ubuntu24-migration#sec-5)〜[1-9. Ubuntuバージョン確認](/docs/cardano/operation/ubuntu24-migration#sec-10)は通常のSSH接続で作業してください。
+[作業対象サーバログイン](/docs/cardano/operation/ubuntu24-migration#sec-5)〜[Ubuntuバージョン確認](/docs/cardano/operation/ubuntu24-migration#sec-10)は通常のSSH接続で作業してください。
 
 </Callout>
 
@@ -157,13 +157,17 @@ sudo apt install --reinstall python3-minimal python3 -y
 ```bash
 ls -l /usr/bin/python3
 ```
-> `/usr/bin/python3 -> python3.10`
+```yaml title="期待される表示例：" noCopy
+/usr/bin/python3 -> python3.10
+```
 
 バージョンを確認します。
 ```bash
 python3 --version
 ```
-> Python 3.10.*
+```yaml title="期待される表示例：" noCopy
+Python 3.10.*
+```
 
   </Accordion>
 </AccordionsYellow>
@@ -256,24 +260,28 @@ sudo apt update
 </AccordionsYellow>
 
 
-### 1-7. システムアップデート [#sec-8]
+### システムアップデート [#sec-8]
 ```bash
 sudo apt update && sudo apt full-upgrade -y && sudo apt autoremove -y
 ```
 
-### 1-8. LTSアップグレード設定の確認 [#sec-9]
+### LTSアップグレード設定の確認 [#sec-9]
 ```bash
 grep Prompt /etc/update-manager/release-upgrades
 ```
-> Prompt=lts であること
+```yaml title="期待される表示例：" noCopy
+Prompt=lts
+```
 
-### 1-9. Ubuntuバージョン確認 [#sec-10]
+### Ubuntuバージョン確認 [#sec-10]
 
 現在のバージョンを確認します。
 ```bash
 lsb_release -d
 ```
-> Description:    Ubuntu 22.04.* LTS
+```yaml title="期待される表示例：" noCopy
+Description:    Ubuntu 22.04.* LTS
+```
 
 
 アップグレードコマンドの確認します。
@@ -285,9 +293,11 @@ which do-release-upgrade || sudo apt install ubuntu-release-upgrader-core -y
 ```bash
 sudo do-release-upgrade -c
 ```
-> Checking for a new Ubuntu release  
-> New release '24.04.* LTS' available.  
-> Run 'do-release-upgrade' to upgrade to it.  
+```yaml title="期待される表示例：" noCopy
+Checking for a new Ubuntu release  
+New release '24.04.* LTS' available.  
+Run 'do-release-upgrade' to upgrade to it.  
+```
 
 アップグレード前にその他アップグレードが必要なパッケージがあるかどうか確認します。
 ```bash
@@ -344,7 +354,7 @@ apt list --upgradable
   </Accordion>
 </AccordionsBlue>
 
-### 1-10. リレーサーバーにGrafanaを搭載している場合の対応 [#sec-11]
+### リレーサーバーにGrafanaを搭載している場合の対応 [#sec-11]
 
 <AccordionsYellow type="single">
   <Accordion id="ubuntu24-migration-grafana-disable-before-upgrade" title="Grafana搭載サーバー">
@@ -379,7 +389,7 @@ sudo apt update
 </AccordionsYellow>
 
 
-### 1-11. サーバー再起動 [#sec-12]
+### サーバー再起動 [#sec-12]
 ```bash
 sudo reboot
 ```
@@ -421,13 +431,13 @@ sudo ufw status numbered
 
 
 
-### 2-1. アップグレード実行 [#sec-14]
+### アップグレード実行 [#sec-14]
 
 <Callout type="warn" title="接続パターン">
 
-* パターン1：VPSサーバー管理画面のコンソールからの接続  
-* パターン2：ローカルPCにインストールしたVNCクライアントからの接続(主にContabo)
-* パターン3：通常通りSSHでの接続
+- パターン1：VPSサーバー管理画面のコンソールからの接続  
+- パターン2：ローカルPCにインストールしたVNCクライアントからの接続(主にContabo)
+- パターン3：通常通りSSHでの接続
 
 </Callout>
 
@@ -453,7 +463,7 @@ tmux a -t ubuntu-upgrade
 </Callout>
 
 
-### 2-2. アップグレードメッセージ [#sec-15]
+### アップグレードメッセージ [#sec-15]
 以下、確認メッセージ例です。  
 <span style={{color: "red"}}>ご利用のサーバーによって表示内容が異なる場合があります。</span>  
 表示された内容をよく読んで下さい。
@@ -650,7 +660,7 @@ Continue [yN]  y      # y 入力後Enter
 </Callout>
 
 
-### 3-1. 現在のUbuntuバージョン確認 [#sec-17]
+### 現在のUbuntuバージョン確認 [#sec-17]
 
 ```bash
 lsb_release -d
@@ -667,18 +677,18 @@ Description:    Ubuntu 24.04.4 LTS
 </Callout>
 
 
-### 3-2. ブラケットペーストモードOFF [#sec-18]
+### ブラケットペーストモードOFF [#sec-18]
 ```bash
 grep -qxF 'set enable-bracketed-paste off' ~/.inputrc || echo 'set enable-bracketed-paste off' >> ~/.inputrc
 ```
 
-### 3-3. SSH再接続 [#sec-19]
+### SSH再接続 [#sec-19]
 ```bash
 exit
 ```
 > SSHで再接続してください。
 
-### 3-4. リレーサーバーにGrafanaを搭載している場合の対応 [#sec-20]
+### リレーサーバーにGrafanaを搭載している場合の対応 [#sec-20]
 
 <AccordionsYellow type="single">
   <Accordion id="ubuntu24-migration-grafana-restore-after-upgrade" title="Grafana搭載サーバー">
@@ -735,8 +745,6 @@ apt policy grafana
 
   </Accordion>
 </AccordionsYellow>
-
-
 
 
 ## 4. 依存関係再インストール [#sec-21]
@@ -854,7 +862,9 @@ python3 -m venv ~/notify-venv
 ```bash
 ~/notify-venv/bin/python -c "import watchdog, pytz, dateutil, requests, discordwebhook, slackweb, i18n, dotenv; print('OK')"
 ```
-> `OK`と表示されれば問題ありません。
+```yaml title="期待される表示例：" noCopy
+OK
+```
 
 ```bash
 sudo systemctl stop cnode-blocknotify.service
@@ -958,8 +968,9 @@ blocknotify
 ```bash
 sudo ufw status
 ```
-以下の表示があればOK
-> Status: active
+```yaml title="期待される表示例：" noCopy
+Status: active
+```
 
 予備SSHポート（1022）を削除します。
 ```bash
@@ -1117,8 +1128,6 @@ cat $HOME/sysctl-before-cardano-*.txt
 [1. 依存環境アップデート](/docs/cardano/operation/node-update#sec-1) ~ [3. 依存関係作業](/docs/cardano/operation/node-update#sec-11)  
 
 </Callout>
-
-
 
 
 ---

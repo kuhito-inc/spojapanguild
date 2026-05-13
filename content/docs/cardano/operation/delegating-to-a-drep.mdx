@@ -197,12 +197,15 @@ cardano-cli latest transaction sign \
 
 ```bash
 cardano-cli latest transaction submit \
-    --tx-file $NODE_HOME/governance/tx.signed \
-    ${NODE_NETWORK}
+  --tx-file $NODE_HOME/governance/tx.signed \
+  ${NODE_NETWORK}
 ```
-
-> Transaction successfully submitted. Transaction hash is:  
-> &#123;"txhash":"****************************************************************"&#125;
+```yaml title="期待される表示例：" noCopy
+Transaction successfully submitted. Transaction hash is:  
+txhash:****************************************************************
+```
 
 </Tab>
 </Tabs>
+
+---

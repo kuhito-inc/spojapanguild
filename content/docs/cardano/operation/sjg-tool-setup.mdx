@@ -6,12 +6,12 @@ title: "SJGツール導入設定"
 
 <Callout type="info" title="主な機能">
 
-* payment.addr残高照会
-* 報酬引き出し
-* ブロック生成可能可否確認
-* envファイルアップデート切り替え
-* Catalyst有権者登録
-* ガバナンス登録・投票
+- payment.addr残高照会
+- 報酬引き出し
+- ブロック生成可能可否確認
+- envファイルアップデート切り替え
+- Catalyst有権者登録
+- ガバナンス登録・投票
 
 </Callout>
 
@@ -80,198 +80,57 @@ echo alias airgap="'cd $HOME/cnode && [ -f airgap-set.tar.gz ] && tar -xOzf airg
 source $HOME/.bashrc
 ```
 
-<Callout type="error" title="既知の不具合">
-
-
-なし
-
-その他バグを発見した場合はGithubで[issue](https://github.com/btbf/spojapanguild/issues)を提出してください。
-
-</Callout>
-
 
 ---
 
 ## 更新履歴 [#sec-2]
 
-### v4.1.2 [#sec-3]
-    * SPOガバナンスアクション投票のバグを修正
+<AccordionsBlue type="single">
+  <Accordion id="sjg-tool-changelog" title="更新履歴">
 
-### v4.1.1 [#sec-4]
-    * ガバナンスアクション投票のバグを修正
+| バージョン | 更新内容 | 追加作業 |
+| --- | --- | --- |
+| v4.1.2 | SPOガバナンスアクション投票のバグを修正 | - |
+| v4.1.1 | ガバナンスアクション投票のバグを修正 | - |
+| v4.1.0 | 投票可能なガバナンスアクションの自動表示<br />代替IPFSゲートウェイの追加<br />SPO投票理由メタデータ（任意URL / Blockfrost-IPFS）を追加 | - |
+| v4.0.4 | ブロック生成状態チェックに`node.cert`プールIDチェックを導入 | - |
+| v4.0.2 | `bech32`インストール時のバグを修正 | - |
+| v4.0.0 | KES更新フロー簡略化<br />Airgap Scripts導入<br />ADAハンドル名前解決バグ修正 | エアギャップに環境変数を追加してください。<br />`echo alias airgap="'cd $HOME/cnode && [ -f airgap-set.tar.gz ] && tar -xOzf airgap-set.tar.gz airgap_script \| bash -s verify \|\| echo "airgap-set.tar.gz が見つかりません"'" >> $HOME/.bashrc`<br />`source $HOME/.bashrc` |
+| v3.9.7 | `cardano-cli 10.11.0.0`対応 | - |
+| v3.9.6 | ガバナンスSPO投票バグ修正 | - |
+| v3.9.5 | ブロック生成状態チェック表示修正 | - |
+| v3.9.4 | `cardano-cli 10.8.0.0`対応<br />ADAハンドル名前解決バグ修正 | - |
+| v3.9.3 | `cardano-node 10.2.1`対応<br />Tx送信後のチェーン検証導入 | - |
+| v3.9.2 | バージョンアップ不具合修正 | - |
+| v3.9.1 | ステークアドレスDRep委任機能バグ修正 | - |
+| v3.9.0 | ステークアドレスDRep委任機能実装 | - |
+| v3.8.2 | 軽微な修正 | - |
+| v3.8.1 | メニュー修正<br />軽微な修正 | - |
+| v3.8.0 | ガバナンスアクションSPO投票実装<br />軽微な修正 | - |
+| v3.7.5 | 報酬 / 資金出金のトランザクションが失敗するバグを修正 | - |
+| v3.7.4 | ADAハンドル名前解決バグ解消 | - |
+| v3.7.3 | `env`から任意Prometheusポート`PROM_PORT`を取得 | - |
+| v3.7.1 | ブロック生成状態チェックの誓約チェック判定修正（`payment.addr` + `stake.addr`報酬合計）<br />Pledge変更時の有効エポックチェック導入 | - |
+| v3.7.0 | CLI 8.17.0.0対応<br />ディスク空き容量とDB容量表示追加 | - |
+| v3.6.4 | gLiveView 1.28.xアップデート機能<br />プールIDファイル名変更（`stakepoolid_hex` → `pool.id`、`stakepoolid_bech32` → `pool.id-bech32`） | - |
+| v3.6.3 | Catalyst有権者登録機能の`payment.addr`エラー修正 | - |
+| v3.6.2 | Catalyst有権者登録機能の表示文言修正 | - |
+| v3.6.0 | Catalyst有権者登録機能を実装<br />`payment.addr`のADAをCatalyst Votingパワーに使用可能 | - |
+| v3.5.1 | SPO投票機能で`cardano-cli 8.0.0-untested`使用時にTxが作成されない不具合を解消 | - |
+| v3.5.0 | SPO投票機能実装<br />簡易メッセージ添付可能 | - |
+| v3.4.6 | ブロック生成状態チェックにメタデータハッシュチェック追加<br />PeerInカウントから`127.0.0.1`を除外<br />PreviewネットワークTx確認リンクをCardanoScanへ変更 | - |
+| v3.4.4 | Preview / PreProdテストネット対応（`env`ファイル更新必須）<br />ブロック生成チェック総合判定導入 | - |
+| v3.4.3 | 軽微な修正 | - |
+| v3.4.2 | 364特別対応削除<br />`env`ファイルアップデートチェックフラグ切替機能追加<br />トランザクション送信後、トランザクション確認URLを表示 | - |
+| v3.3.1 | 364エポック特別対応`cncli.sh`パッチ適用追加 | - |
+| v3.3.0 | 報酬 / 資金出金の任意アドレス出金でADA Handleに対応 | - |
+| v3.2.1 | エアギャップコマンドを修正 | - |
+| v3.2.0 | KES更新時のカウンターファイルチェック / 作成手順追加<br />ブロック生成状態チェックのKESファイルチェックルール変更 | - |
+| v3.1.0 | KES更新時の`node.cert`バックアップ / 削除追加 | - |
+| v3.0.0 | KES更新機能追加 | v2.x.x以上をすでにインストール済みで、プールのKES秘密鍵ファイル名が`kes.skey`の場合は1回だけ実行してください。<br />別のファイル名を使用している場合は任意のファイル名に書き換えてください。<br />`sed -i $NODE_HOME/scripts/env -e '1,116s!#POOL_HOTKEY_SK_FILENAME="hot.skey"!POOL_HOTKEY_SK_FILENAME="kes.skey"!'` |
+| v2.1.0 | DdzFアドレスへの報酬 / 資金出金を許可<br />`payment.addr`出金時、出金額表示単位バグを修正 | - |
 
-### v4.1.0 [#sec-5]
-    * 投票可能なガバナンスアクションの自動表示
-    * 代替IPFSゲートウェイの追加
-    * SPO投票理由メタデータ（任意のURLとBlockfrost-IPFS）を追加しました
-
-### v4.0.4 [#sec-6]
-    * ブロック生成状態チェックにnode.certプールIDチェックを導入
-
-### v4.0.2 [#sec-7]
-    * bech32インストール時バグ修正
-
-### v4.0.0 [#sec-8]
-    * KES更新フロー簡略化
-    * Airgap Scripts導入
-    * ADAハンドル名前解決バグ修正
-
-エアギャップに環境変数を追加してください
-
-```bash
-echo alias airgap="'cd $HOME/cnode && [ -f airgap-set.tar.gz ] && tar -xOzf airgap-set.tar.gz airgap_script | bash -s verify || echo "airgap-set.tar.gz が見つかりません"'" >> $HOME/.bashrc
-source $HOME/.bashrc
-```
-
-### v3.9.7 [#sec-9]
-    * cardano-cli 10.11.0.0対応
-
-### v3.9.6 [#sec-10]
-    * ガバナンスSPO投票バグ修正
-
-### v3.9.5 [#sec-11]
-    * ブロック生成状態チェック表示修正
-
-### v3.9.4 [#sec-12]
-    * cardano-cli 10.8.0.0対応
-    * ADAハンドル名前解決バグ修正
-    
-### v3.9.3 [#sec-13]
-    * cardano-node 10.2.1対応
-    * Tx送信後のチェーン検証導入
-
-### v3.9.2 [#sec-14]
-    * バージョンアップ不具合修正
-
-### v3.9.1 [#sec-15]
-    * ステークアドレスDRep委任機能バグ修正
-
-### v3.9.0 [#sec-16]
-    * ステークアドレスDRep委任機能実装
-
-### v3.8.2 [#sec-17]
-    * 軽微な修正
-
-### v3.8.1 [#sec-18]
-    * メニュー修正
-    * 軽微な修正
-
-### v3.8.0 [#sec-19]
-    * ガバナンスアクションSPO投票実装
-    * 軽微な修正
-
-### v3.7.5 [#sec-20]
-    * 報酬/資金出金のトランザクションが失敗するバグを修正
-
-### v3.7.4 [#sec-21]
-    * ADAハンドル名前解決バグ解消
-
-### v3.7.3 [#sec-22]
-    * envから任意Prometheusポート取得 `PROM_PORT`
-
-### v3.7.1 [#sec-23]
-    * ブロック生成状態チェック　誓約チェック判定修正
-       (payment.addr + stake.addr報酬合計)
-    * Pledge変更時の有効エポックチェック導入
-
-### v3.7.0 [#sec-24]
-    * CLI 8.17.0.0対応
-    * ディスク空き容量とDB容量表示追加
-
-### v3.6.4 [#sec-25]
-    * gLiveView1.28.xアップデート機能
-    * プールIDファイル名変更  
-    　stakepoolid_hex → pool.id  
-    　stakepoolid_bech32 → pool.id-bech32 
-
-### v3.6.3 [#sec-26]
-    * Catalyst有権者登録機能　payment.addrエラー修正
-
-### v3.6.2 [#sec-27]
-    * Catalyst有権者登録機能　表示文言修正
-
-### v3.6.0 [#sec-28]
-    * Catalyst有権者登録機能　実装
-    　payment.addrのADAをCatalyst Votingパワーに使用できます。
-
-### v3.5.1 [#sec-29]
-    * SPO投票機能
-    　cardano-cli 8.0.0-untested使用時、Txが作成されない不具合を解消
-
-### v3.5.0 [#sec-30]
-    * SPO投票機能実装
-    　簡易メッセージ添付可能
-
-### v3.4.6 [#sec-31]
-
-    * ブロック生成状態チェック
-        * メタデータハッシュチェック追加
-        * PeerInカウントから127.0.0.1を除外
-    * PreviewネットワークTx確認リンクをCardanoScanへ変更
-
-### v3.4.4 [#sec-32]
-
-    * Preview / PreProd テストネット対応（envファイル更新必須）
-    * ブロック生成チェック総合判定導入
-
-### v3.4.3 [#sec-33]
-
-    * 軽微な修正
-
-### v3.4.2 [#sec-34]
-
-    * 364特別対応削除
-    * envファイルアップデートチェックフラグ切替機能追加
-    * トランザクション送信後、トランザクション確認URLを表示
-
-### v3.3.1 [#sec-35]
-
-    * 364エポック特別対応 cncli.shパッチ適用追加
-
-### v3.3.0 [#sec-36]
-
-    * 報酬/資金出金　任意アドレス出金ADA Handleに対応
-
-### v3.2.1 [#sec-37]
-
-    * エアギャップコマンドを修正
-
-### v3.2.0 [#sec-38]
-
-    * KES更新時のカウンターファイルチェック・作成手順追加
-    * ブロック生成状態チェック KESファイルチェックルール変更
-
-### v3.1.0 [#sec-39]
-
-    * KES更新時のnode.certバックアップ/削除追加
-
-### v3.0.0 [#sec-40]
-
-<Callout type="info" title="Hint">
-
-
-* KES更新機能追加
-
-このアップデートに伴い、envファイルの修正が必要となります。
-v2.x.x以上をすでにインストールされていて、プールのKES秘密鍵のファイル名がkes.skeyの場合は以下のコードを1回だけ実行してください。
-違うファイル名をご利用の場合は任意に書き換えてください。
-```bash
-sed -i $NODE_HOME/scripts/env \
--e '1,116s!#POOL_HOTKEY_SK_FILENAME="hot.skey"!POOL_HOTKEY_SK_FILENAME="kes.skey"!'
-```
-
-</Callout>
-
-
-### v2.1.0 [#sec-41]
-
-<Callout type="info" title="Hint">
-
-
-* DdzFアドレスへの報酬/資金出金を許可
-* payment.addr出金時、出金額表示単位バグを修正
-
-</Callout>
-
+  </Accordion>
+</AccordionsBlue>
 
 ---

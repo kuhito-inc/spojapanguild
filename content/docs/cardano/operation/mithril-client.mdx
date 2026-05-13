@@ -4,19 +4,18 @@ title: "DB同期（Mithril)"
 
 <Callout type="info" title="概要">
 
-* このマニュアルではMithril-Clientを使用したcardano-node DB同期ブートストラップを実行します。
-* ノード初回起動時のDB同期時間を約2日から約30分以内にまで短縮できます。
-* Mithrilプロトコルはまだベータバージョンのため、ご自身の責任で実施してください。
-* この作業は [1. 依存関係インストール](/docs/cardano/setup/node-setup#1) ~ [7. gLiveViewのインストール](/docs/cardano/setup/node-setup#7-gliveview)まで実施してから行って下さい。
-* スナップショットノードバージョンとサーバーノードバージョンが異なる場合、DB再構築処理が入る場合がありDB同期までに数時間かかります。
+- このマニュアルではMithril-Clientを使用したcardano-node DB同期ブートストラップを実行します。
+- ノード初回起動時のDB同期時間を約2日から約30分以内にまで短縮できます。
+- Mithrilプロトコルはまだベータバージョンのため、ご自身の責任で実施してください。
+- この作業は [1. 依存関係インストール](/docs/cardano/setup/node-setup#sec-1) ~ [7. gLiveViewのインストール](/docs/cardano/setup/node-setup#sec-12)まで実施してから行って下さい。
+- スナップショットノードバージョンとサーバーノードバージョンが異なる場合、DB再構築処理が入る場合がありDB同期までに数時間かかります。
 
 </Callout>
 
 
-
 ## 1. インストール [#sec-1]
 
-### 1-1. システムアップデート [#sec-2]
+### システムアップデート [#sec-2]
 ノード停止
 ```bash
 sudo systemctl stop cardano-node
@@ -26,7 +25,7 @@ sudo systemctl stop cardano-node
 sudo apt update && sudo apt upgrade -y
 ```
 
-### 1-2. Mithirlインストール [#sec-3]
+### Mithirlインストール [#sec-3]
 ```bash
 cd $HOME/git
 mithril_release="$(curl -s https://api.github.com/repos/input-output-hk/mithril/releases/latest | jq -r '.tag_name')"
@@ -54,14 +53,14 @@ mithril-client -V
 ```
 > Mithril Githubの[リリースノート](https://github.com/input-output-hk/mithril/releases/latest)内にある`mithril-client-cli`のバージョンをご確認ください。
 
-## 2.DBブートストラップ [#sec-4]
+## 2. DBブートストラップ [#sec-4]
 
 tmux作業ウィンドウの作成
 ```bash
 tmux new -s mithril
 ```
 
-### 2-1. 変数代入 [#sec-5]
+### 変数代入 [#sec-5]
 
 ```bash
 export AGGREGATOR_ENDPOINT=https://aggregator.release-mainnet.api.mithril.network/aggregator
@@ -70,7 +69,7 @@ export ANCILLARY_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.c
 export SNAPSHOT_DIGEST=latest
 ```
 
-### 2-2.最新スナップショットのダウンロード [#sec-6]
+### 最新スナップショットのダウンロード [#sec-6]
 
 既存DBフォルダの削除
 ```bash
@@ -87,8 +86,10 @@ mithril-client cardano-db download \
 > スナップショットダウンロード～解凍まで自動的に行われます。1/7～7/7が終了するまで待ちましょう。  
 
 DBスナップショットDL/解凍完了メッセージ  
-> 7/7 - Verifying the cardano db signature…    
-> Cardano database snapshot '*****' archives have been successfully unpacked. Immutable files have been successfully verified with Mithril.
+```yaml title="期待される表示例：" noCopy
+7/7 - Verifying the cardano db signature…    
+Cardano database snapshot '*****' archives have been successfully unpacked. Immutable files have been successfully verified with Mithril.
+```
 
 tmux作業ウィンドウの終了
 ```bash
@@ -158,8 +159,6 @@ mithril-client cardano-db snapshot show (Digestハッシュ値指定)
 
   </Accordion>
 </AccordionsBlue>
-
-
 
 
 ## 3. ノード起動 [#sec-7]

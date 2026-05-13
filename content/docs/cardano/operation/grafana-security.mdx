@@ -94,7 +94,11 @@ sudo apt update && sudo apt install nginx -y
 ```bash
 sudo systemctl --no-pager status nginx
 ```
-> 緑色で「active (running)」になっていることを確認
+```yaml title="期待される表示例：" noCopy
+● nginx.service - A high performance web server and a reverse proxy server
+~~
+     Active: active (running) 
+```
 
 **HTTP/HTTPS用ポートを開放**
 ```bash
@@ -128,7 +132,7 @@ sudo ufw reload
 
 
 
-`xxxx.bbb.com`を[1. ドメイン(サブドメイン)の取得](/docs/cardano/operation/grafana-security#1)で取得したドメイン(サブドメイン)に置き換えて実行します。
+`xxxx.bbb.com`を[1. ドメイン(サブドメイン)の取得](/docs/cardano/operation/grafana-security#sec-2)で取得したドメイン(サブドメイン)に置き換えて実行します。
 
 ```bash
 domain=xxxx.bbb.com
@@ -163,9 +167,10 @@ sudo ln -s /etc/nginx/sites-available/$domain.conf /etc/nginx/sites-enabled/$dom
 ```bash
 sudo nginx -t
 ```
-> nginx: the configuration file /etc/nginx/nginx.conf syntax is ok  
-> nginx: configuration file /etc/nginx/nginx.conf test is successful  
-> 上記のような表示であれば問題ありません。
+```yaml title="期待される表示例：" noCopy
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+```
 
 **nginxの再読み込み**
 ```bash
@@ -188,9 +193,10 @@ sudo unlink /etc/nginx/sites-enabled/default
 ```bash
 sudo nginx -t
 ```
-> nginx: the configuration file /etc/nginx/nginx.conf syntax is ok  
-> nginx: configuration file /etc/nginx/nginx.conf test is successful  
-> 上記のような表示であれば問題ありません。
+```yaml title="期待される表示例：" noCopy
+nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
+nginx: configuration file /etc/nginx/nginx.conf test is successful
+```
 
 **nginxの再読み込み**
 ```bash
@@ -261,7 +267,7 @@ sudo certbot --nginx
 echo $domain
 ```
 > 戻り値が設定したドメインであること。  
-> そうでなければ、変数domainに[1. ドメイン(サブドメイン)の取得](/docs/cardano/operation/grafana-security#1)で取得したドメイン(サブドメイン)を代入してください。
+> そうでなければ、変数domainに[1. ドメイン(サブドメイン)の取得](/docs/cardano/operation/grafana-security#sec-2)で取得したドメイン(サブドメイン)を代入してください。
 
 **仮想ホストファイルの編集**
 
@@ -359,7 +365,11 @@ sudo systemctl reload nginx
 ```bash
 sudo systemctl --no-pager status nginx
 ```
-> Active: active (running)であること
+```yaml title="期待される表示例：" noCopy
+● nginx.service - A high performance web server and a reverse proxy server
+~~
+     Active: active (running) 
+```
 
 ## 6. SSL証明書自動更新 [#sec-7]
 
@@ -368,9 +378,13 @@ sudo systemctl --no-pager status nginx
 ```bash
 systemctl status snap.certbot.renew.timer
 ```
-> 緑色で「active (waiting)」になっていることを確認
+```yaml title="期待される表示例：" noCopy
+● snap.certbot.renew.timer - Timer renew for snap application certbot.renew
+~~
+     Active: active (waiting)
+```
 
-## 2. nginx自動リロード設定 [#sec-8]
+## 7. nginx自動リロード設定 [#sec-8]
 
 SSL証明書更新後に nginx を再読み込みする deploy hook を作成します。
 
@@ -392,12 +406,28 @@ sudo chmod 755 /etc/letsencrypt/renewal-hooks/deploy/nginx-reload.sh
 ```bash
 sudo certbot renew --dry-run
 ```
-> Congratulations, all simulated renewals succeeded のように表示されれば成功です。
+```yaml title="期待される表示例：" noCopy
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Processing /etc/letsencrypt/renewal/***.conf
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Simulating renewal of an existing certificate for ***
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Congratulations, all simulated renewals succeeded: 
+  /etc/letsencrypt/live/***/fullchain.pem (success)
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+```
 
 SSL証明書自動更新タイマー確認  
 ```bash
 systemctl status snap.certbot.renew.timer
 ```
-> 緑色で「active (waiting)」になっていることを確認
+```yaml title="期待される表示例：" noCopy
+● snap.certbot.renew.timer - Timer renew for snap application certbot.renew
+~~
+     Active: active (waiting)
+```
 
 ---

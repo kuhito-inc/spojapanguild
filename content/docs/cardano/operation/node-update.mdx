@@ -8,7 +8,7 @@ title: "ノードアップデート"
 
 <Callout type="info" title="バージョン対応表">
 
-* <span style={{color: "red"}}>各依存関係もバージョンアップしてますのでよくお読みになって進めてください</span>
+**<span style={{color: "red"}}>各依存関係もバージョンアップしてますのでよくお読みになって進めてください</span>**
 
 | OS | Node | CLI | GHC | Cabal | CNCLI |
 | :---------- | :---------- | :---------- | :---------- | :---------- | :---------- |
@@ -21,8 +21,6 @@ title: "ノードアップデート"
 | 10.6.4 → 10.7.1 | あり | 更新あり | なし |
 
 </Callout>
-
-
 
 
 <Callout type="warn" title="留意点">
@@ -88,10 +86,10 @@ SPOはこのリリースへのアップグレードが推奨されます。
 
 **10.4.1**
 
-* UTxO-HD統合  
+- UTxO-HD統合  
 <span style={{color: "red"}}>現時点ではプール運営のノードではディスクバックエンドは非推奨のため、当マニュアルではインメモリバックエンドセットアップで構築されています</span>  
 UTxO-HDの概要については[こちら](https://docs.google.com/presentation/d/16gJt5k9p3H9ycwHNO6O0HGb0cYvRpbwhUsvH4kFEthM/edit?usp=sharing)をご参照ください
-* config.json内 `LedgerDB`新しいキーを設定
+- config.json内 `LedgerDB`新しいキーを設定
 
 </Callout>
 
@@ -127,11 +125,6 @@ PreProd-Testnet / cardano-node 10.7.1 / cardano-cli 10.16.0.0 / SJG-TOOL 4.1.2
 </AccordionsBlue>
 
 
-
-
-
-
-
 ## 1. 依存環境アップデート [#sec-1]
 
 **現在のノードバージョンを変数に代入**
@@ -140,7 +133,7 @@ current_node=$(cardano-node version | grep cardano-node)
 echo $current_node
 ```
 
-### 1-1. システムのアップデートと依存関係のインストール [#sec-2]
+### システムのアップデートと依存関係のインストール [#sec-2]
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -149,7 +142,7 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
 ```
 
-### 1-2. 依存関係バージョン確認 [#sec-3]
+### 依存関係バージョン確認 [#sec-3]
 
 **cabalバージョン確認**
 ```bash
@@ -362,7 +355,7 @@ Version: 0.3.14
 
 
 
-### 1-3. CNCLIバージョン確認(BPのみ) [#sec-4]
+### CNCLIバージョン確認(BPのみ) [#sec-4]
 
 CNCLIバージョン確認
 ```bash
@@ -409,9 +402,9 @@ cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
 <Callout type="info" title="バイナリファイルインストール方法の違いについて">
 
 
-* **_ビルド済みバイナリ_**・・・IntersectMBOリポジトリソースコードからビルドされたバイナリファイルをダウンロードします。ビルド不要のためビルド時間を短縮できます。 
+- **_ビルド済みバイナリ_**・・・IntersectMBOリポジトリソースコードからビルドされたバイナリファイルをダウンロードします。ビルド不要のためビルド時間を短縮できます。 
 
-* **_ソースコードからビルド_**・・・ご自身のサーバーでソースコードからビルドしてバイナリファイルを作成します。検証目的やソースコードからビルドしたい場合に利用できます。ビルドに30分前後かかります。Raspberry Piを使用してプールを構築する場合は、ARM用コンパイラでコンパイルする必要があります。
+- **_ソースコードからビルド_**・・・ご自身のサーバーでソースコードからビルドしてバイナリファイルを作成します。検証目的やソースコードからビルドしたい場合に利用できます。ビルドに30分前後かかります。Raspberry Piを使用してプールを構築する場合は、ARM用バイナリを使用する必要があります。
 
 </Callout>
 
@@ -421,7 +414,7 @@ cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
 <Tab value="ビルド済みバイナリを使用する場合">
 
 
-### 2-1. バイナリダウンロード [#sec-6]
+### バイナリダウンロード [#sec-6]
 
 旧バイナリの削除
 ```bash
@@ -461,7 +454,7 @@ git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
 sudo systemctl stop cardano-node
 ```
 
-### 2-2. バイナリインストール [#sec-7]
+### バイナリインストール [#sec-7]
 
 **バイナリーファイルをシステムフォルダーへコピー**
 
@@ -535,9 +528,9 @@ cabal build all cardano-cli
 ```
 <Callout type="info" title="ヒント">
 
-* ビルド完了までに数十分ほどかかります。
-* SSH接続が途中で切断された場合、再度接続して`tmux a -t build`で再開してください。  
-* ビルド中にデタッチ(Ctrl+B D)してバックグラウンド処理へ切り替えられます。
+- ビルド完了までに数十分ほどかかります。
+- SSH接続が途中で切断された場合、再度接続して`tmux a -t build`で再開してください。  
+- ビルド中にデタッチ(Ctrl+B D)してバックグラウンド処理へ切り替えられます。
 
 </Callout>
 
@@ -616,7 +609,7 @@ tar zxvf cardano-node-10.7.1-linux-amd64.tar.gz ./bin/snapshot-converter
 </Tab>
 </Tabs>
 
-### 2-3. 設定ファイル更新 [#sec-8]
+### 設定ファイル更新 [#sec-8]
 
 既存ファイルのバックアップ
 ```bash
@@ -634,9 +627,6 @@ cd $NODE_HOME
 wget -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
 wget -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
-
-
-
 
 
 <AccordionsYellow type="single">
@@ -786,7 +776,7 @@ exit
 </AccordionsYellow>
 
 
-### 2-4. DB更新 [#sec-9]
+### DB更新 [#sec-9]
 
 <Tabs items={["全ノード"]}>
 <Tab value="全ノード">
@@ -865,7 +855,7 @@ exit
 </Tab>
 </Tabs>
 
-### 2-5. サーバー再起動 [#sec-10]
+### サーバー再起動 [#sec-10]
 
 **作業フォルダリネーム**
 
@@ -910,14 +900,14 @@ sudo journalctl --unit=cardano-node --follow
 
 ## 3. 依存関係作業 [#sec-11]
 
-### 3-1. リレー/BP共通 [#sec-12]
+### リレー/BP共通 [#sec-12]
 
 **gLiveView更新**
 ```bash
 sed -i $NODE_HOME/scripts/env \
-    -e '1,73s!UPDATE_CHECK="N"!UPDATE_CHECK="Y"!' \
-    -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
-    -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
+  -e '1,73s!UPDATE_CHECK="N"!UPDATE_CHECK="Y"!' \
+  -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
+  -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
 ```
 
 **gliveの起動**
@@ -940,7 +930,7 @@ press any key to proceed ..
 **更新フラグの切り替え**
 ```bash
 sed -i $NODE_HOME/scripts/env \
-    -e '1,73s!UPDATE_CHECK="Y"!UPDATE_CHECK="N"!'
+  -e '1,73s!UPDATE_CHECK="Y"!UPDATE_CHECK="N"!'
 ```
 
 **gliveバージョン確認**
@@ -952,7 +942,7 @@ Koios gLiveView v1.32.0
 ```
 
 
-### 3-2. BPサービス確認 [#sec-13]
+### BPサービス確認 [#sec-13]
 
 <AccordionsYellow type="single">
   <Accordion id="node-update-blocknotify-missing" title="blocknotify（SPO Block Notify）未導入・未更新の場合">
@@ -977,11 +967,11 @@ Koios gLiveView v1.32.0
 
 BPノードが完全に同期した後、サービス起動状態を確認します。
 
-* cnclilog  
-* leaderlog  
-* validate  
-* logmonitor  
-* blocknotify(SPO Block Notifyを導入している場合)
+- cnclilog  
+- leaderlog  
+- validate  
+- logmonitor  
+- blocknotify(SPO Block Notifyを導入している場合)
 
 
 <AccordionsRed type="single">
@@ -1008,7 +998,7 @@ cnclilog
 
 
 
-### 3-3. Grafanaアラートの対象メトリクス変更 [#sec-14]
+### Grafanaアラートの対象メトリクス変更 [#sec-14]
 
 左ペインの「Alerting」→「Alert rules」→「ノード監視」→「BPリレー接続監視」のメトリクスを変更して保存します。  
 `cardano_node_metrics_peers_connectedPeers_int`から  

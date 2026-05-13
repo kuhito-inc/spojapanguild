@@ -4,10 +4,10 @@ title: "BPサーバー移行（旧VPS会社→新VPS会社）"
 
 <Callout type="info" title="前提注意事項">
 
-* 本まとめは現VPS会社→新VPS会社へと `BPのみ` を移行するまとめです。
-* 実際に行う際には手順をよく読みながら進めてください。
-* ブロック生成予定まで余裕がある時に実施してください。
-* 旧BPは[6-1. 旧BPシャットダウン](/docs/cardano/operation/bp-migration#6-1-bp)まで、**起動状態** にしておいてください。
+- 本まとめは現VPS会社→新VPS会社へと `BPのみ` を移行するまとめです。
+- 実際に行う際には手順をよく読みながら進めてください。
+- ブロック生成予定まで余裕がある時に実施してください。
+- 旧BPは[6-1. 旧BPシャットダウン](/docs/cardano/operation/bp-migration#sec-21)まで、**起動状態** にしておいてください。
 
 </Callout>
 
@@ -16,25 +16,22 @@ title: "BPサーバー移行（旧VPS会社→新VPS会社）"
 
 <Callout type="info" title="留意事項">
 
-1. サーバ独自機能に留意してください。
-    * さくらのパケットフィルタや、AWSのFW設定などのサーバー独自の機能に気を付けてください。
+1. サーバ独自機能に留意してください。※さくらのパケットフィルタや、AWSのFW設定などのサーバー独自の機能に気を付けてください。
 2. 新BPのファイヤーウォール設定は、旧BPと同じ設定にしてください。
 3. 旧BPのユーザー名（例：ubuntu）と新BPのユーザー名は変更しないでください。
-    * もし変更する場合は、以下のファイル内のパス名を手動で変更してください。
-    * `startBlockProducingNode.sh` DIRECTORY=/home/ユーザー名/cnode
+    - もし変更する場合は、以下のファイル内のパス名を手動で変更してください。
+    - `startBlockProducingNode.sh` DIRECTORY=/home/ユーザー名/cnode
 
 </Callout>
 
-
-### 1-1. Ubuntu初期設定 [#sec-2]
-
+### Ubuntu初期設定 [#sec-2]
 新サーバーで[Ubuntu初期設定](/docs/cardano/setup/ubuntu-setup)を実施します。  
 
 
-### 1-2. ノードセットアップ [#sec-3]
-
-1. [1. 依存関係インストール](/docs/cardano/setup/node-setup#1) 〜 [7. gLiveViewのインストール](/docs/cardano/setup/node-setup#7-gliveview)まで実施します。
-2. [2. トポロジーファイル設定変更](/docs/cardano/setup/relay-bp-setup#2)の「**`BPの場合`**」を実施します。
+### ノードセットアップ [#sec-3]
+1. [1. 依存関係インストール](/docs/cardano/setup/node-setup#sec-1) 〜
+[7. gLiveViewのインストール](/docs/cardano/setup/node-setup#sec-12)まで実施します。
+2. [2. トポロジーファイル設定変更](/docs/cardano/setup/relay-bp-setup#sec-5)の`BP`の手順を実施します。
 
 
 ## 2. 既存リレーでの作業 [#sec-4]
@@ -57,7 +54,7 @@ cnreload
 nano $NODE_HOME/startBlockProducingNode.sh
 ```
 
-### 3-1. 旧BPノード停止 [#sec-6]
+### 旧BPノード停止 [#sec-6]
 
 <Tabs items={["旧BP"]}>
 <Tab value="旧BP">
@@ -73,7 +70,7 @@ sudo systemctl disable cardano-node
 </Tab>
 </Tabs>
 
-### 3-2. 旧BPファイル移動 [#sec-7]
+### 旧BPファイル移動 [#sec-7]
 
 <Callout type="info" title="**参考）移行ファイル一覧**">
 
@@ -142,7 +139,7 @@ graph LR
 
 ## 4. 新BP再設定 [#sec-8]
 
-### 4-1. 移行ファイル復元 [#sec-9]
+### 移行ファイル復元 [#sec-9]
 
 <Tabs items={["新BP"]}>
 <Tab value="新BP">
@@ -178,7 +175,7 @@ rm bp-move.zst
 </Tab>
 </Tabs>
 
-### 4-2. パーミッション変更 [#sec-10]
+### パーミッション変更 [#sec-10]
 <Tabs items={["新BP"]}>
 <Tab value="新BP">
 
@@ -201,7 +198,7 @@ journalctl --unit=cardano-node --follow
 </Tab>
 </Tabs>
 
-### 4-3. 新BP接続確認 [#sec-11]
+### 新BP接続確認 [#sec-11]
 gLiveViewで新BPが最新ブロックと同期後、リレーと疎通(I/O)ができているかを確認します。
 
 <Tabs items={["新BP"]}>
@@ -217,7 +214,7 @@ cd $NODE_HOME/scripts
 </Tab>
 </Tabs>
 
-### 4-4. params.json再作成 [#sec-12]
+### params.json再作成 [#sec-12]
 
 <Tabs items={["新BP"]}>
 <Tab value="新BP">
@@ -232,21 +229,21 @@ cardano-cli latest query protocol-parameters \
 </Tab>
 </Tabs>
 
-### 4-5. ブロックログ設定 [#sec-13]
+### ブロックログ設定 [#sec-13]
 
 - [ブロックログ設定](/docs/cardano/setup/blocklog-setup)
 
 
-### 4-6. SJGツール導入 [#sec-14]
+### SJGツール導入 [#sec-14]
 
 - [SJGツール導入設定](/docs/cardano/operation/sjg-tool-setup)
 
 
-### 4-7. ブロック生成状態チェック [#sec-15]
+### ブロック生成状態チェック [#sec-15]
 
 SJGツールを起動し、「[2] ブロック生成状態チェック」ですべての項目がOKになることを確認
 
-### 4-8. ブロック生成ステータス通知設定 [#sec-16]
+### ブロック生成ステータス通知設定 [#sec-16]
 (SPO Block Notify)
 
 <Tabs items={["旧BPで導入済みの場合", "旧BPで未導入の場合"]}>
@@ -282,7 +279,7 @@ cat $NODE_HOME/scripts/block-notify/config.ini
 
 ## 5. Prometheus設定 [#sec-17]
 
-### 5-1. 新BP`node exporter`インストール [#sec-18]
+### 新BP`node exporter`インストール [#sec-18]
 
 <Tabs items={["新BP"]}>
 <Tab value="新BP">
@@ -315,7 +312,7 @@ sudo systemctl reload-or-restart cardano-node
 </Tab>
 </Tabs>
 
-### 5-2. Grafanaサーバー`prometheus.yml`の修正 [#sec-19]
+### Grafanaサーバー`prometheus.yml`の修正 [#sec-19]
 
 <Tabs items={["Grafanaサーバー(リレー1)"]}>
 <Tab value="Grafanaサーバー(リレー1)">
@@ -344,7 +341,7 @@ GrafanaにBPのメトリクス(KESなど)が表示されているか確認
 ---
 ## 6. 最終作業 [#sec-20]
 
-### 6-1. 旧BPシャットダウン [#sec-21]
+### 旧BPシャットダウン [#sec-21]
 
 <Tabs items={["旧BP"]}>
 <Tab value="旧BP">
@@ -356,7 +353,7 @@ sudo shutdown -h now
 </Tab>
 </Tabs>
 
-### 6-2. Tracemempool無効化 [#sec-22]
+### Tracemempool無効化 [#sec-22]
 
 Txの増加が確認できたらTracemempoolを無効にします。
 
@@ -376,7 +373,7 @@ sed -i $NODE_HOME/${NODE_CONFIG}-config.json \
 sudo systemctl reload-or-restart cardano-node
 ```
 
-### 6-3. Mithril-Signer再セットアップ [#sec-23]
+### Mithril-Signer再セットアップ [#sec-23]
 
 旧サーバーでMithril-Signer-Relayを実行していた場合は、新サーバーでも再セットアップしてください。  
 [Mithril Signerノードの設定、更新](/docs/cardano/operation/mithril-signer-node-setup-and-updates)

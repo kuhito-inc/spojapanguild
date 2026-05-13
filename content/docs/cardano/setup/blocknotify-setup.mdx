@@ -422,10 +422,10 @@ sed -i '13a line_user_id = ' config.ini
 2025年3月末をもってLINE Notifyサービス終了に伴い、LINE Messaging APIに対応しました。
 無料版においては、月の送信上限が200通までとなっております。  
 (複数人で運用する場合は「送信数×人数」でカウントされますのでご注意ください)  
-<br />
+
 <span style={{color: "red"}}>新しいAPIはLINE公式アカウントを通じて配信されるため、設定を間違えるとセキュリティ漏洩のリスクがあります。複数人で運用する場合はご注意ください</span>  
-<br />
-上記の点を踏まえ、他の通知システム(Discord/Telegram/Slack)へ移行するか新しいLINE通知の設定を実施してください。（流れで11-3まで実施しないでください）  
+
+上記の点を踏まえ、他の通知システム(Discord/Telegram/Slack)へ移行するか新しいLINE通知の設定を実施してください。  
 LINE公式アカウント発行後、`config.ini`の`line_notify_token`と`line_user_id`を発行した値に書き換えてください。
 
 </Callout>
