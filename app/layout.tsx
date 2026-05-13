@@ -6,8 +6,8 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   metadataBase: new URL('https://spojapanguild.net'),
   title: {
-    default: 'SPO JAPAN GUILD DOCS',
-    template: '%s | SPO JAPAN GUILD DOCS',
+    default: 'SPO JAPAN GUILD ドキュメント',
+    template: '%s | SPO JAPAN GUILD ドキュメント',
   },
   description:
     'SPO JAPAN GUILD監修のステークプール構築ガイド。私たちは日本におけるステークプール構築を促進しカルダノ分散化に貢献してまいります。',
