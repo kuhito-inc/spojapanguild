@@ -20,7 +20,7 @@ title: "リレー/BP接続設定"
 P2P では接続先の多くはノードが自動で選びます。  
 **必ずつなぎたい相手（自BP・自リレーなど）だけ** `localRoots` に書きます。
 
-### 1-1. 接続状態（Hot / Warm / Cold） [#sec-2]
+### 接続状態（Hot / Warm / Cold） [#sec-2]
 
 ノードは接続先を次の3種類で管理します。
 
@@ -59,7 +59,7 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 ```
 
 
-### 2-1. 主な項目 [#sec-4]
+### 主な項目 [#sec-4]
 
 | 項目 | 説明 |
 | --- | --- |
@@ -72,7 +72,7 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 | **peerSnapshotFile** | 手順例どおりパスを書く（運用で `null` にする場合は別途確認） |
 | **useLedgerAfterSlot** | リレーは手順例の値、BP は **`-1`** |
 
-### 2-2. 手順 [#sec-5]
+### 手順 [#sec-5]
 
 <Callout type="error" title="リレー">
 
@@ -218,8 +218,6 @@ sudo ufw reload
 </Callout>
 
 
-
-
 <Callout type="error" title="BP">
 
 <Callout type="warn" title="クラウドのセキュリティグループでファイアウォールを開けている場合">
@@ -291,7 +289,7 @@ sudo ufw reload
 </Callout>
 
 
-### 2-3. 構文チェックと再起動 [#sec-6]
+### 構文チェックと再起動 [#sec-6]
 
 ```bash
 jq . $NODE_HOME/${NODE_CONFIG}-topology.json
