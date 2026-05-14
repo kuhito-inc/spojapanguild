@@ -1,123 +1,175 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function HomePage() {
   return (
-    <main className="flex flex-1 items-center px-6 py-16 sm:px-10 lg:px-16">
-      <div className="mx-auto grid w-full max-w-6xl items-center gap-16 lg:grid-cols-[1fr_0.88fr]">
-        <section className="text-left">
-          <p className="mb-5 inline-flex rounded-full border border-fd-border bg-fd-card px-3 py-1 text-sm font-medium text-fd-muted-foreground">
-            Blockchain Infrastructure Guide
-          </p>
-          <h1 className="max-w-3xl text-4xl font-bold leading-tight tracking-normal text-fd-foreground sm:text-5xl lg:text-6xl">
+    <main className="relative flex flex-1 overflow-hidden px-6 py-10 sm:px-10 lg:px-16">
+      {/* background */}
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(43,80,158,0.11)_0%,rgba(43,80,158,0.045)_34%,transparent_68%)] dark:bg-[linear-gradient(180deg,rgba(43,80,158,0.20)_0%,rgba(43,80,158,0.08)_36%,transparent_70%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-px bg-fd-border/80" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-32 bg-gradient-to-t from-fd-background to-transparent" />
+
+      <div className="mx-auto flex w-full max-w-5xl flex-col items-center">
+        {/* Hero */}
+        <section className="max-w-4xl pt-2 text-center">
+          <h1 className="text-4xl font-bold leading-[1.04] tracking-tight text-fd-foreground sm:text-5xl lg:text-[3.8rem]">
             SPO JAPAN GUILD
-            <span className="block text-fd-primary">ドキュメント</span>
+            <span className="mt-3 block bg-gradient-to-r from-fd-primary to-blue-500 bg-clip-text text-transparent">
+              ドキュメント
+            </span>
           </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-8 text-fd-muted-foreground sm:text-xl">
-            SPO JAPAN GUILD監修のブロックチェーンインフラ構築・運用ガイド。
-            Cardanoを中心に、Midnightなど関連ネットワークの検証・運用知見と学習教材を整理していきます。
-          </p>
-          <div className="mt-9 flex flex-wrap gap-4">
-            <Link
-              href="/docs"
-              className="inline-flex min-h-12 items-center rounded-lg bg-fd-primary px-6 py-3 font-semibold text-fd-primary-foreground shadow-sm transition-colors hover:bg-fd-primary/90"
-            >
-              ドキュメントを読む →
-            </Link>
-            <Link
-              href="https://spojapanguild.net/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex min-h-12 items-center rounded-lg border border-fd-border bg-fd-background px-6 py-3 font-semibold transition-colors hover:bg-fd-accent"
-            >
-              公式サイト
-            </Link>
-          </div>
-          <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-fd-muted-foreground">
-            <span>Cardano</span>
-            <span>Midnight</span>
-            <span>Setup</span>
-            <span>Operation</span>
-            <span>Monitoring</span>
+
+          <div className="mx-auto mt-5 h-1 w-10 rounded-full bg-fd-primary" />
+
+          <div className="mx-auto mt-7 max-w-3xl text-center text-fd-muted-foreground">
+            <p className="text-base font-medium leading-8 sm:text-lg">
+              <span className="text-fd-foreground">SPO JAPAN GUILD監修</span>
+              <span className="mx-2 text-fd-muted-foreground/60">/</span>
+              Cardano / Midnight インフラ構築・運用ガイド
+            </p>
+
+            <p className="mx-auto mt-4 max-w-2xl text-[0.98rem] font-medium leading-8">
+              ノード構築から日々の運用、監視、更新対応まで、
+              実践に基づく情報をまとめています。
+            </p>
           </div>
         </section>
 
-        <section
-          aria-label="ドキュメント構成図"
-          className="rounded-xl border border-fd-border bg-fd-card p-5 shadow-sm"
-        >
-          <div className="mb-5 flex items-center justify-between gap-4">
-            <div>
-              <p className="text-sm font-semibold text-fd-primary">Network Operations</p>
-              <h2 className="mt-1 text-xl font-bold">CardanoとMidnightのノード運用知見を集約</h2>
+        {/* Cards */}
+        <section className="mt-9 grid w-full gap-4 lg:grid-cols-3">
+
+          {/* Cardano */}
+          <Link
+            href="/docs/cardano"
+            className="group relative flex min-h-[285px] flex-col overflow-hidden rounded-[1.5rem] border border-fd-border bg-fd-card/80 p-6 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-fd-primary/60 hover:shadow-xl"
+          >
+            <div className="absolute bottom-0 right-0 -z-10 h-32 w-32 rounded-tl-full bg-blue-500/10 blur-2xl" />
+
+            <div className="flex h-12 items-center">
+              <Image
+                src="/images/brand/cardano-logo-blue.png"
+                alt="Cardano"
+                width={220}
+                height={36}
+                className="h-8 w-auto dark:hidden"
+              />
+              <Image
+                src="/images/brand/cardano-logo-white.png"
+                alt="Cardano"
+                width={220}
+                height={36}
+                className="hidden h-8 w-auto dark:block"
+              />
             </div>
-            <span className="rounded-full bg-fd-accent px-3 py-1 text-sm font-medium text-fd-muted-foreground">
-              SJG Docs
+
+            <p className="mt-6 text-sm font-medium text-fd-muted-foreground">
+              Stake pool operations
+            </p>
+
+            <h2 className="mt-3 text-xl font-bold leading-snug">
+              SPO運用の実践ガイド
+            </h2>
+
+            <div className="mt-4 h-0.5 w-7 rounded-full bg-fd-primary" />
+
+            <p className="mt-6 flex-1 max-w-[18rem] pr-8 text-[0.92rem] font-medium leading-8 text-fd-muted-foreground">
+              Cardanoノード、SPO運用、Mithril、監視、
+              更新対応を実務ベースでまとめています。
+            </p>
+
+            <span className="absolute bottom-5 right-5 flex h-10 w-10 items-center justify-center rounded-full border border-fd-border bg-fd-background text-lg text-fd-primary shadow-sm transition group-hover:translate-x-1">
+              →
             </span>
-          </div>
+          </Link>
 
-          <div className="rounded-lg border border-fd-border bg-fd-background p-4">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <Link
-                href="/docs/cardano"
-                className="group flex min-h-40 flex-col justify-between rounded-lg border border-fd-border bg-fd-card p-5 transition-colors hover:border-fd-primary/60 hover:bg-fd-accent/60"
-              >
-                <div className="flex h-14 items-center">
-                  <img
-                    src="/images/brand/cardano-logo-blue.png"
-                    alt="Cardano"
-                    className="block h-9 w-auto object-contain dark:hidden"
-                  />
-                  <img
-                    src="/images/brand/cardano-logo-white.png"
-                    alt="Cardano"
-                    className="hidden h-9 w-auto object-contain dark:block"
-                  />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-fd-muted-foreground">Stake pool operations</p>
-                  <p className="mt-2 font-semibold text-fd-foreground group-hover:text-fd-primary">
-                    構築・運用・監視の実践手順
-                  </p>
-                </div>
-              </Link>
+          {/* Midnight */}
+          <Link
+            href="/docs/midnight"
+            className="group relative flex min-h-[285px] flex-col overflow-hidden rounded-[1.5rem] border border-fd-border bg-fd-card/80 p-6 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-fd-primary/60 hover:shadow-xl"
+          >
+            <div className="absolute bottom-0 right-0 -z-10 h-32 w-32 rounded-tl-full bg-indigo-500/10 blur-2xl" />
 
-              <Link
-                href="/docs/midnight"
-                className="group flex min-h-40 flex-col justify-between rounded-lg border border-fd-border bg-fd-card p-5 transition-colors hover:border-fd-primary/60 hover:bg-fd-accent/60"
-              >
-                <div className="flex h-14 items-center">
-                  <img
-                    src="/images/brand/midnight-logo-black.png"
-                    alt="Midnight"
-                    className="block h-8 w-auto object-contain dark:hidden"
-                  />
-                  <img
-                    src="/images/brand/midnight-logo-white.png"
-                    alt="Midnight"
-                    className="hidden h-8 w-auto object-contain dark:block"
-                  />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-fd-muted-foreground">Validator testnet</p>
-                  <p className="mt-2 font-semibold text-fd-foreground group-hover:text-fd-primary">
-                    検証環境の知見を順次整理
-                  </p>
-                </div>
-              </Link>
+            <div className="flex h-12 items-center">
+              <Image
+                src="/images/brand/midnight-logo-black.png"
+                alt="Midnight"
+                width={220}
+                height={36}
+                className="h-8 w-auto dark:hidden"
+              />
+              <Image
+                src="/images/brand/midnight-logo-white.png"
+                alt="Midnight"
+                width={220}
+                height={36}
+                className="hidden h-8 w-auto dark:block"
+              />
             </div>
 
-            <Link
-              href="/docs/learning"
-              className="mt-4 flex items-start justify-between gap-4 rounded-lg border border-fd-border bg-fd-card px-5 py-4 transition-colors hover:border-fd-primary/60 hover:bg-fd-accent/60"
-            >
-              <div>
-                <p className="text-sm font-semibold text-fd-primary">SJG Learning</p>
-                <p className="mt-2 text-sm leading-6 text-fd-muted-foreground">
-                  SPOミーティングで共有している運用基礎・トラブルシューティング教材も公開しています。
-                </p>
-              </div>
-            </Link>
-          </div>
+            <p className="mt-6 text-sm font-medium text-fd-muted-foreground">
+              Validator testnet
+            </p>
+
+            <h2 className="mt-3 text-xl font-bold leading-snug">
+              検証環境の知見を順次整理
+            </h2>
+
+            <div className="mt-4 h-0.5 w-7 rounded-full bg-indigo-500" />
+
+            <p className="mt-6 flex-1 max-w-[18rem] pr-8 text-[0.92rem] font-medium leading-8 text-fd-muted-foreground">
+              Midnight検証環境、Validator運用、
+              セットアップ手順で得た知見を整理しています。
+            </p>
+
+            <span className="absolute bottom-5 right-5 flex h-10 w-10 items-center justify-center rounded-full border border-fd-border bg-fd-background text-lg text-fd-primary shadow-sm transition group-hover:translate-x-1">
+              →
+            </span>
+          </Link>
+
+          {/* Learning */}
+          <Link
+            href="/docs/learning"
+            className="group relative flex min-h-[285px] flex-col overflow-hidden rounded-[1.5rem] border border-fd-border bg-fd-card/80 p-6 shadow-sm backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-fd-primary/60 hover:shadow-xl"
+          >
+            <div className="absolute bottom-0 right-0 -z-10 h-32 w-32 rounded-tl-full bg-blue-500/10 blur-2xl" />
+
+            <div className="flex h-12 items-center">
+              <Image
+                src="/images/brand/sjg-yoko-logo.png"
+                alt="SPO JAPAN GUILD"
+                width={260}
+                height={42}
+                className="w-[235px] max-w-full object-contain dark:hidden"
+              />
+
+              <Image
+                src="/images/brand/sjg-yoko-white-logo.png"
+                alt="SPO JAPAN GUILD"
+                width={260}
+                height={42}
+                className="hidden w-[235px] max-w-full object-contain dark:block"
+              />
+            </div>
+
+            <p className="mt-6 text-sm font-medium text-fd-muted-foreground">
+              Learning materials
+            </p>
+
+            <h2 className="mt-3 text-xl font-bold leading-snug">
+              運用基礎・学習教材
+            </h2>
+
+            <div className="mt-4 h-0.5 w-7 rounded-full bg-fd-primary" />
+
+            <p className="mt-6 flex-1 max-w-[18rem] pr-8 text-[0.92rem] font-medium leading-8 text-fd-muted-foreground">
+              SPOミーティングで共有している運用基礎や
+              トラブルシューティング教材を公開しています。
+            </p>
+
+            <span className="absolute bottom-5 right-5 flex h-10 w-10 items-center justify-center rounded-full border border-fd-border bg-fd-background text-lg text-fd-primary shadow-sm transition group-hover:translate-x-1">
+              →
+            </span>
+          </Link>
         </section>
       </div>
     </main>
