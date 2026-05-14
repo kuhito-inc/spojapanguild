@@ -11,6 +11,7 @@
     "docs:fix-relative-fragments": "node scripts/fix-relative-doc-fragments.mjs",
     "docs:infer-fence-lang": "node scripts/infer-code-fence-lang.mjs",
     "start": "next start",
+    "test": "pnpm run types:check",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },
