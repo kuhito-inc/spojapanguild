@@ -2,7 +2,7 @@
 title: "ノードアップデート"
 ---
 
-このガイドは ノードバージョン`10.7.1`に対応しています。  
+このガイドは ノードバージョン`11.0.1`に対応しています。  
 
 最終更新日：2026年5月5日  
 
@@ -12,13 +12,13 @@ title: "ノードアップデート"
 
 | OS | Node | CLI | GHC | Cabal | CNCLI |
 | :---------- | :---------- | :---------- | :---------- | :---------- | :---------- |
-| ubuntu 24.04.* | 10.7.1 | 10.16.0.0 | 9.6.7 | 3.12.1.0 | 6.7.0 |
+| ubuntu 24.04.* | 11.0.1 | 11.0.0.0 | 9.6.7 | 3.12.1.0 | 6.7.0 |
 
 **■アップデートパターンDB再構築有無**
 
 | バージョン | DB再構築有無 | 設定ファイル更新有無 | トポロジーファイル更新有無 |
 | :---------- | :---------- | :---------- | :---------- |
-| 10.6.4 → 10.7.1 | あり | 更新あり | なし |
+| 10.7.1 → 11.0.1 | なし | 更新あり | なし |
 
 </Callout>
 
@@ -26,13 +26,12 @@ title: "ノードアップデート"
 <Callout type="warn" title="留意点">
 
 - 作業実施前にブロック生成スケジュールを確認してください。  
-- 今回のアップデートではDB更新があるため、ブロック生成が2時間以上無いことを確認してください。   
-- 複数行のコードをコードボックスのコピーボタンを使用してコマンドラインに貼り付ける場合は、最後の行が自動実行されないため確認の上Enterを押してコードを実行してください。  
+{/* - 今回のアップデートではDB更新があるため、ブロック生成が2時間以上無いことを確認してください。    */}
+- 複数行のコードをコードボックスのコピーボタンを使用してコマンドラインに貼り付ける場合は、最後の行が自動実行されないため確認の上`Enter`を押してコードを実行してください。  
 - OSバージョンアップを完了していること  
 [Ubuntu22.04から24.04へ移行](/docs/cardano/operation/ubuntu24-migration)
 
 </Callout>
-
 
 
 <AccordionsBlue type="single">
@@ -40,6 +39,12 @@ title: "ノードアップデート"
 
 <Callout type="info" title="cardano-node">
 
+**11.0.1 <span style={{color: "red"}}>Protocol Version 11（PV11）対応アップデート</span>**
+
+- `Protocol Version 11`へのアップグレードを可能にする `intra-era Hard Fork` に対応
+- `cardano-api` / `cardano-cli` を`11系`へ更新
+- `EKG`・`Prometheus`の`HTTPS対応`や`時系列API`を追加
+- `LSM`利用時に既知の不具合あり（次回修正予定）
 
 **10.7.1 <span style={{color: "red"}}>マイナーアップデート</span>**  
 
@@ -51,54 +56,14 @@ title: "ノードアップデート"
 - ソースビルドの場合 blst v0.3.14使用必須
 - PraosModeを有効
 
-**10.5.3 <span style={{color: "red"}}>バグ修正緊急リリース</span>**
-
-- cardano-crypto-classライブラリ参照先修正
-- ソースビルドの場合 blst v0.3.14使用必須
-- PraosModeのみ有効
-
-**10.5.2 <span style={{color: "red"}}>バグ修正緊急リリース</span>**  
-
-<span style={{color: "red"}}> 10.3.x, 10.4.x or 10.5.xをご利用中の場合は速やかに10.5.2へアップグレードしてください</span>
-
-1）ハッシュサイズに関する問題  
-2）ネットワークスタック内の ピア選択の不具合  
-を修正しています。
-
-特定の条件下では、ネットワークの Periodic Churn（定期的な入れ替え） の仕組みが正しく機能せず、十分な数の「Warm ピア」を降格できない状態になるバグが発見されました。
-その結果、長期的に見て アクティブピアのサンプリング（選定）が十分多様化しないことが懸念されます。
-
-SPOはこのリリースへのアップグレードが推奨されます。  
-
-- PraosMode推奨
-
-**10.5.1**  
-
-- Windowsのソケットに関する不具合の修正
-- DNSルックアップエラーのキャッシュ時間の短縮
-- PeerSharing設定動作の改良
-- `--non-producer-node` の代わりに `--start-as-non-producer-node` を使うようにコマンドラインオプションが変更（旧オプションは非推奨に）
-
-**10.5.0**
-
-- Ouroboros Genesis の最適化
-- GHC 8.10 のサポート削除
-
-**10.4.1**
-
-- UTxO-HD統合  
-<span style={{color: "red"}}>現時点ではプール運営のノードではディスクバックエンドは非推奨のため、当マニュアルではインメモリバックエンドセットアップで構築されています</span>  
-UTxO-HDの概要については[こちら](https://docs.google.com/presentation/d/16gJt5k9p3H9ycwHNO6O0HGb0cYvRpbwhUsvH4kFEthM/edit?usp=sharing)をご参照ください
-- config.json内 `LedgerDB`新しいキーを設定
-
 </Callout>
 
 
-<Callout type="info" title="cardano-cli v10.16.0.0">
+<Callout type="info" title="cardano-cli v11.0.0.0">
 
-
-- BLS鍵に関する機能が追加されたアップデート。  
-- BLS鍵の生成・ハッシュ化、およびProof of Possession（所有証明）の生成に対応。
+- `cardano-api` を`11.0.0.0`へ更新し、未署名トランザクション生成時のエラーハンドリングを改善
+- `TxCmdMakeUnsignedTxError` を追加し、エラー内容を明確化
+- `ghc-9.14` に対応
 
 </Callout>
 
@@ -106,7 +71,7 @@ UTxO-HDの概要については[こちら](https://docs.google.com/presentation/
 <Callout type="info" title="検証結果">
 
 ■検証環境
-PreProd-Testnet / cardano-node 10.7.1 / cardano-cli 10.16.0.0 / SJG-TOOL 4.1.2  
+PreProd-Testnet / cardano-node 11.0.1 / cardano-cli 11.0.0.0 / SJG-TOOL 4.1.2  
 
 | 検証項目 | 結果 |
 | :---------- | :---------- |
@@ -425,27 +390,27 @@ rm -rf $HOME/git/cardano-node-old/
 ```bash
 mkdir $HOME/git/cardano-node2
 cd $HOME/git/cardano-node2
-wget -q https://github.com/IntersectMBO/cardano-node/releases/download/10.7.1/cardano-node-10.7.1-linux-amd64.tar.gz
+wget -q https://github.com/IntersectMBO/cardano-node/releases/download/11.0.1/cardano-node-11.0.1-linux-amd64.tar.gz
 ```
 
 解凍
 ```bash
-tar zxvf cardano-node-10.7.1-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano-cli ./bin/snapshot-converter
+tar zxvf cardano-node-11.0.1-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano-cli ./bin/snapshot-converter
 ```
 
 **バージョンの確認**
 
 ```bash
-$(find $HOME/git/cardano-node2 -type f -name "cardano-cli") version  
-$(find $HOME/git/cardano-node2 -type f -name "cardano-node") version  
+$(find $HOME/git/cardano-node2 -type f -name "cardano-node") version
+$(find $HOME/git/cardano-node2 -type f -name "cardano-cli") version
 ```
 以下の戻り値を確認します。  
 ```yaml title="期待される表示例：" noCopy
-cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+cardano-node 11.0.1 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 
-cardano-node 10.7.1 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 ```
 
 
@@ -468,17 +433,17 @@ sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-node") /usr/local/
 **システムに反映されたノードバージョンの確認**
 
 ```bash
-cardano-cli version
 cardano-node version
+cardano-cli version
 ```
 
 以下の戻り値を確認します。
 ```yaml title="期待される表示例：" noCopy
-cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+cardano-node 11.0.1 - linux-x86_64 - ghc-9.6
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 
-cardano-node 10.7.1 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 ```
 
 </Tab>
@@ -519,7 +484,7 @@ cabal update
 
 ```bash
 git fetch --all --recurse-submodules --tags
-git checkout tags/10.7.1
+git checkout tags/11.0.1
 cabal configure --with-compiler=ghc-9.6.7
 ```
 
@@ -540,17 +505,17 @@ cabal build all cardano-cli
 **バージョン確認**
 
 ```bash
-$(./scripts/bin-path.sh cardano-cli) version  
-$(./scripts/bin-path.sh cardano-node) version  
+$(./scripts/bin-path.sh cardano-node) version
+$(./scripts/bin-path.sh cardano-cli) version
 ```
 
 以下の戻り値を確認します。
 ```yaml title="期待される表示例：" noCopy
-cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+cardano-node 11.0.1 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 
-cardano-node 10.7.1 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 ```
 
 **ビルド用TMUXセッションを終了します。** 
@@ -576,17 +541,17 @@ sudo cp $(./scripts/bin-path.sh cardano-node) /usr/local/bin/cardano-node
 **システムに反映されたノードバージョンの確認**
 
 ```bash
-cardano-cli version
 cardano-node version
+cardano-cli version
 ```
 
 以下の戻り値を確認します。
 ```yaml title="期待される表示例：" noCopy
-cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+cardano-node 11.0.1 - linux-x86_64 - ghc-9.6
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 
-cardano-node 10.7.1 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 ```
 
 <AccordionsYellow type="single">
@@ -595,11 +560,11 @@ git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
 **snapshot-converterのダウンロード**
 ```bash
 cd $HOME/git/cardano-node2
-wget -q https://github.com/IntersectMBO/cardano-node/releases/download/10.7.1/cardano-node-10.7.1-linux-amd64.tar.gz
+wget -q https://github.com/IntersectMBO/cardano-node/releases/download/11.0.1/cardano-node-11.0.1-linux-amd64.tar.gz
 ```
 解凍
 ```bash
-tar zxvf cardano-node-10.7.1-linux-amd64.tar.gz ./bin/snapshot-converter
+tar zxvf cardano-node-11.0.1-linux-amd64.tar.gz ./bin/snapshot-converter
 ```
 
   </Accordion>
@@ -624,8 +589,8 @@ cp $NODE_HOME/${NODE_CONFIG}-config.json $NODE_HOME/backup/${NODE_CONFIG}-config
 BPとリレー共通：
 ```bash
 cd $NODE_HOME
-wget -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
-wget -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+wget -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+wget -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
 
 
@@ -776,7 +741,7 @@ exit
 </AccordionsYellow>
 
 
-### DB更新 [#sec-9]
+{/* ### DB更新 [#sec-9]
 
 <Tabs items={["全ノード"]}>
 <Tab value="全ノード">
@@ -854,6 +819,7 @@ exit
 
 </Tab>
 </Tabs>
+*/}
 
 ### サーバー再起動 [#sec-10]
 
@@ -1066,8 +1032,8 @@ cardano-cli version
 
 **戻り値確認**
 ```yaml title="期待される表示例：" noCopy
-cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 ```
 
 </Tab>
@@ -1205,8 +1171,8 @@ cardano-cli version
 
 **戻り値確認**
 ```yaml title="期待される表示例：" noCopy
-cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 ```
 
 
