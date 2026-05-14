@@ -11,6 +11,28 @@ export const metadata: Metadata = {
   },
   description:
     'SPO JAPAN GUILD監修のステークプール構築ガイド。私たちは日本におけるステークプール構築を促進しカルダノ分散化に貢献してまいります。',
+  openGraph: {
+    title: 'SPO JAPAN GUILD ドキュメント',
+    description: 'Cardano / Midnight インフラ構築・運用ガイド',
+    url: '/',
+    siteName: 'SPO JAPAN GUILD',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'SPO JAPAN GUILD ドキュメント',
+      },
+    ],
+    locale: 'ja_JP',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SPO JAPAN GUILD ドキュメント',
+    description: 'Cardano / Midnight インフラ構築・運用ガイド',
+    images: ['/opengraph-image'],
+  },
   icons: {
     icon: [{ url: '/images/favicon.png', type: 'image/png' }],
     apple: '/images/favicon.png',
