@@ -404,7 +404,6 @@ tar zxvf cardano-node-11.0.1-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano
 $(find $HOME/git/cardano-node2 -type f -name "cardano-node") version
 $(find $HOME/git/cardano-node2 -type f -name "cardano-cli") version
 ```
-以下の戻り値を確認します。  
 ```yaml title="期待される表示例：" noCopy
 cardano-node 11.0.1 - linux-x86_64 - ghc-9.6  
 git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
@@ -424,10 +423,10 @@ sudo systemctl stop cardano-node
 **バイナリーファイルをシステムフォルダーへコピー**
 
 ```bash
-sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-cli") /usr/local/bin/cardano-cli
+sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-node") /usr/local/bin/cardano-node
 ```
 ```bash
-sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-node") /usr/local/bin/cardano-node
+sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-cli") /usr/local/bin/cardano-cli
 ```
 
 **システムに反映されたノードバージョンの確認**
@@ -436,8 +435,6 @@ sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-node") /usr/local/
 cardano-node version
 cardano-cli version
 ```
-
-以下の戻り値を確認します。
 ```yaml title="期待される表示例：" noCopy
 cardano-node 11.0.1 - linux-x86_64 - ghc-9.6
 git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
@@ -508,8 +505,6 @@ cabal build all cardano-cli
 $(./scripts/bin-path.sh cardano-node) version
 $(./scripts/bin-path.sh cardano-cli) version
 ```
-
-以下の戻り値を確認します。
 ```yaml title="期待される表示例：" noCopy
 cardano-node 11.0.1 - linux-x86_64 - ghc-9.6  
 git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
@@ -532,11 +527,12 @@ sudo systemctl stop cardano-node
 
 ```bash
 cd $HOME/git/cardano-node2
-sudo cp $(./scripts/bin-path.sh cardano-cli) /usr/local/bin/cardano-cli
-```
-```bash
 sudo cp $(./scripts/bin-path.sh cardano-node) /usr/local/bin/cardano-node
 ```
+```bash
+sudo cp $(./scripts/bin-path.sh cardano-cli) /usr/local/bin/cardano-cli
+```
+
 
 **システムに反映されたノードバージョンの確認**
 
@@ -544,8 +540,6 @@ sudo cp $(./scripts/bin-path.sh cardano-node) /usr/local/bin/cardano-node
 cardano-node version
 cardano-cli version
 ```
-
-以下の戻り値を確認します。
 ```yaml title="期待される表示例：" noCopy
 cardano-node 11.0.1 - linux-x86_64 - ghc-9.6
 git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
@@ -583,13 +577,13 @@ cp $NODE_HOME/${NODE_CONFIG}-config.json $NODE_HOME/backup/${NODE_CONFIG}-config
 ```
 
 
-
 設定ファイルダウンロード
 
 BPとリレー共通：
 ```bash
 cd $NODE_HOME
 wget -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+
 wget -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
 
@@ -741,7 +735,7 @@ exit
 </AccordionsYellow>
 
 
-{/* ### DB更新 [#sec-9]
+### DB更新 [#sec-9]
 
 <Tabs items={["全ノード"]}>
 <Tab value="全ノード">
@@ -819,7 +813,7 @@ exit
 
 </Tab>
 </Tabs>
-*/}
+
 
 ### サーバー再起動 [#sec-10]
 
@@ -841,9 +835,8 @@ sudo reboot
 
 SSH接続後、ノード同期状況の確認
 ```bash
-sudo journalctl --unit=cardano-node --follow
+journalctl -u cardano-node -f
 ```
-
 
 
 <Callout type="info" title="ノードログメッセージ確認">
