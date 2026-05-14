@@ -427,10 +427,9 @@ cnclilog
 <Callout type="info" title="ログ確認">
 
 ```yaml title="期待される表示例：" noCopy
-~~~
-INFO cncli::nodeclient::sync: block ******* of *******: 100.00% sync'd
+INFO cncli::nodeclient::sync: block ******** of ********: 100.00% sync'd
 ```
-> `cncli同期確認「100.00% synced」`になるまで待ちます。  
+> `100.00% sync'd`になるまでお待ちください。
 > `Ctrl+c`で閉じます。
 
 </Callout>
@@ -493,8 +492,8 @@ logmonitor
 ```
 
 ```yaml title="期待される表示例：" noCopy
-~~ LOG MONITOR STARTED ~~  
-monitoring logs/node.json for traces
+~~ LOG MONITOR STARTED ~~
+monitoring ./logs/node.json for traces
 ```
 
 </Callout>
@@ -523,8 +522,6 @@ source $HOME/.bashrc
 ターミナル上で`blocks`と入力し実行するだけで起動できます。  
 
 </Callout>
-
-     
 
 
 ![](/images/blocks1.jpg)
@@ -674,7 +671,10 @@ sudo systemctl restart cnode-cncli-sync.service
 ```bash
 cnclilog
 ```
-> 100% syncedになるまでお待ちください。
+```yaml title="期待される表示例：" noCopy
+INFO cncli::nodeclient::sync: block ******** of ********: 100.00% sync'd
+```
+> `100.00% sync'd`になるまでお待ちください。
 
 <Callout type="info" title="制作クレジット">
 
