@@ -671,7 +671,8 @@ export ANCILLARY_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.c
 export SNAPSHOT_DIGEST=latest
 ```
 
-<Callout type="info" title="旧dbをバックアップしたい方はこちら">
+<AccordionsBlue type="single">
+  <Accordion id="node-update-backup-old-db" title="旧dbをバックアップしたい方はこちら">
 
 <Callout type="error" title="空き容量に関しての注意事項">
 
@@ -683,7 +684,6 @@ df -h /usr | awk '{print $4}'
 <strong><span style={{color: "red"}}>Availが250GB以上あることを確認してください。</span></strong>
 
 </Callout>
-
 
 リネーム
 ```bash
@@ -699,8 +699,8 @@ rm -rf $NODE_HOME/backup/db9/
 
 </Callout>
 
-
-</Callout>
+  </Accordion>
+</AccordionsBlue>
 
 
 既存DBの削除
@@ -734,7 +734,7 @@ exit
   </Accordion>
 </AccordionsYellow>
 
-
+{/*
 ### DB更新 [#sec-9]
 
 <Tabs items={["全ノード"]}>
@@ -813,7 +813,7 @@ exit
 
 </Tab>
 </Tabs>
-
+*/}
 
 ### サーバー再起動 [#sec-10]
 
@@ -1046,20 +1046,23 @@ sudo cp $(./scripts/bin-path.sh cardano-cli) ~/cardano-cli
 
 **必要ライブラリ取得**
 ```bash
-cp /usr/local/lib/libsodium.so.23.3.0 $HOME/libsodium.so.23.3.0
-cp /lib/libsecp256k1.so.2.0.2 $HOME/libsecp256k1.so.2.0.2
+SODIUM_PATH=$(ldconfig -p | grep "libsodium.so.23" | head -1 | awk '{print $NF}')
+SECP_PATH=$(ldconfig -p | grep "libsecp256k1.so.2" | head -1 | awk '{print $NF}')
+
+cp -L "$SODIUM_PATH" $HOME/libsodium.so.23
+cp -L "$SECP_PATH" $HOME/libsecp256k1.so.2
 ```
 
 **確認**
 ```bash
-ll $HOME/cardano-cli $HOME/libsodium.so.23.3.0 $HOME/libsecp256k1.so.2.0.2
+ll $HOME/cardano-cli $HOME/libsodium.so.23 $HOME/libsecp256k1.so.2
 ```
 
 **戻り値確認**
 ```yaml title="期待される表示例：" noCopy
 cardano-cli
-libsecp256k1.so.2.0.2
-libsodium.so.23.3.0
+libsecp256k1.so.2
+libsodium.so.23
 ```
 
 </Tab>
@@ -1067,10 +1070,10 @@ libsodium.so.23.3.0
 
 <Callout type="warn" title="ファイル転送">
 
-USBを用いて`cardano-cli`、`libsodium.so.23.3.0`、`libsecp256k1.so.2.0.2`をエアギャップの$HOME/git/cardano-node2に移動します。
+USBを用いて`cardano-cli`、`libsecp256k1.so.2`、`libsodium.so.23`をエアギャップの$HOME/git/cardano-node2に移動します。
 ```mermaid
 graph LR
-    A[リレーサーバー] -->|cardano-cli / libsodium.so.23.3.0 / libsecp256k1.so.2.0.2| B[エアギャップ];
+    A[リレーサーバー] -->|cardano-cli / libsecp256k1.so.2 / libsodium.so.23| B[エアギャップ];
 ``` 
 
 </Callout>
@@ -1097,26 +1100,26 @@ sudo chmod +x /usr/local/bin/cardano-cli
 ```bash
 sudo mkdir -p /usr/local/lib
 ```
-**`lib`ディレクトリに`libsodium.so.23.3.0`、`libsecp256k1.so.2.0.2`を配置**
+**`lib`ディレクトリに`libsecp256k1.so.2`、`libsodium.so.23`を配置**
 ```bash
-sudo cp $HOME/git/cardano-node2/libsodium.so.23.3.0 /usr/local/lib/
+sudo cp $HOME/git/cardano-node2/libsecp256k1.so.2 /usr/local/lib/
 ```
 ```bash
-sudo cp $HOME/git/cardano-node2/libsecp256k1.so.2.0.2 /usr/local/lib/
+sudo cp $HOME/git/cardano-node2/libsodium.so.23 /usr/local/lib/
 ```
 
 **権限設定**
 ```bash
-sudo chown root:root /usr/local/lib/libsodium.so.23.3.0
+sudo chown root:root /usr/local/lib/libsecp256k1.so.2
 ```
 ```bash
-sudo chown root:root /usr/local/lib/libsecp256k1.so.2.0.2
+sudo chown root:root /usr/local/lib/libsodium.so.23
 ```
 ```bash
-sudo chmod 755 /usr/local/lib/libsodium.so.23.3.0
+sudo chmod 755 /usr/local/lib/libsecp256k1.so.2
 ```
 ```bash
-sudo chmod 755 /usr/local/lib/libsecp256k1.so.2.0.2
+sudo chmod 755 /usr/local/lib/libsodium.so.23
 ```
 
 **シンボリックリンク作成**
@@ -1124,20 +1127,14 @@ sudo chmod 755 /usr/local/lib/libsecp256k1.so.2.0.2
 cd /usr/local/lib
 ```
 
-**libsodium**
-```bash
-sudo ln -sf libsodium.so.23.3.0 libsodium.so.23
-```
-```bash
-sudo ln -sf libsodium.so.23 libsodium.so
-```
-
 **libsecp256k1**
 ```bash
-sudo ln -sf libsecp256k1.so.2.0.2 libsecp256k1.so.2
-```
-```bash
 sudo ln -sf libsecp256k1.so.2 libsecp256k1.so
+```
+
+**libsodium**
+```bash
+sudo ln -sf libsodium.so.23 libsodium.so
 ```
 
 **リンカーの更新**
@@ -1148,13 +1145,13 @@ sudo ldconfig
 
 **依存関係確認**
 ```bash
-ldd /usr/local/bin/cardano-cli
+ldd /usr/local/bin/cardano-cli | grep -E "secp|sodium"
 ```
 
 **戻り値確認**
 ```yaml title="期待される表示例：" noCopy
-libsodium.so.23 => /usr/local/lib/libsodium.so.23
-libsecp256k1.so.2 => /usr/local/lib/libsecp256k1.so.2
+libsodium.so.23 => /usr/local/lib/libsodium.so.23 (*****)
+libsecp256k1.so.2 => /usr/local/lib/libsecp256k1.so.2 (*****)
 ```
 
 **cardano-cliの動作確認**
