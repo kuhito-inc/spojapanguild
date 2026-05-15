@@ -88,12 +88,12 @@ export default function HomePage() {
               <span
                 role="img"
                 aria-label="Midnight"
-                className="block h-8 w-[170px] max-w-full bg-[url('/images/brand/midnight-logo-black.png')] bg-contain bg-left bg-no-repeat dark:hidden"
+                className="block h-8 w-[188px] max-w-full bg-[url('/images/brand/midnight-logo-black.png')] bg-contain bg-left bg-no-repeat dark:hidden"
               />
               <span
                 role="img"
                 aria-label="Midnight"
-                className="hidden h-8 w-[170px] max-w-full bg-[url('/images/brand/midnight-logo-white.png')] bg-contain bg-left bg-no-repeat dark:block"
+                className="hidden h-8 w-[188px] max-w-full bg-[url('/images/brand/midnight-logo-white.png')] bg-contain bg-left bg-no-repeat dark:block"
               />
             </div>
 
@@ -128,12 +128,12 @@ export default function HomePage() {
               <span
                 role="img"
                 aria-label="SPO JAPAN GUILD"
-                className="block h-11 w-[235px] max-w-full bg-[url('/images/brand/sjg-yoko-logo-trimmed.png')] bg-contain bg-left bg-no-repeat dark:hidden"
+                className="block h-10 w-[232px] max-w-full -translate-y-1 bg-[url('/images/brand/sjg-yoko-logo-trimmed.png')] bg-contain bg-left bg-no-repeat dark:hidden"
               />
               <span
                 role="img"
                 aria-label="SPO JAPAN GUILD"
-                className="hidden h-11 w-[235px] max-w-full bg-[url('/images/brand/sjg-yoko-white-logo-trimmed.png')] bg-contain bg-left bg-no-repeat dark:block"
+                className="hidden h-10 w-[232px] max-w-full -translate-y-1 bg-[url('/images/brand/sjg-yoko-white-logo-trimmed.png')] bg-contain bg-left bg-no-repeat dark:block"
               />
             </div>
 
