@@ -144,16 +144,20 @@ mark {
 }
 
 #nd-docs-layout {
-  font-size: 1.0625rem;
+  font-size: clamp(1rem, 0.96rem + 0.18vw, 1.08rem);
 }
 
 #nd-docs-layout .prose {
   line-height: 1.8;
   color: var(--color-fd-foreground);
+  max-width: 100%;
+  overflow-wrap: break-word;
 }
 
 #nd-docs-layout .prose :where(a) {
   color: var(--color-fd-primary);
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 #nd-docs-layout .prose :where(p, li) {
@@ -162,6 +166,28 @@ mark {
 
 #nd-docs-layout .prose code {
   font-weight: 400;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+#nd-docs-layout .prose :where(img, video, canvas) {
+  max-width: 100%;
+  height: auto;
+}
+
+#nd-docs-layout .prose :where(pre) {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+#nd-docs-layout .prose :where(table) {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+#nd-docs-layout .prose :where(p, li, blockquote, td, th) {
+  min-width: 0;
 }
 
 #nd-docs-layout .prose :where(blockquote) {
@@ -204,7 +230,7 @@ mark {
 }
 
 #nd-docs-layout #toc-title {
-  font-size: 0.9375rem;
+  font-size: clamp(0.875rem, 0.84rem + 0.12vw, 0.9375rem);
 }
 
 #nd-docs-layout #nd-toc a.prose > svg path,
