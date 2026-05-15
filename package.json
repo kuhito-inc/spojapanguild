@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@10.28.2",
   "scripts": {
-    "build": "next build",
+    "build": "next build --webpack",
     "dev": "next dev",
     "docs:absolutize-links": "node scripts/absolutize-docs-links.mjs",
     "docs:english-anchors": "node scripts/english-anchor-docs.mjs",
