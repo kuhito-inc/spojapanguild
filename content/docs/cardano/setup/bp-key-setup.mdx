@@ -3,25 +3,21 @@ title: "BP用キー生成"
 ---
 
 
-# **BP用キー生成**
+# 事前確認
 
-<Callout type="info" title="事前確認">
+同期が 100% になってから以降の手順を実施してください。
 
-以下の項目を実施する前にBPノードが起動しているか確認してください。
-```
+```bash
 cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 ```
-
-戻り値確認
-`"syncProgress": "100.00"`  
-戻り値が99以下の場合は100(最新ブロックまで同期)になるまで待ちましょう。
-
-</Callout>
+```yaml title="期待される表示例：" noCopy
+"syncProgress": "100.00"
+```
 
 
 <Callout type="warn" title="BP起動に必要なファイルとは？">
 
-ブロックプロデューサーノードでは３つのキーを生成する必要があります。
+BPでは３つのキーを生成する必要があります。
 
 * ステークプールの運用証明書 \(node.cert\)
 * ステークプールのセキュリティキー \(kes.skey\)
@@ -30,7 +26,7 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 </Callout>
 
 
-## **1. KESキーの作成**
+## 1. KESキーの作成 [#sec-1]
 
 
 <Callout type="info" title="KESキーについて">
@@ -42,33 +38,33 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 </Callout>
 
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
 cardano-cli latest node key-gen-KES \
-    --verification-key-file kes.vkey \
-    --signing-key-file kes.skey
+  --verification-key-file kes.vkey \
+  --signing-key-file kes.skey
 ```
 
 </Tab>
 </Tabs>
 
-## **2. コールドキーの作成** 
-<Callout type="error" title="注意">
+## 2. コールドキーの作成 [#sec-2]
+<Callout type="error" title="注意（コールドキー）">
 
- **コールドキーはエアギャップオフラインマシンで生成し保管する必要があります**  
-このファイルはプール運営で重要なコールドキーです。エアギャップマシンで作成しオンライン環境に保管しないようご注意下さい。  
-<mark>外部に流出するとプールが乗っ取られる可能性がありますので管理には十分注意してください</mark>  
-また複数のUSBに保管し、絶対に上書き・削除しないようご注意下さい。  
-コールドキーは次のパスに格納されます `$HOME/cold-keys`  
+**エアギャップ（オフライン）で生成・保管してください。** オンライン環境に置かないでください。
+
+- **重要性**: プール運営の根幹となる鍵です。<mark>流出するとプールの乗っ取りにつながる可能性があります。</mark>
+- **保管**: 複数の USB などに複製し、**上書き・削除しない**よう注意してください。
+- **保存場所の例**: `$HOME/cold-keys`
 
 </Callout>
 
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 
 ```text
@@ -80,12 +76,12 @@ mkdir $HOME/cold-keys
 ```bash
 cd $HOME/cold-keys
 cardano-cli latest node key-gen \
-    --cold-verification-key-file node.vkey \
-    --cold-signing-key-file node.skey \
-    --operational-certificate-issue-counter node.counter
+  --cold-verification-key-file node.vkey \
+  --cold-signing-key-file node.skey \
+  --operational-certificate-issue-counter node.counter
 ```
 アクセス権を読み取り専用に更新します。
-```
+```bash
 chmod 400 node.vkey
 chmod 400 node.skey
 ```
@@ -95,26 +91,15 @@ chmod 400 node.skey
 
 <Callout type="warn" title="重要">
 
-すべてのキーを別の安全なストレージデバイス(USB)などにバックアップしましょう！  
-複数のバックアップを作成することをおすすめします。
+すべてのキーを、USB などの**専用かつ本体から切り離した安全な媒体**へバックアップし、**複数のコピー**を作成してください。
 
 </Callout>
 
 
-## **3. プール運用証明書の作成**
+## 3. プール運用証明書の作成 [#sec-3]
 
-
-<Callout type="warn" title="事前確認">
-
-ブロックチェーンと完全に同期している必要があります。  
-同期が途中の場合、正しいslotsPerKESPeriodを取得できません。  
-あなたのBPノードが完全に同期されたことを確認するには、[Cardano Explorer](https://explorer.cardano.org/ja.html)で自身の同期済みエポックとスロットが一致しているかをご確認ください。
-
-</Callout>
-
-
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ジェネシスファイルからslotsPerKESPeriodを出力します。
@@ -141,10 +126,10 @@ echo startKesPeriod: ${startKesPeriod}
 </Tab>
 </Tabs>
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
-BPの`kes.skey`と`kes.vkey` をエアギャップマシンのcnodeディレクトリにコピーします。
-``` mermaid
+BPの`kes.skey`と`kes.vkey` をエアギャップのcnodeディレクトリにコピーします。
+```mermaid
 graph LR
     A[BP] -->|kes.skey / kes.vkey| B[エアギャップ];
 ```
@@ -154,8 +139,8 @@ graph LR
 
 BPとエアギャップで`kes.vkey`ファイルハッシュを比較します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -165,15 +150,11 @@ sha256sum kes.vkey
 </Tab>
 </Tabs>
 
-<Callout type="info" title="Hint">
-
-BPとエアギャップで表示された戻り値を比較して、ハッシュ値が一致していれば問題ありません。
-
-</Callout>
+> BPとエアギャップで表示されたハッシュ値を比較し、一致していれば問題ありません。
 
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cd $NODE_HOME
@@ -194,40 +175,39 @@ sha256sum kes.vkey
 
 
 
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 
 ```bash
 cd $NODE_HOME
 read -p "BPで算出したstartKesPeriodを入力してください:" kes
 ```
-> ↑このままコマンドに入力してください  
-> コマンド実行後に、数字入力モードになりますので  
-> そこでBPで算出した`startKesPeriod`の数字を入力します
+> このままコマンドに入力してください。    
+> コマンド実行後に、数字入力モードになりますので、BPで算出した`startKesPeriod`の数字を入力します。
 
-入力した数字が戻り値に表示されているか確認し証明書を作成します。
-```
+入力した数字が戻り値に表示されているか確認したら証明書を作成します。
+```bash
 echo "入力した数字は $kes です"
 ```
 
-```
+```bash
 cardano-cli latest node issue-op-cert \
-    --kes-verification-key-file kes.vkey \
-    --cold-signing-key-file $HOME/cold-keys/node.skey \
-    --operational-certificate-issue-counter $HOME/cold-keys/node.counter \
-    --kes-period $kes \
-    --out-file node.cert
+  --kes-verification-key-file kes.vkey \
+  --cold-signing-key-file $HOME/cold-keys/node.skey \
+  --operational-certificate-issue-counter $HOME/cold-keys/node.counter \
+  --kes-period $kes \
+  --out-file node.cert
 ```
 
 </Tab>
 </Tabs>
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
-エアギャップマシンの`node.cert` をBPのcnodeディレクトリにコピーします。
+エアギャップの`node.cert` をBPのcnodeディレクトリにコピーします。
 
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|node.cert| B[BP];
 ```
@@ -235,11 +215,10 @@ graph LR
 </Callout>
 
 
-
 **BPとエアギャップで`node.cert`ファイルハッシュを比較します。**
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
@@ -250,15 +229,11 @@ sha256sum node.cert
 </Tab>
 </Tabs>
 
-<Callout type="info" title="ヒント">
 
-BPとエアギャップで表示された戻り値を比較して、ハッシュ値が一致していれば問題ありません。
+> BPとエアギャップで表示されたハッシュ値を比較し、一致していれば問題ありません。
 
-</Callout>
-
-
-<Tabs items={["エアギャップオフラインマシン"]}>
-<Tab value="エアギャップオフラインマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 
 ```bash
@@ -269,57 +244,53 @@ sha256sum node.cert
 </Tab>
 </Tabs>
 
-## **4. VRFキーの作成**
+## 4. VRFキーの作成 [#sec-4]
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 
 ```bash
 cd $NODE_HOME
 cardano-cli latest node key-gen-VRF \
-    --verification-key-file vrf.vkey \
-    --signing-key-file vrf.skey
+  --verification-key-file vrf.vkey \
+  --signing-key-file vrf.skey
 ```
 
 vrfキーのアクセス権を読み取り専用に更新します。
-```
+```bash
 chmod 400 vrf.skey
 chmod 400 vrf.vkey
 ```
-<Callout type="error" title="注意">
 
-vrfキーを誤って削除しないように注意してください。
-
-</Callout>
-
+> vrfキーを誤って削除しないようにしてください。
 
 </Tab>
 </Tabs>
 
-## **5. BPノードとして再起動**
+## 5. BPノードとして再起動 [#sec-5]
 
 
 BPノードを停止します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 sudo systemctl stop cardano-node
 ```
 
 ノードポート番号を確認します。
-```
+```bash
 PORT=`grep "PORT=" $NODE_HOME/startBlockProducingNode.sh`
 b_PORT=${PORT#"PORT="}
 echo "BPポートは ${b_PORT} です"
 ```
-> ↑そのまま実行し、BPのポート番号が表示されることを確認します。
+> BPのポート番号が表示されることを確認します。
 
-起動スクリプトにKES、VRF、運用証明書のパスを追記し更新します。
+起動スクリプトにKES、VRF、運用証明書のパスを追記し、更新します。
 
-```bash title="このボックスはすべてコピーして実行してください"
+```bash
 cat > $NODE_HOME/startBlockProducingNode.sh << EOF 
 #!/bin/bash
 DIRECTORY=$NODE_HOME
@@ -343,27 +314,24 @@ sudo systemctl start cardano-node
 ```
 
 BPとして起動しているか確認します。
-
 ```bash
 cd $NODE_HOME/scripts
 ./gLiveView.sh
 ```
-
-チェーン同期後にCoreの表示があれば問題ありません。
+> チェーン同期後に`Core`の表示があれば問題ありません。
 
 </Tab>
 </Tabs>
 
-<Callout type="error" title="**注意事項**">
+<Callout type="error" title="注意事項">
 
-ブロックプロデューサーノードを実行するためには、以下の３つのファイルが必要です。  
-このファイルが揃っていない場合や起動時に指定されていない場合はブロックが生成できません。
+BPを実行するためには、以下の３つのファイルが必要ですので、揃っているか確認してください。  
+> このファイルが揃っていない場合や起動時に指定されていない場合はブロック生成できませんので注意してください。
 
-* kes.skey
-* vrf.skey
-* node.cert
+- `kes.skey`
+- `vrf.skey`
+- `node.cert`
 
 </Callout>
-
 
 ---

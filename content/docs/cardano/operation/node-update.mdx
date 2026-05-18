@@ -2,48 +2,49 @@
 title: "ノードアップデート"
 ---
 
-# **ノードアップデート**
-
-このガイドは ノードバージョン`10.7.1`に対応しています。  
+このガイドは ノードバージョン`11.0.1`に対応しています。  
 
 最終更新日：2026年5月5日  
 
 <Callout type="info" title="バージョン対応表">
 
-* <span style={{color: "red"}}>各依存関係もバージョンアップしてますのでよくお読みになって進めてください</span>
+**<span style={{color: "red"}}>各依存関係もバージョンアップしてますのでよくお読みになって進めてください</span>**
 
 | OS | Node | CLI | GHC | Cabal | CNCLI |
-| :---------- | :---------- | :---------- | :---------- | :---------- | :---------- |
-| ubuntu 24.04.* | 10.7.1 | 10.16.0.0 | 9.6.7 | 3.12.1.0 | 6.7.0 |
+| :----------: | :----------: | :----------: | :----------: | :----------: | :----------: |
+| ubuntu 24.04.* | 11.0.1 | 11.0.0.0 | 9.6.7 | 3.12.1.0 | 6.7.0 |
 
 **■アップデートパターンDB再構築有無**
 
 | バージョン | DB再構築有無 | 設定ファイル更新有無 | トポロジーファイル更新有無 |
-| :---------- | :---------- | :---------- | :---------- |
-| 10.6.4 → 10.7.1 | あり | 更新あり | なし |
+| :----------: | :----------: | :----------: | :----------: |
+| 10.7.1 → 11.0.1 | なし | 更新あり | なし |
 
 </Callout>
-
-
 
 
 <Callout type="warn" title="留意点">
 
 - 作業実施前にブロック生成スケジュールを確認してください。  
-- 今回のアップデートではDB更新があるため、ブロック生成が2時間以上無いことを確認してください。   
-- 複数行のコードをコードボックスのコピーボタンを使用してコマンドラインに貼り付ける場合は、最後の行が自動実行されないため確認の上Enterを押してコードを実行してください。  
+{/* - 今回のアップデートではDB更新があるため、ブロック生成が2時間以上無いことを確認してください。    */}
+- 複数行のコードをコードボックスのコピーボタンを使用してコマンドラインに貼り付ける場合は、最後の行が自動実行されないため確認の上`Enter`を押してコードを実行してください。  
 - OSバージョンアップを完了していること  
-[Ubuntu22.04から24.04へ移行](../../operation/ubuntu24-migration/)
+[Ubuntu22.04から24.04へ移行](/docs/cardano/operation/ubuntu24-migration)
 
 </Callout>
 
 
-
-<Callout type="error" title="主な変更点と新機能および検証結果">
-
+<AccordionsBlue type="single">
+  <Accordion id="node-update-major-changes" title="主な変更点と新機能および検証結果">
 
 <Callout type="info" title="cardano-node">
 
+**11.0.1 <span style={{color: "red"}}>Protocol Version 11（PV11）対応アップデート</span>**
+
+- `Protocol Version 11`へのアップグレードを可能にする `intra-era Hard Fork` に対応
+- `cardano-api` / `cardano-cli` を`11系`へ更新
+- `EKG`・`Prometheus`の`HTTPS対応`や`時系列API`を追加
+- `LSM`利用時に既知の不具合あり（次回修正予定）
 
 **10.7.1 <span style={{color: "red"}}>マイナーアップデート</span>**  
 
@@ -55,54 +56,14 @@ title: "ノードアップデート"
 - ソースビルドの場合 blst v0.3.14使用必須
 - PraosModeを有効
 
-**10.5.3 <span style={{color: "red"}}>バグ修正緊急リリース</span>**
-
-- cardano-crypto-classライブラリ参照先修正
-- ソースビルドの場合 blst v0.3.14使用必須
-- PraosModeのみ有効
-
-**10.5.2 <span style={{color: "red"}}>バグ修正緊急リリース</span>**  
-
-<span style={{color: "red"}}> 10.3.x, 10.4.x or 10.5.xをご利用中の場合は速やかに10.5.2へアップグレードしてください</span>
-
-1）ハッシュサイズに関する問題  
-2）ネットワークスタック内の ピア選択の不具合  
-を修正しています。
-
-特定の条件下では、ネットワークの Periodic Churn（定期的な入れ替え） の仕組みが正しく機能せず、十分な数の「Warm ピア」を降格できない状態になるバグが発見されました。
-その結果、長期的に見て アクティブピアのサンプリング（選定）が十分多様化しないことが懸念されます。
-
-SPOはこのリリースへのアップグレードが推奨されます。  
-
-- PraosMode推奨
-
-**10.5.1**  
-
-- Windowsのソケットに関する不具合の修正
-- DNSルックアップエラーのキャッシュ時間の短縮
-- PeerSharing設定動作の改良
-- `--non-producer-node` の代わりに `--start-as-non-producer-node` を使うようにコマンドラインオプションが変更（旧オプションは非推奨に）
-
-**10.5.0**
-
-- Ouroboros Genesis の最適化
-- GHC 8.10 のサポート削除
-
-**10.4.1**
-
-* UTxO-HD統合  
-<span style={{color: "red"}}>現時点ではプール運営のノードではディスクバックエンドは非推奨のため、当マニュアルではインメモリバックエンドセットアップで構築されています</span>  
-UTxO-HDの概要については[こちら](https://docs.google.com/presentation/d/16gJt5k9p3H9ycwHNO6O0HGb0cYvRpbwhUsvH4kFEthM/edit?usp=sharing)をご参照ください
-* config.json内 `LedgerDB`新しいキーを設定
-
 </Callout>
 
 
-<Callout type="info" title="cardano-cli v10.16.0.0">
+<Callout type="info" title="cardano-cli v11.0.0.0">
 
-
-- BLS鍵に関する機能が追加されたアップデート。  
-- BLS鍵の生成・ハッシュ化、およびProof of Possession（所有証明）の生成に対応。
+- `cardano-api` を`11.0.0.0`へ更新し、未署名トランザクション生成時のエラーハンドリングを改善
+- `TxCmdMakeUnsignedTxError` を追加し、エラー内容を明確化
+- `ghc-9.14` に対応
 
 </Callout>
 
@@ -110,10 +71,10 @@ UTxO-HDの概要については[こちら](https://docs.google.com/presentation/
 <Callout type="info" title="検証結果">
 
 ■検証環境
-PreProd-Testnet / cardano-node 10.7.1 / cardano-cli 10.16.0.0 / SJG-TOOL 4.1.2  
+PreProd-Testnet / cardano-node 11.0.1 / cardano-cli 11.0.0.0 / SJG-TOOL 4.1.2  
 
 | 検証項目 | 結果 |
-| :---------- | :---------- |
+| :----------: | :----------: |
 | ソースコードビルド | ✅ |
 | ブロック生成 | ✅ |
 | リソース監視 | ✅ |
@@ -125,15 +86,11 @@ PreProd-Testnet / cardano-node 10.7.1 / cardano-cli 10.16.0.0 / SJG-TOOL 4.1.2
 </Callout>
 
 
-</Callout>
+  </Accordion>
+</AccordionsBlue>
 
 
-
-
-
-
-
-## **1. 依存環境アップデート**
+## 1. 依存環境アップデート [#sec-1]
 
 **現在のノードバージョンを変数に代入**
 ```bash
@@ -141,7 +98,7 @@ current_node=$(cardano-node version | grep cardano-node)
 echo $current_node
 ```
 
-### **1-1. システムのアップデートと依存関係のインストール**
+### システムのアップデートと依存関係のインストール [#sec-2]
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -150,46 +107,59 @@ sudo apt update && sudo apt upgrade -y
 sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
 ```
 
-### **1-2. 依存関係バージョン確認**
+### 依存関係バージョン確認 [#sec-3]
 
 **cabalバージョン確認**
 ```bash
 cabal --version
 ```
-> `cabal-install version 3.12.1.0`
+```yaml title="期待される表示例：" noCopy
+cabal-install version 3.12.1.0
+compiled using version 3.12.1.0 of the Cabal library 
+```
 
 **GHCバージョン確認**
 ```bash
 ghc --version
 ```
-> `The Glorious Glasgow Haskell Compilation System, version 9.6.7`
+```yaml title="期待される表示例：" noCopy
+The Glorious Glasgow Haskell Compilation System, version 9.6.7
+```
 
 **libsodiumコミット確認**
 ```bash
 cd $HOME/git/libsodium
 git branch --contains | grep -m1 HEAD | cut -c 21-28
 ```
-> `dbb48cce`
+```yaml title="期待される表示例：" noCopy
+dbb48cce
+```
+
 
 **secp256k1バージョン確認**
 ```bash
 cd $HOME/git/secp256k1
 git branch --contains | grep -m1 HEAD | cut -c 21-27
 ```
-> `acf5c55`
+```yaml title="期待される表示例：" noCopy
+acf5c55
+```
+
 
 **Blstバージョン確認**  
 インストール済みバージョン
 ```bash
 cat /usr/local/lib/pkgconfig/libblst.pc | grep Version
 ```
-> `Version 0.3.14`
+```yaml title="期待される表示例：" noCopy
+Version: 0.3.14
+```
 
 
-<Callout type="error" title="各アプリのバージョン(戻り値)が異なる場合">
+各アプリのバージョン（戻り値）が上記と異なる場合は、該当する項目を開いて対応してください。
 
-
-<Callout type="error" title="cabal 3.8.1.0以下の場合">
+<AccordionsRed type="multiple">
+  <Accordion id="node-update-cabal-below-3810" title="cabal 3.8.1.0以下の場合">
 
 **cabal 3.8.1.0以下の場合のみ実行**
 **cabalバージョンアップ**
@@ -203,16 +173,14 @@ cabalバージョン確認
 ```bash
 cabal --version
 ```
-
-```yaml
-cabal-install version 3.12.1.0   
-compiled using version 3.12.1.0 of the Cabal library
+```yaml title="期待される表示例：" noCopy
+cabal-install version 3.12.1.0
+compiled using version 3.12.1.0 of the Cabal library 
 ```
 
-</Callout>
+  </Accordion>
 
-
-<Callout type="error" title="GHC 9.6.7以外の場合 (9.6.7より新しい場合を含む)">
+  <Accordion id="node-update-ghc-not-967" title="GHC 9.6.7以外の場合 (9.6.7より新しい場合を含む)">
 
 ```bash
 ghcup upgrade
@@ -224,21 +192,20 @@ ghcバージョン確認
 ```bash
 ghc --version
 ```
-
-```yaml
+```yaml title="期待される表示例：" noCopy
 The Glorious Glasgow Haskell Compilation System, version 9.6.7
 ```
 
-</Callout>
+  </Accordion>
 
-
-<Callout type="error" title="libsodiumコミット値が違う場合">
+  <Accordion id="node-update-libsodium-commit" title="libsodiumコミット値が違う場合">
 
 ```bash
 cd ~/git/libsodium
 git fetch --all --prune
 git checkout dbb48cc
 ./autogen.sh
+sleep 1
 ./configure
 make
 make check
@@ -246,24 +213,21 @@ sudo make install
 ```
 > `make`コマンド実行後半に出現する `warning` は無視して大丈夫です。
 
-</Callout>
+  </Accordion>
 
-
-<Callout type="error" title="secp256k1コミット値が違うまたは戻り値が無い場合">
+  <Accordion id="node-update-secp256k1-commit" title="secp256k1コミット値が違うまたは戻り値が無い場合">
 
 ```bash
 cd $HOME/git/secp256k1/
 git fetch --all --prune --recurse-submodules --tags
 git checkout acf5c55
 ./autogen.sh
+sleep 1
 ./configure --prefix=/usr --enable-module-schnorrsig --enable-experimental
 make
 make check
 ```
-
-<Callout type="info" title="戻り値確認">
-
-```yaml
+```yaml title="期待される表示例：" noCopy
 Testsuite summary for libsecp256k1 0.3.2
 ============================================================================
 # TOTAL: 3
@@ -277,18 +241,15 @@ Testsuite summary for libsecp256k1 0.3.2
 ```
 > PASS:3であることを確認する
 
-</Callout>
-
 
 **インストールコマンドを必ず実行する**
 ```bash
 sudo make install
 ```
 
-</Callout>
+  </Accordion>
 
-
-<Callout type="error" title="Blst 0.3.13以下または「No such file or directory」の場合">
+  <Accordion id="node-update-blst-old-or-missing" title="Blst 0.3.13以下または「No such file or directory」の場合">
 
 <Tabs items={["0.3.13以下の場合", "「No such file or directory」の場合"]}>
 <Tab value="0.3.13以下の場合">
@@ -316,7 +277,7 @@ git checkout v0.3.14
 
 設定ファイル作成
 
-```bash title="このボックスはすべてコピーして実行してください"
+```bash
 cat > libblst.pc << EOF
 prefix=/usr/local
 exec_prefix=\${prefix}
@@ -333,8 +294,6 @@ EOF
 ```
 
 設定ファイルコピー
-> このボックスは1行ずつコピーして実行してください
-
 ```bash
 sudo cp libblst.pc /usr/local/lib/pkgconfig/
 ```
@@ -352,25 +311,27 @@ sudo chmod u=rw,go=r /usr/local/{lib/{libblst.a,pkgconfig/libblst.pc},include/{b
 ```bash
 cat /usr/local/lib/pkgconfig/libblst.pc | grep Version
 ```
-> Version 0.3.14
+```yaml title="期待される表示例：" noCopy
+Version: 0.3.14
+```
 
-</Callout>
-
-
-</Callout>
+  </Accordion>
+</AccordionsRed>
 
 
 
-### **1-3. CNCLIバージョン確認(BPのみ)**
+### CNCLIバージョン確認(BPのみ) [#sec-4]
 
 CNCLIバージョン確認
 ```bash
 cncli --version
 ```
-> cncli 6.7.0
+```yaml title="期待される表示例：" noCopy
+cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
+```
 
-<Callout type="error" title="cncli v6.6.0以下だった場合(クリックして開く)">
-
+<AccordionsRed type="single">
+  <Accordion id="node-update-cncli-below-660" title="cncli v6.6.0以下だった場合">
 
 **CNCLIのアップデート**
 
@@ -392,20 +353,23 @@ rm $HOME/cncli-${cncli_release}-x86_64-unknown-linux-musl.tar.gz
 ```bash
 cncli --version
 ```
-> cncli v6.7.0
+```yaml title="期待される表示例：" noCopy
+cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
+```
 
-</Callout>
+  </Accordion>
+</AccordionsRed>
 
 
 
-## **2. ノードアップデート**
+## 2. ノードアップデート [#sec-5]
 
 <Callout type="info" title="バイナリファイルインストール方法の違いについて">
 
 
-* **_ビルド済みバイナリ_**・・・IntersectMBOリポジトリソースコードからビルドされたバイナリファイルをダウンロードします。ビルド不要のためビルド時間を短縮できます。 
+- **_ビルド済みバイナリ_**・・・IntersectMBOリポジトリソースコードからビルドされたバイナリファイルをダウンロードします。ビルド不要のためビルド時間を短縮できます。 
 
-* **_ソースコードからビルド_**・・・ご自身のサーバーでソースコードからビルドしてバイナリファイルを作成します。検証目的やソースコードからビルドしたい場合に利用できます。ビルドに30分前後かかります。Raspberry Piを使用してプールを構築する場合は、ARM用コンパイラでコンパイルする必要があります。
+- **_ソースコードからビルド_**・・・ご自身のサーバーでソースコードからビルドしてバイナリファイルを作成します。検証目的やソースコードからビルドしたい場合に利用できます。ビルドに30分前後かかります。Raspberry Piを使用してプールを構築する場合は、ARM用バイナリを使用する必要があります。
 
 </Callout>
 
@@ -415,7 +379,7 @@ cncli --version
 <Tab value="ビルド済みバイナリを使用する場合">
 
 
-### **2-1. バイナリダウンロード**
+### バイナリダウンロード [#sec-6]
 
 旧バイナリの削除
 ```bash
@@ -426,27 +390,26 @@ rm -rf $HOME/git/cardano-node-old/
 ```bash
 mkdir $HOME/git/cardano-node2
 cd $HOME/git/cardano-node2
-wget -q https://github.com/IntersectMBO/cardano-node/releases/download/10.7.1/cardano-node-10.7.1-linux-amd64.tar.gz
+wget -q https://github.com/IntersectMBO/cardano-node/releases/download/11.0.1/cardano-node-11.0.1-linux-amd64.tar.gz
 ```
 
 解凍
 ```bash
-tar zxvf cardano-node-10.7.1-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano-cli ./bin/snapshot-converter
+tar zxvf cardano-node-11.0.1-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano-cli ./bin/snapshot-converter
 ```
 
 **バージョンの確認**
 
 ```bash
-$(find $HOME/git/cardano-node2 -type f -name "cardano-cli") version  
-$(find $HOME/git/cardano-node2 -type f -name "cardano-node") version  
+$(find $HOME/git/cardano-node2 -type f -name "cardano-node") version
+$(find $HOME/git/cardano-node2 -type f -name "cardano-cli") version
 ```
-以下の戻り値を確認します。  
-```yaml
-cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+```yaml title="期待される表示例：" noCopy
+cardano-node 11.0.1 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 
-cardano-node 10.7.1 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 ```
 
 
@@ -455,31 +418,29 @@ git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
 sudo systemctl stop cardano-node
 ```
 
-### **2-2. バイナリインストール**
+### バイナリインストール [#sec-7]
 
 **バイナリーファイルをシステムフォルダーへコピー**
 
 ```bash
-sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-cli") /usr/local/bin/cardano-cli
+sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-node") /usr/local/bin/cardano-node
 ```
 ```bash
-sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-node") /usr/local/bin/cardano-node
+sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-cli") /usr/local/bin/cardano-cli
 ```
 
 **システムに反映されたノードバージョンの確認**
 
 ```bash
-cardano-cli version
 cardano-node version
+cardano-cli version
 ```
+```yaml title="期待される表示例：" noCopy
+cardano-node 11.0.1 - linux-x86_64 - ghc-9.6
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 
-以下の戻り値を確認します。
-```yaml
-cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
-
-cardano-node 10.7.1 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 ```
 
 </Tab>
@@ -520,7 +481,7 @@ cabal update
 
 ```bash
 git fetch --all --recurse-submodules --tags
-git checkout tags/10.7.1
+git checkout tags/11.0.1
 cabal configure --with-compiler=ghc-9.6.7
 ```
 
@@ -529,9 +490,9 @@ cabal build all cardano-cli
 ```
 <Callout type="info" title="ヒント">
 
-* ビルド完了までに数十分ほどかかります。
-* SSH接続が途中で切断された場合、再度接続して`tmux a -t build`で再開してください。  
-* ビルド中にデタッチ(Ctrl+B D)してバックグラウンド処理へ切り替えられます。
+- ビルド完了までに数十分ほどかかります。
+- SSH接続が途中で切断された場合、再度接続して`tmux a -t build`で再開してください。  
+- ビルド中にデタッチ(Ctrl+B D)してバックグラウンド処理へ切り替えられます。
 
 </Callout>
 
@@ -541,17 +502,15 @@ cabal build all cardano-cli
 **バージョン確認**
 
 ```bash
-$(./scripts/bin-path.sh cardano-cli) version  
-$(./scripts/bin-path.sh cardano-node) version  
+$(./scripts/bin-path.sh cardano-node) version
+$(./scripts/bin-path.sh cardano-cli) version
 ```
+```yaml title="期待される表示例：" noCopy
+cardano-node 11.0.1 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 
-以下の戻り値を確認します。
-```yaml
-cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
-
-cardano-node 10.7.1 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 ```
 
 **ビルド用TMUXセッションを終了します。** 
@@ -568,47 +527,48 @@ sudo systemctl stop cardano-node
 
 ```bash
 cd $HOME/git/cardano-node2
-sudo cp $(./scripts/bin-path.sh cardano-cli) /usr/local/bin/cardano-cli
-```
-```bash
 sudo cp $(./scripts/bin-path.sh cardano-node) /usr/local/bin/cardano-node
 ```
+```bash
+sudo cp $(./scripts/bin-path.sh cardano-cli) /usr/local/bin/cardano-cli
+```
+
 
 **システムに反映されたノードバージョンの確認**
 
 ```bash
-cardano-cli version
 cardano-node version
+cardano-cli version
+```
+```yaml title="期待される表示例：" noCopy
+cardano-node 11.0.1 - linux-x86_64 - ghc-9.6
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
+
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 ```
 
-以下の戻り値を確認します。
-```yaml
-cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
-
-cardano-node 10.7.1 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
-```
-
-<Callout type="warn" title="10.3.1以下からアップデートする場合はこちらも実施(クリックして開く)">
+<AccordionsYellow type="single">
+  <Accordion id="node-update-from-1031-below-extra" title="10.3.1 未満のバージョンから更新する場合は、こちらを実施">
 
 **snapshot-converterのダウンロード**
 ```bash
 cd $HOME/git/cardano-node2
-wget -q https://github.com/IntersectMBO/cardano-node/releases/download/10.7.1/cardano-node-10.7.1-linux-amd64.tar.gz
+wget -q https://github.com/IntersectMBO/cardano-node/releases/download/11.0.1/cardano-node-11.0.1-linux-amd64.tar.gz
 ```
 解凍
 ```bash
-tar zxvf cardano-node-10.7.1-linux-amd64.tar.gz ./bin/snapshot-converter
+tar zxvf cardano-node-11.0.1-linux-amd64.tar.gz ./bin/snapshot-converter
 ```
 
-</Callout>
+  </Accordion>
+</AccordionsYellow>
 
 
 </Tab>
 </Tabs>
 
-### **2-3. 設定ファイル更新**
+### 設定ファイル更新 [#sec-8]
 
 既存ファイルのバックアップ
 ```bash
@@ -617,21 +577,19 @@ cp $NODE_HOME/${NODE_CONFIG}-config.json $NODE_HOME/backup/${NODE_CONFIG}-config
 ```
 
 
-
 設定ファイルダウンロード
 
 BPとリレー共通：
 ```bash
 cd $NODE_HOME
-wget -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
-wget -q https://spojapanguild.net/node_config/10.7.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+wget -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+
+wget -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
 
 
-
-
-
-<Callout type="warn" title="10.1.4~からアップデートする場合はこちらも実施(クリックして開く)">
+<AccordionsYellow type="single">
+  <Accordion id="node-update-from-1014-extra" title="10.7.1 未満のバージョンから更新する場合は、こちらを実施">
 
 
 <Callout type="info" title="BPのみ">
@@ -644,7 +602,7 @@ echo "BPポートは ${b_PORT} です"
 ```
 > BPのポート番号が表示されることを確認します。
 
-```bash title="このボックスはすべてコピーして実行してください"
+```bash
 cat > $NODE_HOME/startBlockProducingNode.sh << EOF 
 #!/bin/bash
 DIRECTORY=$NODE_HOME
@@ -713,7 +671,8 @@ export ANCILLARY_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.c
 export SNAPSHOT_DIGEST=latest
 ```
 
-<Callout type="info" title="旧dbをバックアップしたい方はこちら">
+<AccordionsBlue type="single">
+  <Accordion id="node-update-backup-old-db" title="旧dbをバックアップしたい方はこちら">
 
 <Callout type="error" title="空き容量に関しての注意事項">
 
@@ -725,7 +684,6 @@ df -h /usr | awk '{print $4}'
 <strong><span style={{color: "red"}}>Availが250GB以上あることを確認してください。</span></strong>
 
 </Callout>
-
 
 リネーム
 ```bash
@@ -741,8 +699,8 @@ rm -rf $NODE_HOME/backup/db9/
 
 </Callout>
 
-
-</Callout>
+  </Accordion>
+</AccordionsBlue>
 
 
 既存DBの削除
@@ -760,8 +718,10 @@ mithril-client cardano-db download \
 > スナップショットダウンロード～解凍まで自動的に行われます。1/7～7/7が終了するまで待ちましょう。  
 
 DBスナップショットDL/解凍完了メッセージ  
-> 7/7 - Verifying the cardano db signature…    
-> Cardano database snapshot '*****' archives have been successfully unpacked. Immutable files have been successfully verified with Mithril.
+```yaml title="期待される表示例：" noCopy
+7/7 - Verifying the cardano db signature…    
+Cardano database snapshot '*****' archives have been successfully unpacked. Immutable files have been successfully verified with Mithril.
+```
 
 tmux作業ウィンドウを終了します。
 ```bash
@@ -771,13 +731,11 @@ exit
 </Callout>
 
 
-</Callout>
+  </Accordion>
+</AccordionsYellow>
 
-
-
-
-
-### **2-4. DB更新**
+{/*
+### DB更新 [#sec-9]
 
 <Tabs items={["全ノード"]}>
 <Tab value="全ノード">
@@ -843,8 +801,10 @@ mithril-client cardano-db download \
 > スナップショットダウンロード～解凍まで自動的に行われます。1/5～7/7が終了するまで待ちましょう。  
 
 DBスナップショットDL/解凍完了メッセージ  
-> 7/7 - Verifying the cardano db signature…    
-> Cardano database snapshot '*****' archives have been successfully unpacked. Immutable files have been successfully verified with Mithril.
+```yaml title="期待される表示例：" noCopy
+7/7 - Verifying the cardano db signature…    
+Cardano database snapshot '*****' archives have been successfully unpacked. Immutable files have been successfully verified with Mithril.
+```
 
 tmux作業ウィンドウを終了します。
 ```bash
@@ -853,8 +813,9 @@ exit
 
 </Tab>
 </Tabs>
+*/}
 
-### **2-5. サーバー再起動**
+### サーバー再起動 [#sec-10]
 
 **作業フォルダリネーム**
 
@@ -874,9 +835,8 @@ sudo reboot
 
 SSH接続後、ノード同期状況の確認
 ```bash
-sudo journalctl --unit=cardano-node --follow
+journalctl -u cardano-node -f
 ```
-
 
 
 <Callout type="info" title="ノードログメッセージ確認">
@@ -897,16 +857,16 @@ sudo journalctl --unit=cardano-node --follow
 
 
 
-## **3. 依存関係作業**
+## 3. 依存関係作業 [#sec-11]
 
-### **3-1. リレー/BP共通**
+### リレー/BP共通 [#sec-12]
 
 **gLiveView更新**
 ```bash
 sed -i $NODE_HOME/scripts/env \
-    -e '1,73s!UPDATE_CHECK="N"!UPDATE_CHECK="Y"!' \
-    -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
-    -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
+  -e '1,73s!UPDATE_CHECK="N"!UPDATE_CHECK="Y"!' \
+  -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
+  -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
 ```
 
 **gliveの起動**
@@ -915,58 +875,66 @@ glive
 ```
 
 更新メッセージが表示されたら`yes`を入力して`enter`  
-> env script update(s) detected, do you want to download the latest version? (yes/no): yes
+```yaml title="期待される表示例：" noCopy
+env script update(s) detected, do you want to download the latest version? (yes/no): yes
+```
 
 gLiveView.sh更新完了のメッセージが表示されたら再度`enter`  
-> gLiveView.sh update successfully applied!  
-> press any key to proceed ..
+```yaml title="期待される表示例：" noCopy
+gLiveView.sh update successfully applied!  
+press any key to proceed ..
+```
 
 
 **更新フラグの切り替え**
 ```bash
 sed -i $NODE_HOME/scripts/env \
-    -e '1,73s!UPDATE_CHECK="Y"!UPDATE_CHECK="N"!'
+  -e '1,73s!UPDATE_CHECK="Y"!UPDATE_CHECK="N"!'
 ```
 
 **gliveバージョン確認**
 ```bash
 glive
 ```
-> Koios gLiveView v1.32.0
+```yaml title="期待される表示例：" noCopy
+Koios gLiveView v1.32.0
+```
 
 
-### **3-2. BPサービス確認** 
+### BPサービス確認 [#sec-13]
 
-<Callout type="error" title="ブロック生成ステータス通知またはSPO Block Notifyを未導入(更新)していない方">
-
+<AccordionsYellow type="single">
+  <Accordion id="node-update-blocknotify-missing" title="blocknotify（SPO Block Notify）未導入・未更新の場合">
 
 <Tabs items={["未導入の方で今後も導入予定が無い方", "新規導入または更新する方"]}>
 <Tab value="未導入の方で今後も導入予定が無い方">
 
-[5. サービスファイル作成・登録](../setup/blocklog-setup.md#5)を再実行してください。（エイリアス設定は不要です）
+[5. サービスファイル作成・登録](/docs/cardano/setup/blocklog-setup#sec-5)を再実行してください。（エイリアス設定は不要です）
 
 </Tab>
 <Tab value="新規導入または更新する方">
 
-[SPOBlockNotify移行手順](../operation/blocknotify-reinstall.md)から新規導入または更新を実施してください。
+[SPO BlockNotify設定](/docs/cardano/setup/blocknotify-setup)から新規導入または更新を実施してください。
 
 </Tab>
 </Tabs>
 
 
-</Callout>
+  </Accordion>
+</AccordionsYellow>
 
 
 BPノードが完全に同期した後、サービス起動状態を確認します。
 
-* cnclilog  
-* leaderlog  
-* validate  
-* logmonitor  
-* blocknotify(SPO Block Notifyを導入している場合)
+- cnclilog  
+- leaderlog  
+- validate  
+- logmonitor  
+- blocknotify(SPO Block Notifyを導入している場合)
 
 
-<Callout type="error" title="cnclilogで`Missing eta_v for block xxxxxx` エラーが出る場合の対処法">
+<AccordionsRed type="single">
+  <Accordion id="node-update-cnclilog-missing-etav" title="cnclilogで`Missing eta_v for block xxxxxx` エラーが出る場合の対処法">
 
 cncliを再同期してください。
 
@@ -984,25 +952,28 @@ cnclilog
 ```
 100% sync'dになるまでお待ち下さい。
 
-</Callout>
+  </Accordion>
+</AccordionsRed>
 
 
 
-### **3-3. Grafanaアラートの対象メトリクス変更** 
+### Grafanaアラートの対象メトリクス変更 [#sec-14]
+
+> すでに対応済みの場合は、スキップしてください。
 
 左ペインの「Alerting」→「Alert rules」→「ノード監視」→「BPリレー接続監視」のメトリクスを変更して保存します。  
 `cardano_node_metrics_peers_connectedPeers_int`から  
-```
+```bash
 cardano_node_metrics_peerSelection_ActivePeers
 ```
 へと変更してください。
 
 
-## **4. エアギャップアップデート**
+## 4. エアギャップアップデート [#sec-15]
 <Callout type="info" title="SFTP機能ソフト導入">
 
 R-loginの転送機能が遅いので、大容量ファイルをダウン・アップロードする場合は、SFTP接続可能なソフトを使用すると効率的です。（FileZilaなど）  
-ファイル転送には[SFTPソフト設定](../operation/sftp-setup.md)を行ってください。
+ファイル転送には[SFTPソフト設定](/docs/cardano/operation/sftp-setup)を行ってください。
 
 </Callout>
 
@@ -1016,6 +987,9 @@ R-loginの転送機能が遅いので、大容量ファイルをダウン・ア�
 ```bash
 sudo cp $(find $HOME/git/cardano-node -type f -name "cardano-cli") ~/cardano-cli
 ```
+
+</Tab>
+</Tabs>
 
 ```mermaid
 graph LR
@@ -1037,8 +1011,6 @@ mkdir -p $HOME/git/cardano-node2
 ```
 > $HOME/git/cardano-node2/ に`cardano-cli`を格納します。  
 
-</Tab>
-</Tabs>
 
 **`cardano-cli` バイナリの配置**
 ```bash
@@ -1054,9 +1026,9 @@ cardano-cli version
 ```
 
 **戻り値確認**
-```yaml
-cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+```yaml title="期待される表示例：" noCopy
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 ```
 
 </Tab>
@@ -1076,34 +1048,40 @@ sudo cp $(./scripts/bin-path.sh cardano-cli) ~/cardano-cli
 
 **必要ライブラリ取得**
 ```bash
-cp /usr/local/lib/libsodium.so.23.3.0 $HOME/libsodium.so.23.3.0
-cp /lib/libsecp256k1.so.2.0.2 $HOME/libsecp256k1.so.2.0.2
+SODIUM_PATH=$(ldconfig -p | grep "libsodium.so.23" | head -1 | awk '{print $NF}')
+SECP_PATH=$(ldconfig -p | grep "libsecp256k1.so.2" | head -1 | awk '{print $NF}')
+
+cp -L "$SODIUM_PATH" $HOME/libsodium.so.23
+cp -L "$SECP_PATH" $HOME/libsecp256k1.so.2
 ```
 
 **確認**
 ```bash
-ll $HOME/cardano-cli $HOME/libsodium.so.23.3.0 $HOME/libsecp256k1.so.2.0.2
+ll $HOME/cardano-cli $HOME/libsodium.so.23 $HOME/libsecp256k1.so.2
 ```
 
 **戻り値確認**
-```yaml
+```yaml title="期待される表示例：" noCopy
 cardano-cli
-libsecp256k1.so.2.0.2
-libsodium.so.23.3.0
+libsecp256k1.so.2
+libsodium.so.23
 ```
+
+</Tab>
+</Tabs>
 
 <Callout type="warn" title="ファイル転送">
 
-USBを用いて`cardano-cli`、`libsodium.so.23.3.0`、`libsecp256k1.so.2.0.2`をエアギャップの$HOME/git/cardano-node2に移動します。
+USBを用いて`cardano-cli`、`libsecp256k1.so.2`、`libsodium.so.23`をエアギャップの$HOME/git/cardano-node2に移動します。
 ```mermaid
 graph LR
-    A[リレーサーバー] -->|cardano-cli / libsodium.so.23.3.0 / libsecp256k1.so.2.0.2| B[エアギャップ];
+    A[リレーサーバー] -->|cardano-cli / libsecp256k1.so.2 / libsodium.so.23| B[エアギャップ];
 ``` 
 
 </Callout>
 
 
-エアギャップマシンで以下を実行します。
+エアギャップで以下を実行します。
 <Tabs items={["エアギャップ"]}>
 <Tab value="エアギャップ">
 
@@ -1124,26 +1102,26 @@ sudo chmod +x /usr/local/bin/cardano-cli
 ```bash
 sudo mkdir -p /usr/local/lib
 ```
-**`lib`ディレクトリに`libsodium.so.23.3.0`、`libsecp256k1.so.2.0.2`を配置**
+**`lib`ディレクトリに`libsecp256k1.so.2`、`libsodium.so.23`を配置**
 ```bash
-sudo cp $HOME/git/cardano-node2/libsodium.so.23.3.0 /usr/local/lib/
+sudo cp $HOME/git/cardano-node2/libsecp256k1.so.2 /usr/local/lib/
 ```
 ```bash
-sudo cp $HOME/git/cardano-node2/libsecp256k1.so.2.0.2 /usr/local/lib/
+sudo cp $HOME/git/cardano-node2/libsodium.so.23 /usr/local/lib/
 ```
 
 **権限設定**
 ```bash
-sudo chown root:root /usr/local/lib/libsodium.so.23.3.0
+sudo chown root:root /usr/local/lib/libsecp256k1.so.2
 ```
 ```bash
-sudo chown root:root /usr/local/lib/libsecp256k1.so.2.0.2
+sudo chown root:root /usr/local/lib/libsodium.so.23
 ```
 ```bash
-sudo chmod 755 /usr/local/lib/libsodium.so.23.3.0
+sudo chmod 755 /usr/local/lib/libsecp256k1.so.2
 ```
 ```bash
-sudo chmod 755 /usr/local/lib/libsecp256k1.so.2.0.2
+sudo chmod 755 /usr/local/lib/libsodium.so.23
 ```
 
 **シンボリックリンク作成**
@@ -1151,20 +1129,14 @@ sudo chmod 755 /usr/local/lib/libsecp256k1.so.2.0.2
 cd /usr/local/lib
 ```
 
-**libsodium**
-```bash
-sudo ln -sf libsodium.so.23.3.0 libsodium.so.23
-```
-```bash
-sudo ln -sf libsodium.so.23 libsodium.so
-```
-
 **libsecp256k1**
 ```bash
-sudo ln -sf libsecp256k1.so.2.0.2 libsecp256k1.so.2
-```
-```bash
 sudo ln -sf libsecp256k1.so.2 libsecp256k1.so
+```
+
+**libsodium**
+```bash
+sudo ln -sf libsodium.so.23 libsodium.so
 ```
 
 **リンカーの更新**
@@ -1175,13 +1147,13 @@ sudo ldconfig
 
 **依存関係確認**
 ```bash
-ldd /usr/local/bin/cardano-cli
+ldd /usr/local/bin/cardano-cli | grep -E "secp|sodium"
 ```
 
 **戻り値確認**
-```yaml
-libsodium.so.23 => /usr/local/lib/libsodium.so.23
-libsecp256k1.so.2 => /usr/local/lib/libsecp256k1.so.2
+```yaml title="期待される表示例：" noCopy
+libsodium.so.23 => /usr/local/lib/libsodium.so.23 (*****)
+libsecp256k1.so.2 => /usr/local/lib/libsecp256k1.so.2 (*****)
 ```
 
 **cardano-cliの動作確認**
@@ -1190,13 +1162,10 @@ cardano-cli version
 ```
 
 **戻り値確認**
-```yaml
-cardano-cli 10.16.0.0 - linux-x86_64 - ghc-9.6  
-git rev 045bc187a36ef0cbd236db902b85dd8f202fb059
+```yaml title="期待される表示例：" noCopy
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 ```
-
-</Tab>
-</Tabs>
 
 
 </Tab>

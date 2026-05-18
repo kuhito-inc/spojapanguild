@@ -1,17 +1,16 @@
-import { getPageImage, getPageMarkdownUrl, source } from '@/lib/source';
+import { source } from '@/lib/source';
 import {
   DocsBody,
   DocsDescription,
   DocsPage,
   DocsTitle,
-  MarkdownCopyButton,
-  ViewOptionsPopover,
+  PageLastUpdate,
 } from 'fumadocs-ui/layouts/docs/page';
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/components/mdx';
 import type { Metadata } from 'next';
-import { createRelativeLink } from 'fumadocs-ui/mdx';
-import { gitConfig } from '@/lib/shared';
+
+const ogImageUrl = 'https://spojapanguild.net/wp-content/uploads/2022/04/ogp-image-main.png';
 
 export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   const params = await props.params;
@@ -19,27 +18,24 @@ export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   if (!page) notFound();
 
   const MDX = page.data.body;
-  const markdownUrl = getPageMarkdownUrl(page).url;
+  const lastModified =
+    'lastModified' in page.data && page.data.lastModified
+      ? new Date(page.data.lastModified as string | Date)
+      : null;
 
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
+    <DocsPage
+      toc={page.data.toc}
+      full={page.data.full}
+      tableOfContent={{ style: 'clerk' }}
+      tableOfContentPopover={{ style: 'clerk' }}
+    >
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
-      <div className="flex flex-row gap-2 items-center border-b pb-6">
-        <MarkdownCopyButton markdownUrl={markdownUrl} />
-        <ViewOptionsPopover
-          markdownUrl={markdownUrl}
-          githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${page.path}`}
-        />
-      </div>
       <DocsBody>
-        <MDX
-          components={getMDXComponents({
-            // this allows you to link to other pages with relative file paths
-            a: createRelativeLink(source, page),
-          })}
-        />
+        <MDX components={getMDXComponents()} />
       </DocsBody>
+      {lastModified && <PageLastUpdate date={lastModified} className="mt-10" />}
     </DocsPage>
   );
 }
@@ -57,7 +53,18 @@ export async function generateMetadata(props: PageProps<'/docs/[[...slug]]'>): P
     title: page.data.title,
     description: page.data.description,
     openGraph: {
-      images: getPageImage(page).url,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: page.data.title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      images: [ogImageUrl],
     },
   };
 }

@@ -2,23 +2,17 @@
 title: "監視ツール設定"
 ---
 
-# **監視ツール設定**
-
 プロメテウスはターゲットに指定したメトリックHTTPエンドポイントをスクレイピングし、情報を収集する監視ツールです。[オフィシャルドキュメントはこちら](https://prometheus.io/docs/introduction/overview/)  
 グラファナは収集されたデータを視覚的に表示させるダッシュボードツールです。
 
-## **1. インストール**
+## 1. インストール [#sec-1]
 
-<Callout type="info" title="概要">
-
-「prometheus」および「prometheus node exporter」をインストールします。  
-この手順では、**Grafana稼働サーバー（リレーサーバー1）**で`prometheus`と`Grafana`本体を稼働させ、各サーバーの情報を取得する方法です。
-
-</Callout>
+`prometheus` と `prometheus node exporter` をインストールします。  
+この手順では、**Grafana稼働サーバー（リレーサーバー1）** で`prometheus`と`Grafana`本体を稼働させ、各サーバーの情報を取得します。
 
 
 **構成図**
-``` mermaid
+```mermaid
     flowchart TB
         bp[ローカルPC] -- 3000ポート開放 --> a1[Grafana] 
         a2[prometheus] -- Grafana稼働サーバーのIP指定で<br />9100/12798ポート開放 --> ide2[BP] & ide3[リレー2]
@@ -126,17 +120,15 @@ sudo ufw reload
 </Tab>
 </Tabs>
 
-## **2. 設定ファイルの作成**
+## 2. 設定ファイルの作成 [#sec-2]
 
 Grafana稼働サーバーにインストールしたPrometheusの設定ファイルを作成します。  
 ここに記載されたサーバーのデータを取得します。
 
-<Callout type="warn" title="注意">
+**設定前に置き換える値**
 
-targets:の「xxx.xxx.xxx」は、BPのパブリックIP(静的)アドレスに置き換えて下さい。  
-targets:の「bb.xxx.xxx」は、リレー2のパブリックIP(静的)アドレスに置き換えて下さい。
-
-</Callout>
+- `xxx.xxx.xxx.xxx`：BPのパブリックIPアドレス
+- `bb.xxx.xxx.xxx`：リレー2のパブリックIPアドレス
 
 
 <Tabs items={["Grafana稼働サーバー"]}>
@@ -192,56 +184,47 @@ EOF
 <Tabs items={["Grafana稼働サーバー"]}>
 <Tab value="Grafana稼働サーバー">
 
-
+```bash
+sudo promtool check config $HOME/prometheus.yml
+```
 
 </Tab>
 </Tabs>
+構文エラーがない場合は、以下のように表示されます。
 
-  ```
-  sudo promtool check config $HOME/prometheus.yml
-  ```
-<Callout type="info" title="戻り値確認">
-
-構文エラーなしの場合
-```yaml
+```yaml title="正常時の表示例：" noCopy
 Checking /home/$USER/prometheus.yml
 SUCCESS: /home/$USER/prometheus.yml is valid prometheus config file syntax
 ```
 
-<Callout type="warn" title="構文エラーの場合(一例)">
+構文エラーがある場合は、以下のように表示されます。
 
-```yaml
+```yaml title="構文エラー時の表示例：" noCopy
 Checking /home/$USER/prometheus.yml
   FAILED: parsing YAML file /home/$USER/prometheus.yml: yaml: line **: did not find expected '-' indicator
 ```
 
-構文エラーだった場合は、$HOME/prometheus.ymlを開いて余分なスペースや記号の有無などを確認し、修正してください。
-```
+構文エラーだった場合は、`$HOME/prometheus.yml`を開き、余分なスペースや記号の有無を確認して修正してください。
+```bash
 sudo nano $HOME/prometheus.yml
 ```
 > 修正したら、`Ctrl + O`で保存し、Enter。その後`Ctrl + X`で閉じます。
 
-</Callout>
+**prometheus.ymlファイルのバックアップ**
+```bash
+sudo cp /etc/prometheus/prometheus.yml /etc/prometheus/prometheus.yml.bak
+```
 
+**prometheus.ymlファイルの移動**
+```bash
+sudo mv $HOME/prometheus.yml /etc/prometheus/prometheus.yml
+```
 
-</Callout>
-
-
-  **prometheus.ymlファイルのバックアップ**
-  ```bash
-  sudo cp /etc/prometheus/prometheus.yml /etc/prometheus/prometheus.yml.bak
-  ```
-
-  **prometheus.ymlファイルの移動**
-  ```bash
-  sudo mv $HOME/prometheus.yml /etc/prometheus/prometheus.yml
-  ```
-
-  **Grafanaプラグインのインストール**
-  ```
-  sudo grafana-cli plugins install yesoreyeram-infinity-datasource
-  ```
-  > GrafanaダッシュボードでJSONデータを取得するため、Infinity datasourceプラグインをインストールします。
+**Grafanaプラグインのインストール**
+```bash
+sudo grafana-cli plugins install yesoreyeram-infinity-datasource
+```
+> GrafanaダッシュボードでJSONデータを取得するため、Infinity datasourceプラグインをインストールします。
 
 **サービス再起動**
 
@@ -269,14 +252,11 @@ sudo systemctl --no-pager status grafana-server.service prometheus.service prome
 </Tab>
 </Tabs>
 
-<Callout type="info" title="戻り値確認">
+以下3つのサービスが緑色の `active (running)` になっていることを確認してください。
 
-* grafana-server.service
-* prometheus.service
-* prometheus-node-exporter.service  
-上記3つのプログラムが 緑色 `active (running)` になっていることを確認します。
-
-</Callout>
+- `grafana-server.service`
+- `prometheus.service`
+- `prometheus-node-exporter.service`
 
 
 **バージョン確認**
@@ -301,24 +281,18 @@ prometheus-node-exporter --version
 </Tab>
 </Tabs>
 
-<Callout type="info" title="戻り値確認">
-
 それぞれ以下のような形式で表示されれば正常です。
 
-```text
+```yaml title="表示例：" noCopy
 Version 12.4.1
 prometheus, version 2.45.3+ds
 node_exporter, version 1.7.0
 ```
 
-</Callout>
 
+### 既存の設定ファイルを更新する場合 [#sec-3]
 
-### **2-1. 既存の設定ファイルを更新する場合**
-
-<Callout type="info" title="既存ファイルの更新">
-
-```
+```bash
 sudo nano /etc/prometheus/prometheus.yml
 ```
 > 修正したら、`Ctrl + O`で保存し、Enter。その後`Ctrl + X`で閉じます。
@@ -327,46 +301,36 @@ sudo nano /etc/prometheus/prometheus.yml
 <Tabs items={["Grafana稼働サーバー"]}>
 <Tab value="Grafana稼働サーバー">
 
-
+```bash
+sudo promtool check config /etc/prometheus/prometheus.yml
+```
 
 </Tab>
 </Tabs>
 
-  ```
-  sudo promtool check config /etc/prometheus/prometheus.yml
-  ```
+構文エラーがない場合は、以下のように表示されます。
 
-<Callout type="info" title="戻り値確認">
-
-構文エラーなしの場合
-```yaml
+```yaml title="正常時の表示例：" noCopy
 Checking /etc/prometheus/prometheus.yml
 SUCCESS: /etc/prometheus/prometheus.yml is valid prometheus config file syntax
 ```
 
-<Callout type="warn" title="構文エラーの場合(一例)">
+構文エラーがある場合は、以下のように表示されます。
 
-```yaml
+```yaml title="構文エラー時の表示例：" noCopy
 Checking /etc/prometheus/prometheus.yml
   FAILED: parsing YAML file /etc/prometheus/prometheus.yml: yaml: line **: did not find expected '-' indicator
 ```
-/etc/prometheus/prometheus.ymlを開いて余分なスペースや記号の有無などを確認してください。
-
-</Callout>
-
-
-</Callout>
+`/etc/prometheus/prometheus.yml`を開き、余分なスペースや記号の有無を確認してください。
 
 
 **サービスの再起動**
-```
+```bash
 sudo systemctl restart prometheus.service
 ```
 
-</Callout>
 
-
-## **3. Grafanaダッシュボードの設定**
+## 3. Grafanaダッシュボードの設定 [#sec-4]
 
 1. ローカルPCのブラウザから http://Grafana稼働サーバーIPアドレス:3000 を開きます。
 2. ログイン名・PWは **admin** / **admin**
@@ -390,8 +354,8 @@ curl -s -o $NODE_HOME/SJG_Grafana_Dashboard.json https://raw.githubusercontent.c
 ```
 ```bash
 sed -i \
-    -e "s/bech32_id_of_your_pool/$(cat $NODE_HOME/pool.id-bech32)/g" \
-    $NODE_HOME/SJG_Grafana_Dashboard.json
+  -e "s/bech32_id_of_your_pool/$(cat $NODE_HOME/pool.id-bech32)/g" \
+  $NODE_HOME/SJG_Grafana_Dashboard.json
 ```
 12. BPの`cnode`フォルダにある`SJG_Grafana_Dashboard.json`をローカルPCにダウンロードします。  
 13. 左ペインの「**Dashboards**」→「**New**」→「**`Import`**」を選択します。  
@@ -400,18 +364,11 @@ sed -i \
 
 ![Grafana system health dashboard](/images/grafana-dashboard-sample.png)
 
-<Callout type="info" title="🎉">
-
 これで基本的な監視設定は完了です。
 
 以下の追加設定も実施してください。
 
-* [Grafanaアラート設定](../operation/grafana-alert.md)
-* [Grafanaセキュリティ強化](../operation/grafana-security.md)
-
-</Callout>
-
+- [Grafanaアラート設定](/docs/cardano/operation/grafana-alert)
+- [Grafanaセキュリティ強化](/docs/cardano/operation/grafana-security)
 
 ---
-
-

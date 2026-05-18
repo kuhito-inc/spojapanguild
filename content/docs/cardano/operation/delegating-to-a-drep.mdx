@@ -2,8 +2,6 @@
 title: "委任代表者（DRep）への委任"
 ---
 
-# **委任代表者（DRep）への委任**
-
 Cardanoエコシステムでは、委任代表者（DRep）が、ADA保有者に代わってガバナンスアクションへの投票を行います。
 
 投票権をDRepに委任するには、投票委任証明書を作成し、ブロックチェーンに送信します。
@@ -199,12 +197,15 @@ cardano-cli latest transaction sign \
 
 ```bash
 cardano-cli latest transaction submit \
-    --tx-file $NODE_HOME/governance/tx.signed \
-    ${NODE_NETWORK}
+  --tx-file $NODE_HOME/governance/tx.signed \
+  ${NODE_NETWORK}
 ```
-
-> Transaction successfully submitted. Transaction hash is:  
-> &#123;"txhash":"****************************************************************"&#125;
+```yaml title="期待される表示例：" noCopy
+Transaction successfully submitted. Transaction hash is:  
+txhash:****************************************************************
+```
 
 </Tab>
 </Tabs>
+
+---

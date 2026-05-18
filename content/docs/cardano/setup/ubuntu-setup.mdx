@@ -2,11 +2,9 @@
 title: "Ubuntu初期設定"
 ---
 
-# **Ubuntu初期設定**
-
 <Callout type="info" title="ヒント">
 
-この手順は、エアギャップオフラインマシンのUbuntuでは実施する必要はございません。
+この手順は、エアギャップのUbuntuでは実施する必要はございません。
 
 </Callout>
 
@@ -19,7 +17,7 @@ title: "Ubuntu初期設定"
 
 
 
-## **1. サーバーログイン（初回のみ / root）**
+## 1. サーバーログイン（初回のみ / root） [#sec-1]
 
 <Callout type="warn" title="重要">
 
@@ -37,7 +35,7 @@ title: "Ubuntu初期設定"
 | **パスワード** | 契約時に送付される初期 root パスワード |
 
 
-## **2. ユーザーアカウント作成**
+## 2. ユーザーアカウント作成 [#sec-2]
 <Callout type="info" title="ヒント">
 
 日常運用では`root`アカウントを使用せず、sudo権限を付与した一般ユーザーで操作します。
@@ -53,7 +51,7 @@ title: "Ubuntu初期設定"
 adduser cardano
 ```
 
-```yaml
+```yaml title="期待される表示例：" noCopy
 New password:           # パスワードを設定
 Retype new password:    # 確認のため再入力
 
@@ -83,11 +81,9 @@ exit
 </Callout>
 
 
-**`Ubuntu 22.04`以降の設定**
-
 ブラケットペースト機能を無効化します。
 ```bash
-echo "set enable-bracketed-paste off" >> ~/.inputrc
+grep -qxF 'set enable-bracketed-paste off' ~/.inputrc || echo 'set enable-bracketed-paste off' >> ~/.inputrc
 ```
 > 設定反映のため、ターミナルから一度ログアウトして再ログインしてください。
 
@@ -99,7 +95,7 @@ echo "\$nrconf{restart} = 'a';" | sudo tee /etc/needrestart/conf.d/50local.conf
 echo "\$nrconf{blacklist_rc} = [qr(^cardano-node\\.service$) => 0, qr(^cnode-blocknotify\\.service$) => 0, qr(^cnode-cncli-sync\\.service$) => 0,];" | sudo tee -a /etc/needrestart/conf.d/50local.conf
 ```
 
-## **3. SSH設定変更**
+## 3. SSH設定変更 [#sec-3]
 
 <Callout type="info" title="SSH強化設定ルール">
 
@@ -129,7 +125,7 @@ mkdir -p ~/.ssh
 
 <Callout type="warn" title="ファイル転送">
 
-[事前準備](../setup/index.md/#_2)で生成した`authorized_keys`を対象サーバーの`$HOME/.ssh`ディレクトリにコピーします。
+[SSH鍵作成](/docs/cardano/setup#sec-3)で生成した`authorized_keys`を対象サーバーの`$HOME/.ssh`ディレクトリにコピーします。
 ```mermaid
 graph LR
     A[ローカルのホストマシン] -->|authorized_keys| B[対象サーバー];
@@ -169,7 +165,7 @@ sudo sshd -t
 ```bash
 sudo sshd -T | grep -iE 'passwordauthentication|kbdinteractiveauthentication|permitrootlogin|port'
 ```
-```yaml
+```yaml title="期待される表示例：" noCopy
 port xxxxx
 permitrootlogin no
 passwordauthentication no
@@ -181,9 +177,14 @@ gatewayports no
 ```bash
 sudo systemctl status ssh.socket
 ```
-> active (running)になっていることを確認します。
+```yaml title="期待される表示例：" noCopy
+● ssh.socket - OpenBSD Secure Shell server socket
+~~~
+     Active: active (running) 
+```
 
-<Callout type="info" title="activeではない場合">
+<AccordionsYellow type="single">
+  <Accordion id="ubuntu-setup-ssh-socket-not-active" title="activeではない場合">
 
 ```bash
 sudo systemctl enable --now ssh.socket
@@ -191,9 +192,14 @@ sudo systemctl enable --now ssh.socket
 ```bash
 sudo systemctl status ssh.socket
 ```
-> active (running)になっていることを確認します。
+```yaml title="期待される表示例：" noCopy
+● ssh.socket - OpenBSD Secure Shell server socket
+~~~
+     Active: active (running) 
+```
 
-</Callout>
+  </Accordion>
+</AccordionsYellow>
 
 
 問題がなければ、SSHサービスを再起動します。
@@ -208,12 +214,12 @@ sudo systemctl restart ssh.socket
 ```bash
 sudo ss -tlnp | grep ssh
 ```
-```yaml
+```yaml title="期待される表示例：" noCopy
 LISTEN 0 4096 0.0.0.0:<設定したSSH Port>  
 LISTEN 0 4096 [::]:<設定したSSH Port>  
 ```
 
-<Callout type="info" title="ターミナルソフト設定について">
+<Callout type="warning" title="ターミナルソフト設定について">
 
 - 現在起動中のターミナルは接続したままにしてもう一つ起動してください。
 - 接続設定のSSHポート番号を変更し秘密鍵を設定しサーバーへログインできるか確認して下さい。
@@ -222,26 +228,20 @@ LISTEN 0 4096 [::]:<設定したSSH Port>
 </Callout>
 
 
-## **4. ファイアウォール有効化**
+## 4. ファイアウォール有効化 [#sec-4]
 
 標準のファイアウォール（UFW）を使用して、インバウンドのアクセス可能なポートを限定します。
 
 <Callout type="warn" title="注意事項">
 
-<Callout type="info" title="設定前の注意事項">
+- **設定前の注意事項**
 
-ご利用のVPSによっては管理画面からファイアウォールを設定する必要があります。（例AWS系など）  
+ご利用のVPSによっては管理画面からファイアウォールを設定する必要があります。（例：AWS系など）  
 その場合は以下の設定を行わず、VPSマイページ管理画面などから個別に設定してください。
 
-</Callout>
+- **さくらVPSをご利用の場合**
 
-
-<Callout type="info" title="さくらVPSをご利用の場合">
-
-管理画面からパケットフィルターを、”利用しない”に設定してください。    
-
-</Callout>
-
+管理画面からパケットフィルターを、`利用しない`に設定してください。    
 
 </Callout>
 
@@ -268,12 +268,13 @@ sudo ufw --force enable
 ```bash
 sudo ufw status
 ```
-以下の戻り値があればOK
-> Status: active
+```yaml title="期待される表示例：" noCopy
+Status: active
+```
 
-## **5. システム更新**
+## 5. システム更新 [#sec-5]
 
-<Callout type="info" title="重要">
+<Callout type="warning" title="重要">
 
 不正アクセスを予防するには、システムに最新のパッチを適用することが重要です。
 
@@ -305,11 +306,11 @@ sudo dpkg-reconfigure --priority=low unattended-upgrades
 > `YES`を選択し、Enterを押下
 
 
-## **6. rootアカウントの無効化設定**
+## 6. rootアカウントの無効化設定 [#sec-6]
 `root`アカウントを無効化します。
 > サーバーのセキュリティ維持のため、頻繁に root アカウントでログインしないでください。
 
-<Callout type="info" title="`root`アカウント無効">
+<Callout type="info" title="rootアカウント無効">
 
 ```bash
 sudo passwd -l root
@@ -318,18 +319,20 @@ sudo passwd -l root
 </Callout>
 
 
-<Callout type="info" title="`root`アカウント有効">
+<AccordionsRed type="single">
+  <Accordion id="ubuntu-setup-root-account-enable" title="rootアカウント有効">
 
+何らかの理由でrootアカウントを有効にする必要がある場合のみ有効にします。
 ```bash
 sudo passwd -u root
 ```
-> 何らかの理由でrootアカウントを有効にする必要がある場合
 
-</Callout>
+  </Accordion>
+</AccordionsRed>
 
 
 
-## **7. 共有メモリのセキュリティ強化**
+## 7. 共有メモリのセキュリティ強化 [#sec-7]
 
 システムで共有されるメモリを保護します。
 
@@ -342,18 +345,18 @@ echo 'tmpfs /dev/shm tmpfs ro,noexec,nosuid 0 0' | sudo tee -a /etc/fstab
 ```bash
 tail -n 1 /etc/fstab
 ```
-> `tmpfs /dev/shm tmpfs ro,noexec,nosuid 0 0`が最終行に入力されていることを確認します。
 
-## **8. Fail2banのインストール**
+```yaml title="期待される表示例：" noCopy
+tmpfs /dev/shm tmpfs ro,noexec,nosuid 0 0
+```
 
-<Callout type="info" title="Fail2banについて">
+## 8. Fail2banのインストール [#sec-8]
 
 Fail2banは、ログファイルを監視し、ログイン試行に失敗した特定のパターンを監視する侵入防止システムです。  
 特定のIPアドレスから、指定された時間内に一定数のログイン失敗が検知された場合、Fail2banはそのIPアドレスからのアクセスをブロックします。
 
-</Callout>
 
-
+インストールを行います。
 ```bash
 sudo apt install nano fail2ban -y
 ```
@@ -364,7 +367,8 @@ sudo nano /etc/fail2ban/jail.local
 ```
 
 ファイルの最後に次の行を追加し保存します。
-> コマンド中の (SSHポートを入力してください) については[3. SSH設定変更](../setup/ubuntu-setup.md/#3-ssh)で設定したSSHポートを入力してください。(**)は不要です。
+> コマンド中の (SSHポートを入力してください) については[3. SSH設定変更](/docs/cardano/setup/ubuntu-setup#sec-3)で設定したSSHポートを入力してください。  
+(**)は不要です。
 
 ```bash
 [sshd]
@@ -387,9 +391,14 @@ sudo systemctl enable --now fail2ban
 ```bash
 sudo systemctl status fail2ban --no-pager
 ```
-> `Active: active (running)`となっていることを確認してください。
+```yaml title="期待される表示例：" noCopy
+● fail2ban.service - Fail2Ban Service
+~~~
+     Active: active (running)
+```
 
-## **9. Chronyの設定**
+
+## 9. Chronyの設定 [#sec-9]
 
 chronyをインストールします。
 ```bash
@@ -402,7 +411,6 @@ sudo mv /etc/chrony/chrony.conf /etc/chrony/chrony-bk.conf
 ```
 
 `/etc/chrony/chrony.conf`を更新します。
-> 以下をすべてコピーして実行してください。
 
 ```bash
 cat > $HOME/chrony.conf << EOF
@@ -475,7 +483,7 @@ chronyc tracking
 </Callout>
 
 
-## **10. sysctlの設定**
+## 10. sysctlの設定 [#sec-10]
 
 <Tabs items={["リレー", "BP"]}>
 <Tab value="リレー">
@@ -610,19 +618,20 @@ cat $HOME/sysctl-before-cardano-*.txt
 </Callout>
 
 
-## **補足：SSH2段階認証（任意作業・上級者向け）**
+## 補足：SSH2段階認証（任意作業・上級者向け） [#sec-11]
 
 <Callout type="error" title="注意">
 
 本設定は必須ではありません。  
-ただし、本手順を実施したサーバーでは、SSHログインに2FAを要求します（= `Google Authenticator` 未設定ユーザーはログインできません）。  
+本手順を実施したサーバーでは、SSHログインに2FAを要求します（= `Google Authenticator` 未設定ユーザーはログインできません）。  
 本番サーバー（VPS 等）で適用する場合は、必ず復旧手段（クラウドコンソール等）と予備セッションを確保してから実施してください。
 
 </Callout>
 
     
 
-<Callout type="info" title="`Google Authenticator`を用いたSSH2段階設定（任意）">
+<AccordionsBlue type="single">
+  <Accordion id="ubuntu-setup-ssh-google-authenticator" title="Google Authenticatorを用いたSSH2段階設定">
 
 システムを更新して`libpam-google-authenticator`をインストールします。
 
@@ -650,17 +659,17 @@ google-authenticator
 
 - `認証トークンを時間ベースにしたいですか？`に対して「`y`」を入力します。
 > 表示される `secret key` / `スクラッチコード` は、スクリーンショットではなく安全な保管方法（オフライン保管等）で保存してください。
-```yaml
+```yaml title="期待される表示例：" noCopy
 Do you want authentication tokens to be time-based (y/n) : y
 ```
 
 - `Google Authenticator`でQRコードを読み込み、表示された6桁のコードを入力
-```yaml
+```yaml title="期待される表示例：" noCopy
 Enter code from app (-1 to skip) : ******
 ```
 
 - スクラッチコードも控えておきます。
-```yaml
+```yaml title="期待される表示例：" noCopy
 Code confirmed
 Your emergency scratch codes are : 
   ********
@@ -671,19 +680,19 @@ Your emergency scratch codes are :
 ```
 
 - `「/home/$USER/.google_authenticator」ファイルを更新しますか？`に対して「`y`」を入力
-```yaml
+```yaml title="期待される表示例：" noCopy
 Do you want me to update your "/home/$USER/.google_authenticator" file? (y/n) : y
 ```
 
 - `同じ認証トークンの複数回使用を禁止しますか？これにより、約30秒ごとに1回のログインに制限されますが、中間者攻撃を検知したり、防止したりする可能性が高まります。`に対して「`y`」を入力
-```yaml
+```yaml title="期待される表示例：" noCopy
 Do you want to disallow multiple uses of the same authentication
 token? This restricts you to one login about every 30s, but it increases
 your chances to notice or even prevent man-in-the-middle attacks (y/n) : y
 ```
 
 - `デフォルトでは、モバイルアプリによって30秒ごとに新しいトークンが生成されます。クライアントとサーバー間の時刻のずれを補正するため、現在時刻の前後に追加のトークンを許可しています。これにより、認証サーバーとクライアント間の時刻のずれは最大30秒まで許容されます。時刻同期がうまくいかない場合は、ウィンドウサイズをデフォルトの3コード（前のコード1つ、現在のコード、次のコード）から17コード（前のコード8つ、現在のコード、次のコード8つ）に増やすことができます。これにより、クライアントとサーバー間の時刻のずれ最大4分まで許容されます。これを実行しますか？`に対して「`n`」を入力
-```yaml
+```yaml title="期待される表示例：" noCopy
 By default, a new token is generated every 30 seconds by the mobile app.
 In order to compensate for possible time-skew between the client and the server,
 we allow an extra token before and after the current time. This allows for a
@@ -697,7 +706,7 @@ Do you want to do so? (y/n) : n
 ```
 
 - `ログイン先のコンピューターがブルートフォース攻撃によるログイン試行に対して強化されていない場合は、認証モジュールのレート制限を有効にすることができます。デフォルトでは、攻撃者によるログイン試行は30秒ごとに3回までに制限されます。レート制限を有効にしますか？`に対して「`y`」を入力
-```yaml
+```yaml title="期待される表示例：" noCopy
 If the computer that you are logging into isn't hardened against brute-force
 login attempts, you can enable rate-limiting for the authentication module.
 By default, this limits attackers to no more than 3 login attempts every 30s.
@@ -728,7 +737,7 @@ echo 'auth required pam_google_authenticator.so' | sudo tee -a /etc/pam.d/sshd >
 ```bash
 grep -n -E 'common-auth|pam_google_authenticator' /etc/pam.d/sshd
 ```
-```yaml
+```yaml title="期待される表示例：" noCopy
 4:# @include common-auth
 56:auth required pam_google_authenticator.so
 ```
@@ -750,7 +759,7 @@ sudo grep -RIn --color=auto \
   -E '^\s*KbdInteractiveAuthentication\s+no\b' \
   /etc/ssh/sshd_config /etc/ssh/sshd_config.d 2>/dev/null
 ```
-```yaml
+```yaml title="期待される表示例：" noCopy
 /etc/ssh/sshd_config:61:KbdInteractiveAuthentication no
 /etc/ssh/sshd_config.d/01-custom-ssh.conf:2:KbdInteractiveAuthentication no
 ```
@@ -775,14 +784,14 @@ sudo systemctl restart ssh.socket
 ```bash
 sudo sshd -T | egrep -i 'usepam|kbdinteractiveauthentication|authenticationmethods|passwordauthentication'
 ```
-```yaml
+```yaml title="期待される表示例：" noCopy
 usepam yes
 passwordauthentication no
 kbdinteractiveauthentication yes
 authenticationmethods publickey,keyboard-interactive
 ```
 
-### **最終確認（必須）**
+**最終確認**
 
 既存の SSH セッションは切断せず、**別ターミナルから新規接続**を行い、以下を必ず確認してください。
 
@@ -793,7 +802,7 @@ authenticationmethods publickey,keyboard-interactive
 以下の実効値が表示されていれば、設定は正しく反映されています。
 
 
-## **SSH 2FA（Google Authenticator）完全クリーンアップ**
+**SSH 2FA（Google Authenticator）完全クリーンアップ**
 
 SSH 側：2FA 強制を解除
 ```bash
@@ -811,7 +820,7 @@ sudo systemctl restart ssh.socket
 ```bash
 sudo sshd -T | egrep -i 'authenticationmethods|kbdinteractiveauthentication'
 ```
-```yaml 
+```yaml title="期待される表示例：" noCopy
 kbdinteractiveauthentication yes
 authenticationmethods any
 ```
@@ -829,7 +838,7 @@ sudo sed -i -E 's/^#\s*@include\s+common-auth/@include common-auth/' /etc/pam.d/
 ```bash
 grep -n -E 'common-auth|pam_google_authenticator' /etc/pam.d/sshd
 ```
-```yaml 
+```yaml title="期待される表示例：" noCopy
 4:@include common-auth
 ``` 
 
@@ -853,7 +862,8 @@ sudo apt autoremove -y
 rm -f ~/.google_authenticator
 ```
 
-</Callout>
+  </Accordion>
+</AccordionsBlue>
 
 
 ---

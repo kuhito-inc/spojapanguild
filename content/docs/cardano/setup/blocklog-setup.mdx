@@ -2,8 +2,6 @@
 title: "ブロックログ設定"
 ---
 
-# **ブロックログ設定**
-
 <Callout type="info" title="ブロックログについて">
 
 このツールはウロボロスにおける自プールのブロック生成スケジュールを事前に取得するツールです。  
@@ -12,7 +10,7 @@ title: "ブロックログ設定"
 </Callout>
 
 
-## **1. インストール要件**
+## 1. インストール要件 [#sec-1]
 
 <Callout type="info" title="設定サーバー">
 
@@ -34,36 +32,72 @@ title: "ブロックログ設定"
 
 <Callout type="info" title="プログラム構成図">
 
-``` mermaid
-    flowchart TB
-        a1[cardano-node] --> a2[logファイル]
-        a3 --> a5[leaderlog.service]
-        a3 --> a6[validate.service]
-        a1[cardano-node] --> a3[cncli.service]
-        a2 --> a4[logmonitor.service]
-        a3[cncli.service]
-        a4[logmonitor.service]
-        a5[leaderlog.service]
-        a6[validate.service]
-        subgraph Guild-DB
-            a7[cncli.db]
-            a8[blocklog.db]
-        end
-        subgraph ステータス通知
-            a9[blocknotify] --> 各アプリ
-        end
-        Guild-DB --> blocks.sh
-        a8[blocklog.db] --> a9[blocknotify]
-        a3[cncli.service] --> a7[cncli.db]
-        a5[leaderlog.service] --> a8[blocklog.db]
-        a6[validate.service] --> a8[blocklog.db]
+<svg
+  viewBox="0 0 1040 860"
+  role="img"
+  aria-label="cardano-node、CNCLI、Guild-DB、blocknotifyのプログラム構成図"
+  style={{ width: '100%', height: 'auto' }}
+>
+  <defs>
+    <marker id="program-diagram-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="currentColor" />
+    </marker>
+  </defs>
 
-```
+  <g fill="none" stroke="currentColor" strokeWidth="1.5" opacity="0.65" markerEnd="url(#program-diagram-arrow)">
+    <path d="M470 90 C330 115 210 130 150 190" />
+    <path d="M610 90 C730 120 800 140 835 190" />
+    <path d="M150 250 V325" />
+    <path d="M835 250 V325" />
+    <path d="M835 250 C730 285 630 285 570 325" />
+    <path d="M915 220 C1010 255 1030 330 940 500" />
+    <path d="M570 385 C570 455 635 470 670 500" />
+    <path d="M835 385 C835 455 780 470 735 500" />
+    <path d="M720 560 V680" />
+    <path d="M720 740 V795" />
+    <path d="M940 540 V660" />
+  </g>
+
+  <g fill="var(--color-fd-muted)" stroke="currentColor" strokeWidth="1" opacity="0.22">
+    <rect x="410" y="430" width="640" height="170" />
+    <rect x="570" y="635" width="300" height="215" />
+  </g>
+
+  <g fill="var(--color-fd-card)" stroke="currentColor" strokeWidth="1">
+    <rect x="430" y="40" width="180" height="60" />
+    <rect x="70" y="190" width="160" height="60" />
+    <rect x="755" y="190" width="160" height="60" />
+    <rect x="40" y="325" width="220" height="60" />
+    <rect x="470" y="325" width="200" height="60" />
+    <rect x="735" y="325" width="200" height="60" />
+    <rect x="640" y="500" width="160" height="60" />
+    <rect x="860" y="500" width="160" height="60" />
+    <rect x="635" y="680" width="170" height="60" />
+    <rect x="860" y="660" width="160" height="60" />
+    <rect x="655" y="795" width="130" height="50" />
+  </g>
+
+  <g fill="currentColor" fontSize="18" fontWeight="600" textAnchor="middle" dominantBaseline="middle">
+    <text x="520" y="70">cardano-node</text>
+    <text x="150" y="220">logファイル</text>
+    <text x="835" y="220">cncli.service</text>
+    <text x="150" y="355">logmonitor.service</text>
+    <text x="570" y="355">leaderlog.service</text>
+    <text x="835" y="355">validate.service</text>
+    <text x="710" y="455">Guild-DB</text>
+    <text x="720" y="530">blocklog.db</text>
+    <text x="940" y="530">cncli.db</text>
+    <text x="720" y="660">ステータス通知</text>
+    <text x="720" y="710">blocknotify</text>
+    <text x="940" y="690">blocks.sh</text>
+    <text x="720" y="820">各アプリ</text>
+  </g>
+</svg>
 
 </Callout>
 
 
-## **2. CNCLIインストール**
+## 2. CNCLIインストール [#sec-2]
 
 <Callout type="info" title="CNCLIについて">
 
@@ -85,7 +119,7 @@ chown $USER $HOME/.profile
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
-> 1) Proceed with standard installation (default - just press enter)が表示されたらEnter
+> `1) Proceed with standard installation (default - just press enter)`が表示されたらEnter
 
 ```bash
 source $HOME/.cargo/env
@@ -114,19 +148,24 @@ rm $HOME/cncli-${cncli_release}-x86_64-unknown-linux-gnu.tar.gz
 ```bash
 cncli --version
 ```
-> cncli v6.7.0
+```yaml title="期待される表示例：" noCopy
+cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
+```
 
-## **3. sqlite3のインストール**
+## 3. sqlite3のインストール [#sec-3]
 ```bash
 sudo apt install sqlite3
 ```
 ```bash
 sqlite3 --version
 ```
-> 3.31.1以上のバージョンがインストールされていれば問題ありません。
+```yaml title="期待される表示例：" noCopy
+3.45.1 2024-01-30 16:01:20 e876e51a0ed5c5b3126f52e532044363a014bc594cfefa87ffb5b82257ccalt1 (64-bit)
+```
+> `3.31.1`以上のバージョンがインストールされていれば問題ありません。
 
 
-## **4. 依存ファイルのダウンロード**
+## 4. 依存ファイルのダウンロード [#sec-4]
 
 ```bash
 cd $NODE_HOME/scripts
@@ -185,18 +224,18 @@ printf "\nプールID(bech32)は \e[32m${pool_bech32}\e[m です\n\n"
 ```
 
 <strong><span style={{color: "red"}}>ご自身のプールID `2種類`が表示されていることを確認してください</span></strong>  
-プールIDが表示されていない場合は、[こちらの手順](../setup/stake-pool-register.md/#4)を実行してください。  
+プールIDが表示されていない場合は、[こちらの手順](/docs/cardano/setup/stake-pool-register#sec-4)を実行してください。  
 
 **cncli.shファイルの修正**
 ```bash
 sed -i $NODE_HOME/scripts/cncli.sh \
--e '1,30s!#POOL_ID=""!POOL_ID="'${pool_hex}'"!' \
--e '1,30s!#POOL_ID_BECH32=""!POOL_ID_BECH32="'${pool_bech32}'"!' \
--e '1,30s!#POOL_VRF_SKEY=""!POOL_VRF_SKEY="${CNODE_HOME}/vrf.skey"!' \
--e '1,30s!#POOL_VRF_VKEY=""!POOL_VRF_VKEY="${CNODE_HOME}/vrf.vkey"!'
+  -e '1,30s!#POOL_ID=""!POOL_ID="'${pool_hex}'"!' \
+  -e '1,30s!#POOL_ID_BECH32=""!POOL_ID_BECH32="'${pool_bech32}'"!' \
+  -e '1,30s!#POOL_VRF_SKEY=""!POOL_VRF_SKEY="${CNODE_HOME}/vrf.skey"!' \
+  -e '1,30s!#POOL_VRF_VKEY=""!POOL_VRF_VKEY="${CNODE_HOME}/vrf.vkey"!'
 ```
 
-## **5. サービスファイル作成・登録**
+## 5. サービスファイル作成・登録 [#sec-5]
 ```bash
 mkdir -p $NODE_HOME/service
 cd $NODE_HOME/service
@@ -205,7 +244,7 @@ cd $NODE_HOME/service
 <Tabs items={["cncli", "validate", "leaderlog", "logmonitor"]}>
 <Tab value="cncli">
 
-```bash title="このボックスはすべてコピーして実行してください"
+```bash
 cat > $NODE_HOME/service/cnode-cncli-sync.service << EOF 
 # file: /etc/systemd/system/cnode-cncli-sync.service
 
@@ -238,7 +277,7 @@ EOF
 </Tab>
 <Tab value="validate">
 
-```bash title="このボックスはすべてコピーして実行してください"
+```bash
 cat > $NODE_HOME/service/cnode-cncli-validate.service << EOF 
 # file: /etc/systemd/system/cnode-cncli-validate.service
 
@@ -270,7 +309,7 @@ EOF
 </Tab>
 <Tab value="leaderlog">
 
-```bash title="このボックスはすべてコピーして実行してください"
+```bash
 cat > $NODE_HOME/service/cnode-cncli-leaderlog.service << EOF
 # file: /etc/systemd/system/cnode-cncli-leaderlog.service
 
@@ -301,7 +340,7 @@ EOF
 </Tab>
 <Tab value="logmonitor">
 
-```bash title="このボックスはすべてコピーして実行してください"
+```bash
 cat > $NODE_HOME/service/cnode-logmonitor.service << EOF 
 # file: /etc/systemd/system/cnode-logmonitor.service
 
@@ -354,7 +393,7 @@ sudo systemctl enable --now cnode-cncli-sync.service cnode-cncli-validate.servic
 **便利なエイリアス設定**
 <Callout type="info" title="エイリアス設定">
 
-スクリプトへのパスを通し、エイリアスで起動出来るようにする。
+スクリプトへのパスを通し、エイリアスで起動出来るようにします。
 ```bash
 echo alias cnclilog='"journalctl --no-hostname -u cnode-cncli-sync -f"' >> $HOME/.bashrc
 echo alias validate='"journalctl --no-hostname -u cnode-cncli-validate -f"' >> $HOME/.bashrc
@@ -369,44 +408,52 @@ source $HOME/.bashrc
 
 以下のコマンドを入力して実行すると、サービスファイルログが閲覧できます。  
 単語を入力するだけで、起動状態(ログ)を確認できます。  
-`cnclilog`　`validate`　`leaderlog`　`logmonitor`
+
+> `cnclilog` の例：`cnode-cncli-sync`サービスのログが表示されます。  
+> `validate` の例：`cnode-cncli-validate`サービスのログが表示されます。  
+> `leaderlog` の例：`cnode-cncli-leaderlog`サービスのログが表示されます。  
+> `logmonitor` の例：`cnode-logmonitor`サービスのログが表示されます。  
 
 </Callout>
 
 
-## **6. ブロックチェーンとDBを同期**
+## 6. ブロックチェーンとDBを同期 [#sec-6]
 
 cncliログ確認
 ```bash
 cnclilog
 ```
 
-<Callout type="info" title="確認">
+<Callout type="info" title="ログ確認">
 
-* cncli同期確認「100.00% synced」になるまで待ちます。  
-100%になったら、Ctrl+cで閉じます。
+```yaml title="期待される表示例：" noCopy
+INFO cncli::nodeclient::sync: block ******** of ********: 100.00% sync'd
+```
+> `100.00% sync'd`になるまでお待ちください。
+> `Ctrl+c`で閉じます。
 
 </Callout>
 
 
-他サービスの起動確認
+他サービスの起動確認  
+以下のコマンドを入力して実行すると、サービスファイルログが閲覧できます。  
+単語を入力するだけで、起動状態(ログ)を確認できます。  
 
 <Tabs items={["validate", "leaderlog", "logmonitor"]}>
 <Tab value="validate">
 
 
-<Callout type="info" title="Info">
+<Callout type="info" title="ブロック検証確認">
 
-こちらのサービスは生成したブロックがブロックチェーン上に記録されているか照合します。
+> こちらのサービスは生成したブロックがブロックチェーン上に記録されているか照合します。
 
 ```bash
 validate
 ```
 
-以下の表示なら正常です。
-> ~ CNCLI Block Validation started ~
-
-Ctrl+cで閉じます
+```yaml title="期待される表示例：" noCopy
+~ CNCLI Block Validation started ~
+```
 
 </Callout>
 
@@ -415,20 +462,19 @@ Ctrl+cで閉じます
 <Tab value="leaderlog">
 
 
-<Callout type="info" title="Info">
+<Callout type="info" title="スロットリーダー確認">
 
 
-こちらのサービスはスロットリーダーを自動的に算出します。 
-次エポックの1.5日前から次エポックのスケジュールを算出することができます。
+> こちらのサービスはスロットリーダーを自動的に算出します。 
+> 次エポックの1.5日前から次エポックのスケジュールを算出することができます。
 
 ```bash
 leaderlog
 ```
 
-以下の表示なら正常です。  
-> ~ CNCLI Leaderlog started ~
-
-Ctrl+cで閉じます
+```yaml title="期待される表示例：" noCopy
+~ CNCLI Leaderlog started ~
+```
 
 </Callout>
 
@@ -437,20 +483,18 @@ Ctrl+cで閉じます
 <Tab value="logmonitor">
 
 
-<Callout type="info" title="Info">
+<Callout type="info" title="ログモニター確認">
 
-こちらのサービスはプールのノードログからブロック生成結果を抽出します。
+> こちらのサービスはプールのノードログからブロック生成結果を抽出します。
 
 ```bash
 logmonitor
 ```
 
-以下の表示なら正常です。  
-
-> ~~ LOG MONITOR STARTED ~~  
-> monitoring logs/node.json for traces
-
-Ctrl+cで閉じます
+```yaml title="期待される表示例：" noCopy
+~~ LOG MONITOR STARTED ~~
+monitoring ./logs/node.json for traces
+```
 
 </Callout>
 
@@ -458,7 +502,7 @@ Ctrl+cで閉じます
 </Tab>
 </Tabs>
 
-## **7. ブロックログを表示する**
+## 7. ブロックログを表示する [#sec-7]
 
 このツールでは上記で設定してきたプログラムを組み合わせ、割り当てられたスロットリーダーに対してのブロック生成結果をデータベースに格納し、確認することができます。
 
@@ -479,15 +523,11 @@ source $HOME/.bashrc
 
 </Callout>
 
-     
-
 
 ![](/images/blocks1.jpg)
 
 （ｓ）実績概要---エポック毎のブロック生成実績参照  
 （ｅ）エポック詳細---個別エポックのブロック生成スケジュールおよび生成実績参照
-
-![](/images/blocklog.jpg)
 
 ブロックステータス
 
@@ -504,7 +544,7 @@ source $HOME/.bashrc
 | **Invalid**    | プールはブロックの作成に失敗しました。base64でエンコードされたエラーメッセージがlogmonitorに表示されます |
  
 Invalidのエラー内容は次のコードでデコードできます 
-```
+```bash
 echo (base64コードを入れる) | base64 -d | jq -r
 ```
 
@@ -514,9 +554,9 @@ echo $LANG
 ```
 
 
-## **8. ブロック生成スケジュールと通知**
+## 8. ブロック生成スケジュールと通知 [#sec-8]
 
-[SPO BlockNotify設定](../setup/blocknotify-setup.md)を導入することでブロックログDBに保存されるブロック生成ステータスを`LINE`/`Slack`/`Discord`/`Telegram`に通知することができます。  
+[SPO BlockNotify設定](/docs/cardano/setup/blocknotify-setup)を導入することでブロックログDBに保存されるブロック生成ステータスを`LINE`/`Slack`/`Discord`/`Telegram`に通知することができます。  
 
 <Callout type="info" title="ブロック生成スケジュール取得のタイミング">
 
@@ -551,7 +591,7 @@ echo $LANG
 </Callout>
 
 
-## **9. CNCLI更新手順**
+## 9. CNCLI更新手順 [#sec-9]
 
 <Callout type="warn" title="注意">
 
@@ -581,22 +621,28 @@ rm $HOME/cncli-${cncli_release}-x86_64-unknown-linux-gnu.tar.gz
 ```bash
 cncli --version
 ```
-> cncli 6.7.0
+```yaml title="期待される表示例：" noCopy
+cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
+```
 
 **ノード再起動**
 ```bash
 sudo systemctl reload-or-restart cardano-node
 ```
-> ノードの同期を確認
 
 **ログ確認**
 ```bash
 cnclilog
 ```
->100% syncedになったことを確認
+```yaml title="期待される表示例：" noCopy
+~~~
+INFO cncli::nodeclient::sync: block ******* of *******: 100.00% sync'd
+```
+> `cncli同期確認「100.00% synced」`になるまで待ちます。  
+> `Ctrl+c`で閉じます。
 
 
-### **9-1. スケジュールにないブロックが生成される場合**
+### スケジュールにないブロックが生成される場合 [#sec-10]
 
 <Callout type="info" title="ヒント">
 
@@ -625,13 +671,17 @@ sudo systemctl restart cnode-cncli-sync.service
 ```bash
 cnclilog
 ```
-> 100% syncedになるまでお待ちください。
+```yaml title="期待される表示例：" noCopy
+INFO cncli::nodeclient::sync: block ******** of ********: 100.00% sync'd
+```
+> `100.00% sync'd`になるまでお待ちください。
 
 <Callout type="info" title="制作クレジット">
 
-このツールは海外ギルドオペレーター制作の[CNCLI By AndrewWestberg](https://github.com/cardano-community/cncli)、[Guild LiveView](https://cardano-community.github.io/guild-operators/#/Scripts/gliveview)、[BLOCK LOG for CNTools](https://cardano-community.github.io/guild-operators/#/Scripts/cntools)を組み合わせたツールとなっております。カスタマイズするにあたり、開発者の[AHLNET(AHL)](https://twitter.com/olaahlman)にご協力頂きました。ありがとうございます。
+このツールは海外ギルドオペレーター制作の[CNCLI By AndrewWestberg](https://github.com/cardano-community/cncli)、[Guild LiveView](https://cardano-community.github.io/guild-operators/#/Scripts/gliveview)、[BLOCK LOG for CNTools](https://cardano-community.github.io/guild-operators/#/Scripts/cntools)を組み合わせたツールとなっております。  
+カスタマイズするにあたり、開発者の[AHLNET(AHL)](https://twitter.com/olaahlman)にご協力頂きました。  
+ありがとうございます。
 
 </Callout>
-
 
 ---
