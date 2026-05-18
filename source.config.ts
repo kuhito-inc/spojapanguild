@@ -3,9 +3,6 @@ import lastModified from 'fumadocs-mdx/plugins/last-modified';
 import { parseCodeBlockAttributes, rehypeCodeDefaultOptions, remarkMdxMermaid } from 'fumadocs-core/mdx-plugins';
 import { metaSchema, pageSchema } from 'fumadocs-core/source/schema';
 
-/** 開発時は Shiki を単一テーマにして巨大 MDX の初回コンパイルを短縮する（本番は従来どおりライト/ダーク） */
-const isDev = process.env.NODE_ENV === 'development';
-
 function rehypeCodeOptionsWithCustomMeta() {
   const parseMetaString = (meta: string) => {
     const parsed = parseCodeBlockAttributes(meta, ['title', 'tab', 'allowCopy', 'allowcopy', 'noCopy', 'nocopy']);
@@ -24,19 +21,6 @@ function rehypeCodeOptionsWithCustomMeta() {
     data.__raw = parsed.rest;
     return data;
   };
-
-  if (isDev) {
-    // `theme` だけだと Shiki の dual-slot 用に github-light が参照され未ロードで落ちる。
-    // 両スロット同じテーマにするとハイライト負荷を抑えつつエラーを防ぐ。
-    return {
-      ...rehypeCodeDefaultOptions,
-      themes: {
-        light: 'github-dark',
-        dark: 'github-dark',
-      },
-      parseMetaString,
-    };
-  }
 
   return {
     ...rehypeCodeDefaultOptions,
