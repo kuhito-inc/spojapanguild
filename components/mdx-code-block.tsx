@@ -9,6 +9,9 @@ import { twMerge } from 'tailwind-merge';
 
 type MdxCodeBlockProps = ComponentPropsWithoutRef<'pre'> & {
   allowCopy?: boolean;
+  noCopy?: boolean | string | null;
+  nocopy?: boolean | string | null;
+  'data-no-copy'?: boolean | string;
   title?: string;
 };
 
@@ -28,10 +31,20 @@ function getCodeText(container: HTMLElement | null): string {
   return clone.textContent ?? '';
 }
 
+function hasNoCopyFlag(props: MdxCodeBlockProps): boolean {
+  return (
+    props.noCopy !== undefined ||
+    props.nocopy !== undefined ||
+    props['data-no-copy'] === true ||
+    props['data-no-copy'] === 'true'
+  );
+}
+
 export function MdxCodeBlock({ allowCopy = true, children, ...props }: MdxCodeBlockProps) {
   const areaRef = useRef<HTMLDivElement | null>(null);
   const [copied, setCopied] = useState(false);
   const viewportProps = ({ ref: areaRef } satisfies CodeBlockViewportProps) as unknown as ComponentPropsWithoutRef<'div'>;
+  const canCopy = allowCopy && !hasNoCopyFlag(props);
 
   const onCopy = async () => {
     const ok = await copyTextToClipboard(getCodeText(areaRef.current));
@@ -47,7 +60,7 @@ export function MdxCodeBlock({ allowCopy = true, children, ...props }: MdxCodeBl
       allowCopy={false}
       viewportProps={viewportProps}
       Actions={
-        allowCopy
+        canCopy
           ? ({ className, children: actionsChildren }) => (
               <div className={twMerge('empty:hidden', className)}>
                 <button

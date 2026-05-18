@@ -139,7 +139,9 @@ mark {
 }
 
 [data-no-copy] button[aria-label='Copy Text'],
-[data-no-copy] button[aria-label='Copied Text'] {
+[data-no-copy] button[aria-label='Copied Text'],
+[data-no-copy] button[aria-label='コードをコピー'],
+[data-no-copy] button[aria-label='コピー済み'] {
   display: none;
 }
 

@@ -13,13 +13,25 @@ import type { ComponentPropsWithoutRef } from 'react';
 type CustomPreProps = ComponentPropsWithoutRef<'pre'> & {
   allowCopy?: boolean | string;
   allowcopy?: boolean | string;
+  noCopy?: boolean | string | null;
+  nocopy?: boolean | string | null;
+  'data-no-copy'?: boolean | string;
   title?: string;
 };
 
-function normalizeBoolean(value: boolean | string | undefined): boolean | undefined {
+function normalizeBoolean(value: boolean | string | null | undefined): boolean | undefined {
   if (value === 'false') return false;
   if (value === 'true') return true;
   return typeof value === 'boolean' ? value : undefined;
+}
+
+function hasNoCopyFlag(props: CustomPreProps): boolean {
+  return (
+    props.noCopy !== undefined ||
+    props.nocopy !== undefined ||
+    props['data-no-copy'] === true ||
+    props['data-no-copy'] === 'true'
+  );
 }
 
 function ZoomableImage(props: ComponentPropsWithoutRef<'img'>) {
@@ -40,7 +52,7 @@ function CustomPre(props: CustomPreProps) {
     return <Mermaid chart={code} />;
   }
   const allowCopyValue = props.allowCopy ?? props.allowcopy;
-  const allowCopy = normalizeBoolean(allowCopyValue);
+  const allowCopy = hasNoCopyFlag(props) ? false : normalizeBoolean(allowCopyValue);
 
   return <MdxCodeBlock {...props} allowCopy={allowCopy} />;
 }
