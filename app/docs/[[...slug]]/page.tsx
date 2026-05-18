@@ -1,4 +1,4 @@
-import { getPageImage, source } from '@/lib/source';
+import { source } from '@/lib/source';
 import {
   DocsBody,
   DocsDescription,
@@ -9,6 +9,8 @@ import {
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/components/mdx';
 import type { Metadata } from 'next';
+
+const ogImageUrl = 'https://spojapanguild.net/wp-content/uploads/2022/04/ogp-image-main.png';
 
 export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   const params = await props.params;
@@ -47,17 +49,22 @@ export async function generateMetadata(props: PageProps<'/docs/[[...slug]]'>): P
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
-  const image = getPageImage(page).url;
-
   return {
     title: page.data.title,
     description: page.data.description,
     openGraph: {
-      images: image,
+      images: [
+        {
+          url: ogImageUrl,
+          width: 1200,
+          height: 630,
+          alt: page.data.title,
+        },
+      ],
     },
     twitter: {
       card: 'summary_large_image',
-      images: image,
+      images: [ogImageUrl],
     },
   };
 }

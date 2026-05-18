@@ -5,6 +5,7 @@ import { AccordionsBlue, AccordionsRed, AccordionsYellow, DocsAccordions } from 
 import { AnnotatedCode } from '@/components/docs-annotated-code';
 import { DocsMdxAnchor } from '@/components/docs-mdx-anchor';
 import { Mermaid } from '@/components/mermaid';
+import { MdxCodeBlock } from '@/components/mdx-code-block';
 import { MdxImage } from '@/components/mdx-image';
 import type { MDXComponents } from 'mdx/types';
 import type { ComponentPropsWithoutRef } from 'react';
@@ -38,11 +39,18 @@ function CustomPre(props: CustomPreProps) {
     const code = typeof child?.props?.children === 'string' ? child.props.children.trim() : '';
     return <Mermaid chart={code} />;
   }
-  const DefaultPre = defaultMdxComponents.pre as React.ComponentType<CustomPreProps>;
   const allowCopyValue = props.allowCopy ?? props.allowcopy;
   const allowCopy = normalizeBoolean(allowCopyValue);
 
-  return <DefaultPre {...props} allowCopy={allowCopy} />;
+  return <MdxCodeBlock {...props} allowCopy={allowCopy} />;
+}
+
+function DocsTable(props: ComponentPropsWithoutRef<'table'>) {
+  return (
+    <div className="sjg-table-wrap relative overflow-auto prose-no-margin my-6">
+      <table {...props} />
+    </div>
+  );
 }
 
 export function getMDXComponents(components?: MDXComponents) {
@@ -62,6 +70,7 @@ export function getMDXComponents(components?: MDXComponents) {
     ZoomImage: ZoomableImage,
     Mermaid,
     pre: CustomPre,
+    table: DocsTable,
     ...components,
   } satisfies MDXComponents;
 }

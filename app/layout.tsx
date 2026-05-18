@@ -1,7 +1,10 @@
+import { GoogleAnalyticsConsent } from '@/components/google-analytics-consent';
 import { SiteFooter } from '@/components/site-footer';
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
 import type { Metadata } from 'next';
+
+const ogImageUrl = 'https://spojapanguild.net/wp-content/uploads/2022/04/ogp-image-main.png';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://spojapanguild.net'),
@@ -18,7 +21,7 @@ export const metadata: Metadata = {
     siteName: 'SPO JAPAN GUILD',
     images: [
       {
-        url: '/opengraph-image',
+        url: ogImageUrl,
         width: 1200,
         height: 630,
         alt: 'SPO JAPAN GUILD ドキュメント',
@@ -31,7 +34,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'SPO JAPAN GUILD ドキュメント',
     description: 'Cardano / Midnight インフラ構築・運用ガイド',
-    images: ['/opengraph-image'],
+    images: [ogImageUrl],
   },
   icons: {
     icon: [{ url: '/images/favicon.png', type: 'image/png' }],
@@ -49,6 +52,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
             <SiteFooter />
           </div>
         </RootProvider>
+        <GoogleAnalyticsConsent />
       </body>
     </html>
   );
