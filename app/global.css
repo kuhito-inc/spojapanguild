@@ -180,9 +180,13 @@ mark {
   overflow-x: auto;
 }
 
-#nd-docs-layout .prose :where(table) {
-  width: max-content;
-  min-width: min(100%, 42rem);
+#nd-docs-layout .prose :where(.sjg-table-wrap) {
+  width: fit-content;
+  max-width: 100%;
+}
+
+#nd-docs-layout .prose :where(.sjg-table-wrap > table) {
+  width: auto;
 }
 
 #nd-docs-layout .prose :where(p, li, blockquote, td, th) {

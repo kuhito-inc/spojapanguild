@@ -45,6 +45,14 @@ function CustomPre(props: CustomPreProps) {
   return <DefaultPre {...props} allowCopy={allowCopy} />;
 }
 
+function DocsTable(props: ComponentPropsWithoutRef<'table'>) {
+  return (
+    <div className="sjg-table-wrap relative overflow-auto prose-no-margin my-6">
+      <table {...props} />
+    </div>
+  );
+}
+
 export function getMDXComponents(components?: MDXComponents) {
   return {
     ...defaultMdxComponents,
@@ -62,6 +70,7 @@ export function getMDXComponents(components?: MDXComponents) {
     ZoomImage: ZoomableImage,
     Mermaid,
     pre: CustomPre,
+    table: DocsTable,
     ...components,
   } satisfies MDXComponents;
 }
