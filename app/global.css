@@ -181,9 +181,8 @@ mark {
 }
 
 #nd-docs-layout .prose :where(table) {
-  display: block;
-  max-width: 100%;
-  overflow-x: auto;
+  width: max-content;
+  min-width: min(100%, 42rem);
 }
 
 #nd-docs-layout .prose :where(p, li, blockquote, td, th) {
