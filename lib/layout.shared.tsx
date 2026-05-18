@@ -53,18 +53,18 @@ export function baseOptions(): BaseLayoutProps {
     links: [
       {
         type: 'icon' as const,
-        url: 'https://x.com/spojapanguild',
-        text: 'X',
-        label: 'X',
-        icon: xIcon(),
-        external: true,
-      },
-      {
-        type: 'icon' as const,
         url: officialSiteUrl,
         text: '公式サイト',
         label: '公式サイト',
         icon: <Globe className="size-4" strokeWidth={2} />,
+        external: true,
+      },
+      {
+        type: 'icon' as const,
+        url: 'https://x.com/spojapanguild',
+        text: 'X',
+        label: 'X',
+        icon: xIcon(),
         external: true,
       },
       ...(discordInviteUrl
