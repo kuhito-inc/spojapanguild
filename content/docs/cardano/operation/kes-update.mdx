@@ -2,15 +2,13 @@
 title: "KESの更新"
 ---
 
-# **KESの更新**
-
 以降は、すべて手動で行うKES更新手順です。  
-ドキュメントとして記載しておきますが、<span style={{color: "red"}}>**実運用では、半自動更新が可能な[SJG TOOL](../operation/sjg-tool-setup.md)の利用を推奨します。**</span>
+ドキュメントとして記載しておきますが、実運用では、半自動更新が可能な[SJGツール](/docs/cardano/operation/sjg-tool-setup)の利用を推奨します。
 
 <Callout type="info" title="概要">
 
 **KESとは**
- **`Key Evolving Signature`**の略です。  
+`Key Evolving Signature`の略です。  
 
 キーを悪意のある攻撃者（クラッカー）からステークプールを保護するために作成されます。  
 90日ごとに再生成する必要があり、有効期限が切れる前に更新すれば期限内ならいつ更新しても問題ありません。  
@@ -41,7 +39,7 @@ title: "KESの更新"
 5. **BP**：オンチェーンカウンター番号を算出  
 6. **エアギャップ**：`node.counter`を生成  
 7. **BP**：現在の`KesPeriod`を算出  
-8. **エアギャップ**：`node.cert`を生成 ([項目7](../operation/kes-update.md/#7-bpkesperiod)で算出した`KesPeriod`を使うこと)   
+8. **エアギャップ**：`node.cert`を生成 ([項目7](/docs/cardano/operation/kes-update#sec-7)で算出した`KesPeriod`を使うこと)   
 9. **エアギャップ**：`node.cert`をBPのcnodeディレクトリへコピー  
 10. **BP** & **エアギャップ**：`node.cert`ファイルハッシュを比較  
 11. **BP**：ノードを再起動  
@@ -50,9 +48,9 @@ title: "KESの更新"
 
 
 
-## **1. KES更新タイミングの確認**
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
+## 1. KES更新タイミングの確認 [#sec-1]
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 slotNumInt=`curl -s http://localhost:12798/metrics | grep cardano_node_metrics_slotNum_int | awk '{ print $2 }'`
@@ -64,10 +62,10 @@ echo "scale=6; ${slotNumInt} / 129600" | bc | awk '{printf "%.5f\n", $0}'
 </Tab>
 </Tabs>
 
-## **2. KESファイルのバックアップ、新規作成**
+## 2. KESファイルのバックアップ、新規作成 [#sec-2]
 既存ファイルのバックアップ
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cp $NODE_HOME/kes.vkey $NODE_HOME/kes-bk.vkey
@@ -86,7 +84,7 @@ KESファイルの新規作成
     ```
 
 
-## **3. KESファイルをエアギャップにコピー**
+## 3. KESファイルをエアギャップにコピー [#sec-3]
 BPで生成したKESファイル(`kes.skey`/`kes.vkey`)をエアギャップのcnodeディレクトリへコピー    
 
 <Callout type="warn" title="ファイル転送">
@@ -101,11 +99,11 @@ graph LR
 
 
 
-## **4. ハッシュ値の確認**
+## 4. ハッシュ値の確認 [#sec-4]
 BPとエアギャップで`kes.vkey`ファイルハッシュを比較します。  
 
-<Tabs items={["ブロックプロデューサー", "エアギャップ"]}>
-<Tab value="ブロックプロデューサー">
+<Tabs items={["BP", "エアギャップ"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -133,9 +131,9 @@ BPとエアギャップの両方で表示された戻り値を比較し、ハッ
 
 
 
-## **5. オンチェーンカウンター取得**
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
+## 5. オンチェーンカウンター取得 [#sec-5]
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 kesperiodinfo=$(cardano-cli latest query kes-period-info $NODE_NETWORK --op-cert-file $NODE_HOME/node.cert --out-file kesperiod.json)
@@ -159,7 +157,7 @@ rm kesperiod.json
 </Tab>
 </Tabs>
 
-## **6. カウンターファイル生成**
+## 6. カウンターファイル生成 [#sec-6]
 <Tabs items={["エアギャップ"]}>
 <Tab value="エアギャップ">
 
@@ -168,7 +166,7 @@ cd $NODE_HOME
 read -p "BPで算出した更新カウンター番号を入力してください: " cnt_No
 ```
 > 上記のコマンドをそのままコピーしてターミナルに入力してください。  
-> コマンド実行後に、数字入力モードになりますので[項目5](../operation/kes-update.md/#5)で確認した更新カウンター番号を入力します。
+> コマンド実行後に、数字入力モードになりますので[項目5](/docs/cardano/operation/kes-update#sec-5)で確認した更新カウンター番号を入力します。
 
 ```bash
 chmod u+rwx $HOME/cold-keys
@@ -189,9 +187,9 @@ cardano-cli latest text-view decode-cbor \
 </Tab>
 </Tabs>
 
-## **7. BPで現在の`KesPeriod`を算出**
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
+## 7. BPで現在の`KesPeriod`を算出 [#sec-7]
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -205,7 +203,7 @@ echo "startKesPeriod: ${startKesPeriod}"
 </Tab>
 </Tabs>
 
-## **8. `node.cert`ファイルの生成**  
+## 8. `node.cert`ファイルの生成 [#sec-8]
 次のコマンドで、新しい`node.cert`ファイルを作成します。
 
 <Tabs items={["エアギャップ"]}>
@@ -216,7 +214,7 @@ cd $NODE_HOME
 read -p "BPで算出した startKesPeriod を入力してください: " kes
 ```
 > 上記のコマンドをそのままコピーしてターミナルに入力してください。  
-> コマンド実行後に、数字入力モードになりますので[項目7](../operation/kes-update.md/#7-bpkesperiod)で算出した`startKesPeriod`の数字を入力します。  
+> コマンド実行後に、数字入力モードになりますので[項目7](/docs/cardano/operation/kes-update#sec-7)で算出した`startKesPeriod`の数字を入力します。  
 > 必ずBPで算出した値と一致していることを確認してから入力してください。
 
 </Tab>
@@ -258,12 +256,12 @@ chmod u+rwx $HOME/cold-keys
 
 
 
-## **9. `node.cert`ファイルをBPへコピー**
-エアギャップで生成した**`node.cert`**をBPのcnodeディレクトリへコピー
+## 9. `node.cert`ファイルをBPへコピー [#sec-9]
+エアギャップで生成した`node.cert`をBPのcnodeディレクトリへコピー
 
 <Callout type="warn" title="ファイル転送">
 
-エアギャップで生成した**`node.cert`**をBPのcnodeディレクトリにコピーします。
+エアギャップで生成した`node.cert`をBPのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
     A[エアギャップ] -->|node.cert| B[BP];
@@ -273,11 +271,11 @@ graph LR
 
 
 
-## **10. ハッシュ値確認**
+## 10. ハッシュ値確認 [#sec-10]
 BPとエアギャップで`node.cert`のハッシュ値が一致していることを確認します。
 
-<Tabs items={["ブロックプロデューサー", "エアギャップ"]}>
-<Tab value="ブロックプロデューサー">
+<Tabs items={["BP", "エアギャップ"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -303,22 +301,26 @@ BPとエアギャップで表示された戻り値を比較し、ハッシュ値
 
 
 
-## **11. ノード再起動**
-この手順を完了するため、ブロックプロデューサーを再起動してください。
+## 11. ノード再起動 [#sec-11]
+この手順を完了するため、BPを再起動してください。
 
-<Tabs items={["ブロックプロデューサー"]}>
-<Tab value="ブロックプロデューサー">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 sudo systemctl reload-or-restart cardano-node
 ```
+
+</Tab>
+</Tabs>
 
 `gLiveview`でノード同期を確認します。
 ```bash
 glive
 ```
 
-<Callout type="error" title="10分以上経ってもノードが同期を再開しない場合はこちら">
+<AccordionsRed type="single">
+  <Accordion id="kes-update-node-not-resuming-sync" title="10分以上経ってもノードが同期を再開しない場合はこちら">
 
 KES更新に失敗している可能性があります。  
 以下の手順でバックアップファイルから復元してください。  
@@ -345,14 +347,12 @@ sudo systemctl start cardano-node
 glive
 ```
 
-</Callout>
+  </Accordion>
+</AccordionsRed>
 
 
-</Tab>
-</Tabs>
-
-## **12. チェックプログラム実行**
-確認のため、**[SJG TOOL](../operation/sjg-tool-setup.md)**を実行します。
+## 12. チェックプログラム実行 [#sec-12]
+確認のため、[SJGツール](/docs/cardano/operation/sjg-tool-setup)を実行します。
 
 ```bash
 gtool
@@ -360,7 +360,7 @@ gtool
 > `[2] ブロック生成状態チェック`を選択します。
 
 
-## **13. バックアップファイル削除**
+## 13. バックアップファイル削除 [#sec-13]
 ブロック生成状態のチェックがすべて正常（OK）であることを確認したら、不要となったバックアップファイルを削除してください。
 
 ```bash

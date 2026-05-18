@@ -2,8 +2,6 @@
 title: "Midnightバリデーターセットアップマニュアル"
 ---
 
-# **Midnightバリデーターセットアップマニュアル**
-
 <Callout type="info" title="お知らせ">
 
 Midnight公式では、Testnet-02からMōhaluフェーズへの移行期間中の混乱防止および新アーキテクチャとの整合性確保を目的として、バリデータードキュメントを一時的に非公開としています。  
@@ -19,7 +17,7 @@ Midnight公式では、Testnet-02からMōhaluフェーズへの移行期間中�
 👉 他のバリデータやビルダーと交流するには、Midnight Discord に参加してください。
 [https://discord.com/invite/midnightnetwork](https://discord.com/invite/midnightnetwork)  
 
----
+{/*
 
 &lt;template&gt;
 
@@ -29,11 +27,11 @@ Midnight公式では、Testnet-02からMōhaluフェーズへの移行期間中�
 
 
 
-本マニュアルを実施する前に、**エアギャップマシン環境構築**と**Cardano Preview ネットワーク**において、
+本マニュアルを実施する前に、**エアギャップ環境構築**と**Cardano Preview ネットワーク**において、
 Cardano ステークプールの構築からブロック生成までの一連の作業を完了していることを前提とします。
 
-- [エアギャップ環境構築](../cardano/setup/air-gapped-setup/)
-- [カルダノステークプール構築ガイド](../cardano/setup/index.md)
+- [エアギャップ環境構築](/docs/cardano/setup/air-gapped-setup)
+- [カルダノステークプール構築ガイド](/docs/cardano/setup)
 - [SPOKIT](https://github.com/btbf/spokit)  
   > SPOKIT は、ノーコマンドで Cardano ステークプールの構築・管理を行える **Cardano SPO Tool Kit** です。
 
@@ -74,7 +72,7 @@ Midnightから`Preview`への移行アナウンスがあり次第、リポジト
 | 役割 | サービス | CPU | メモリ | ストレージ | 備考 |
 | --- | --- | --- | --- | --- | --- |
 | **ブロック生成ノード** | cardano-node | ≥4 vCPU | ≥8 GB | ≥100 GB SSD |  |
-| **リレーノード** | cardano-node | ≥4 vCPU | ≥8 GB | ≥100 GB SSD |  |
+| **リレー** | cardano-node | ≥4 vCPU | ≥8 GB | ≥100 GB SSD |  |
 
 **Cardanoインデクサーサーバー**：
 
@@ -97,8 +95,8 @@ Midnightから`Preview`への移行アナウンスがあり次第、リポジト
 | 役割 | サービス | CPU | メモリ | ストレージ | 備考 |
 | --- | --- | --- | --- | --- | --- |
 | **ブロック生成ノード** | cardano-node | ≥4 vCPU | 32 GB | 350 GB SSD |  |
-| **リレーノード-1** | cardano-node | ≥4 vCPU | 32 GB | 350 GB SSD |  |
-| **リレーノード-2** | cardano-node | ≥4 vCPU | 32 GB | 350 GB SSD | 冗長用 |
+| **リレー-1** | cardano-node | ≥4 vCPU | 32 GB | 350 GB SSD |  |
+| **リレー-2** | cardano-node | ≥4 vCPU | 32 GB | 350 GB SSD | 冗長用 |
 
 **Cardanoインデクサーサーバー**：
 
@@ -285,3 +283,7 @@ flowchart BT
 ---
 
 &lt;/template&gt;
+
+*/}
+
+---

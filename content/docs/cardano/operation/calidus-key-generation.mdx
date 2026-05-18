@@ -2,8 +2,6 @@
 title: "Calidusキー生成"
 ---
 
-# **Calidusキー生成**
-
 <Callout type="info" title="概要">
 
 - ステークプールの所有権を証明するための署名技術
@@ -14,14 +12,13 @@ title: "Calidusキー生成"
 </Callout>
 
 
+## 1. cardano-signerインストール [#sec-1]
 
-## **1. cardano-signerインストール**
-
-### **1-1. ブロックプロデューサー**
+### BP [#sec-2]
 
 **ダウンロード**
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 signer_release="$(curl -s https://api.github.com/repos/gitmachtl/cardano-signer/releases/latest | jq -r '.tag_name' | sed -e "s/^.\{1\}//")"
@@ -37,8 +34,8 @@ rm cardano-signer-${signer_release}_linux-x64.tar.gz
 </Tabs>
 
 **インストール** 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 sudo cp cardano-signer /usr/local/bin/cardano-signer
@@ -48,8 +45,8 @@ sudo cp cardano-signer /usr/local/bin/cardano-signer
 </Tabs>
 
 **バージョン確認**
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-signer --version
@@ -58,12 +55,12 @@ cardano-signer --version
 </Tab>
 </Tabs>
 
-### **1-2. エアギャップ**
+### エアギャップ [#sec-3]
 
 <Callout type="warn" title="ファイル転送">
 
-BPの`$HOME/git`にある`cardano-signer`をエアギャップマシンの`$HOME/git`にコピーします。
-``` mermaid
+BPの`$HOME/git`にある`cardano-signer`をエアギャップの`$HOME/git`にコピーします。
+```mermaid
 graph LR
     A[BP] -->|cardano-signer| B[エアギャップ];
 ```
@@ -72,8 +69,8 @@ graph LR
 
 
 **システムフォルダへコピー**
-<Tabs items={["エアギャップマシン"]}>
-<Tab value="エアギャップマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cd $HOME/git
@@ -85,8 +82,8 @@ sudo cp cardano-signer /usr/local/bin/cardano-signer
 </Tabs>
 
 **バージョン確認** 
-<Tabs items={["エアギャップマシン"]}>
-<Tab value="エアギャップマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 cardano-signer --version
@@ -95,7 +92,7 @@ cardano-signer --version
 </Tab>
 </Tabs>
 
-## **2. Calidusキー作成**
+## 2. Calidusキー作成 [#sec-4]
 
 <Callout type="error" title="Calidusキーとjsonファイルの取り扱いについて">
 
@@ -108,58 +105,63 @@ cardano-signer --version
 </Callout>
 
 
-??? "一つのペアキーで複数プールを登録する場合はこちら"
-    1. 1プール目のエアギャップ領域で`myCalidusKey`ペアキー発行します。
-    2. 2プール目のエアギャップ領域($NODE_HOME)にcalidusディレクトリを作成します。
-    ```bash
-    mkdir -p $NODE_HOME/calidus
-    ```
-    3. 作成したディレクトリに`myCalidusKey`**ペアキー(myCalidusKey.skey、myCalidusKey.vkey)のみ**をコピーします。
-    4. [3.メタデータ作成](../operation/calidus-key-generation.md/#3)から実行します。
+<AccordionsBlue type="single">
+  <Accordion id="calidus-multiple-pools-single-keypair" title="一つのペアキーで複数プールを登録する場合はこちら">
+
+1. 1プール目のエアギャップ領域で`myCalidusKey`ペアキー発行します。
+2. 2プール目のエアギャップ領域($NODE_HOME)にcalidusディレクトリを作成します。
+```bash
+mkdir -p $NODE_HOME/calidus
+```
+3. 作成したディレクトリに`myCalidusKey` **ペアキー(`myCalidusKey.skey`、`myCalidusKey.vkey`)のみ** をコピーします。
+4. [3.メタデータ作成](/docs/cardano/operation/calidus-key-generation#sec-5)から実行します。
+
+  </Accordion>
+</AccordionsBlue>
 
 **`myCalidusKey`ペアキー発行**
 
-<Tabs items={["エアギャップマシン"]}>
-<Tab value="エアギャップマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 mkdir -p $NODE_HOME/calidus
 cd $NODE_HOME/calidus
 cardano-signer keygen --path calidus \
-    --out-skey myCalidusKey.skey \
-    --out-vkey myCalidusKey.vkey \
-    --json-extended \
-    --out-file Calidus-MnemonicsKey.json
+  --out-skey myCalidusKey.skey \
+  --out-vkey myCalidusKey.vkey \
+  --json-extended \
+  --out-file Calidus-MnemonicsKey.json
 ```
 
 </Tab>
 </Tabs>
 
-## **3. メタデータ作成**
+## 3. メタデータ作成 [#sec-5]
 
 **プール秘密鍵で署名したメタデータの作成**  
-<Tabs items={["エアギャップマシン"]}>
-<Tab value="エアギャップマシン">
+<Tabs items={["エアギャップ"]}>
+<Tab value="エアギャップ">
 
 ```bash
 chmod u+rwx $HOME/cold-keys
 cardano-signer sign --cip88 \
-    --calidus-public-key $NODE_HOME/calidus/myCalidusKey.vkey \
-    --secret-key $HOME/cold-keys/node.skey \
-    --json \
-    --out-file $NODE_HOME/calidus/myCalidusRegistrationMetadata.json
+  --calidus-public-key $NODE_HOME/calidus/myCalidusKey.vkey \
+  --secret-key $HOME/cold-keys/node.skey \
+  --json \
+  --out-file $NODE_HOME/calidus/myCalidusRegistrationMetadata.json
 chmod a-rwx $HOME/cold-keys
 ```
 
 </Tab>
 </Tabs>
 
-## **4. オンチェーン登録**
+## 4. オンチェーン登録 [#sec-6]
 
 最新のスロット番号を取得します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cd $NODE_HOME
@@ -177,8 +179,8 @@ echo Current Slot: $currentSlot
 </Callout>
 
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 amountToSend=10000000
@@ -190,8 +192,8 @@ echo "送金額: $amountToSend Lovelace"
 
 送金先のアドレスを設定します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 destinationAddress=$(echo $(cat $NODE_HOME/payment.addr))
@@ -203,15 +205,15 @@ echo 送金先: $destinationAddress
 
 payment.addrの残高を算出します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 cardano-cli latest query utxo \
-    --address $(cat payment.addr) \
-    $NODE_NETWORK \
-    --output-text \
-    --out-file fullUtxo.out
+  --address $(cat payment.addr) \
+  $NODE_NETWORK \
+  --output-text \
+  --out-file fullUtxo.out
 ```
 ```bash
 tail -n +3 fullUtxo.out | sort -k3 -nr | sed -e '/lovelace + [0-9]/d' > balance.out
@@ -223,20 +225,20 @@ cat balance.out
 
 UTXOを算出します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 tx_in=""
 total_balance=0
 while read -r utxo; do
-    in_addr=$(awk '{ print $1 }' <<< "${utxo}")
-    idx=$(awk '{ print $2 }' <<< "${utxo}")
-    utxo_balance=$(awk '{ print $3 }' <<< "${utxo}")
-    total_balance=$((${total_balance}+${utxo_balance}))
-    echo TxHash: ${in_addr}#${idx}
-    echo ADA: ${utxo_balance}
-    tx_in="${tx_in} --tx-in ${in_addr}#${idx}"
+  in_addr=$(awk '{ print $1 }' <<< "${utxo}")
+  idx=$(awk '{ print $2 }' <<< "${utxo}")
+  utxo_balance=$(awk '{ print $3 }' <<< "${utxo}")
+  total_balance=$((${total_balance}+${utxo_balance}))
+  echo TxHash: ${in_addr}#${idx}
+  echo ADA: ${utxo_balance}
+  tx_in="${tx_in} --tx-in ${in_addr}#${idx}"
 done < balance.out
 txcnt=$(cat balance.out | wc -l)
 echo Total ADA balance: ${total_balance}
@@ -260,8 +262,8 @@ EOF
 
 <Callout type="warn" title="ファイル転送">
 
-BPの`$NODE_HOME`にある`wallet_balance.sh`と`params.json`をエアギャップマシンのcnodeディレクトリにコピーします。
-``` mermaid
+BPの`$NODE_HOME`にある`wallet_balance.sh`と`params.json`をエアギャップのcnodeディレクトリにコピーします。
+```mermaid
 graph LR
     A[BP] -->|wallet_balance.sh / params.json| B[エアギャップ];
 ```
@@ -291,13 +293,13 @@ source $NODE_HOME/wallet_balance.sh
 ```bash
 cd $NODE_HOME
 cardano-cli latest transaction build-raw \
-    ${tx_in} \
-    --tx-out $(cat payment.addr)+${tempBalanceAmont} \
-    --tx-out ${destinationAddress}+${amountToSend} \
-    --invalid-hereafter $(( ${currentSlot} + 10000)) \
-    --metadata-json-file $NODE_HOME/calidus/myCalidusRegistrationMetadata.json \
-    --fee 200000 \
-    --out-file tx.tmp
+  ${tx_in} \
+  --tx-out $(cat payment.addr)+${tempBalanceAmont} \
+  --tx-out ${destinationAddress}+${amountToSend} \
+  --invalid-hereafter $(( ${currentSlot} + 10000)) \
+  --metadata-json-file $NODE_HOME/calidus/myCalidusRegistrationMetadata.json \
+  --fee 200000 \
+  --out-file tx.tmp
 ```
 
 </Tab>
@@ -310,10 +312,10 @@ cardano-cli latest transaction build-raw \
 
 ```bash
 fee=$(cardano-cli latest transaction calculate-min-fee \
-    --tx-body-file tx.tmp \
-    --witness-count 1 \
-    --output-text \
-    --protocol-params-file params.json | awk '{ print $1 }')
+  --tx-body-file tx.tmp \
+  --witness-count 1 \
+  --output-text \
+  --protocol-params-file params.json | awk '{ print $1 }')
 echo fee: $fee
 ```
 
@@ -340,13 +342,13 @@ echo Change Output: ${txOut}
 
 ```bash
 cardano-cli latest transaction build-raw \
-    ${tx_in} \
-    --tx-out $(cat payment.addr)+${txOut} \
-    --tx-out ${destinationAddress}+${amountToSend} \
-    --invalid-hereafter $(( ${currentSlot} + 10000)) \
-    --metadata-json-file $NODE_HOME/calidus/myCalidusRegistrationMetadata.json \
-    --fee ${fee} \
-    --out-file tx.raw
+  ${tx_in} \
+  --tx-out $(cat payment.addr)+${txOut} \
+  --tx-out ${destinationAddress}+${amountToSend} \
+  --invalid-hereafter $(( ${currentSlot} + 10000)) \
+  --metadata-json-file $NODE_HOME/calidus/myCalidusRegistrationMetadata.json \
+  --fee ${fee} \
+  --out-file tx.raw
 ```
 
 </Tab>
@@ -360,20 +362,20 @@ cardano-cli latest transaction build-raw \
 ```bash
 cd $NODE_HOME
 cardano-cli latest transaction sign \
-    --tx-body-file tx.raw \
-    --signing-key-file payment.skey \
-    $NODE_NETWORK \
-    --out-file tx.signed
+  --tx-body-file tx.raw \
+  --signing-key-file payment.skey \
+  $NODE_NETWORK \
+  --out-file tx.signed
 ```
 
 </Tab>
 </Tabs>
 
-**tx.signed** をブロックプロデューサーノードのcnodeディレクトリにコピーします。
+**tx.signed** をBPのcnodeディレクトリにコピーします。
 <Callout type="warn" title="ファイル転送">
 
 エアギャップの`tx.signed` をBPのcnodeディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|tx.signed| B[BP];
 ```
@@ -383,8 +385,8 @@ graph LR
 
 署名されたトランザクションを送信します。
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ウォレット残高情報ファイルの削除
 ```bash
@@ -399,8 +401,8 @@ echo TxID:$tx_id
 トランザクション送信
 ```bash
 cardano-cli latest transaction submit \
-    --tx-file tx.signed \
-    $NODE_NETWORK
+  --tx-file tx.signed \
+  $NODE_NETWORK
 ```
 
 </Tab>
@@ -408,16 +410,16 @@ cardano-cli latest transaction submit \
 
 > Transacsion Successfully submittedと表示されれば成功
 
-## **5. オンチェーン確認**
+## 5. オンチェーン確認 [#sec-7]
 ```bash
 curl -s "https://api.koios.rest/api/v1/pool_calidus_keys?pool_id_bech32=eq.$(cat $NODE_HOME/pool.id-bech32)" | jq .
 ```
 > 戻り値に、`"pool_status": "registered"`の項目があれば登録成功
 
-## **6. Calidusキー転送**
+## 6. Calidusキー転送 [#sec-8]
 
-<Tabs items={["ブロックプロデューサーノード"]}>
-<Tab value="ブロックプロデューサーノード">
+<Tabs items={["BP"]}>
+<Tab value="BP">
 
 ```bash
 mkdir -p $NODE_HOME/calidus
@@ -426,11 +428,11 @@ mkdir -p $NODE_HOME/calidus
 </Tab>
 </Tabs>
 
-エアギャップの`myCalidusKey.skey` をブロックプロデューサーノードのcnode/calidusディレクトリにコピーします。
+エアギャップの`myCalidusKey.skey` をBPのcnode/calidusディレクトリにコピーします。
 <Callout type="warn" title="ファイル転送">
 
 エアギャップの`myCalidusKey.skey`をBPのcnode/calidusディレクトリにコピーします。
-``` mermaid
+```mermaid
 graph LR
     A[エアギャップ] -->|myCalidusKey.skey| B[BP];
 ```
@@ -438,7 +440,7 @@ graph LR
 </Callout>
 
 
-## **7. ニーモニックフレーズを使い、Eternlでウォレット作成**
+## 7. ニーモニックフレーズを使い、Eternlでウォレット作成 [#sec-9]
 
 エアギャップにて以下のコマンドを実行し、ニーモニックフレーズを紙などにメモします。
 <Tabs items={["エアギャップ"]}>

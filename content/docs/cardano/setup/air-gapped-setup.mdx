@@ -2,76 +2,75 @@
 title: "エアギャップ環境構築"
 ---
 
-# **エアギャップ環境構築**
-<Callout type="info" title="エアギャップマシンとは">
-
-エアギャップマシンとは、ネットワークから完全に隔離されたオフライン環境で動作する専用マシンを指します。  
-ステークプール運用においては、ウォレットの秘密鍵およびプール運営用の秘密鍵を安全に管理し、**オフライン状態**で**`cardano-cli`**を用いたトランザクション署名を行うために使用します。  
-エアギャップの一般的な定義および考え方については、[Wikipediaの解説](https://ja.wikipedia.org/wiki/%E3%82%A8%E3%82%A2%E3%82%AE%E3%83%A3%E3%83%83%E3%83%97)をご参照ください。
+エアギャップとは、ネットワークから完全に隔離されたオフライン環境で動作する専用マシンを指します。  
+ステークプール運用では、ウォレットおよびプール運営用の秘密鍵を安全に管理し、**オフライン**で `cardano-cli` によるトランザクション署名を行うために使います。  
+背景の整理は [Wikipedia の解説](https://ja.wikipedia.org/wiki/%E3%82%A8%E3%82%A2%E3%82%AE%E3%83%A3%E3%83%83%E3%83%97) を参照してください。
 
 <Callout type="error" title="秘密鍵オンライン保存のリスク">
 
-これらの秘密鍵をオンライン環境（BP/リレーノード等）に保存すると、ハッキング・マルウェア感染などにより、**資金やプール運営権限の盗難等につながる重大なリスク**が発生します。    
-そのため、<mark>**秘密鍵の管理と署名処理は必ずエアギャップマシン上で実施してください。**</mark>  
-
-</Callout>
-
-
-</Callout>
-
-
-
-## **方針**
-<Callout type="info" title="前提">
-
-エアギャップ環境としての安全性を確保するため、本マニュアルでは、USBブートにより Ubuntu 24.04 を物理マシンへネイティブインストール し、<mark>**既存OSを削除した単一OS構成**</mark>で運用することを前提とします。
-
-Liveブート、デュアルブート構成、ならびに ホストOSに依存するあらゆる仮想化・コンテナ実行環境（ハイパーバイザー型および OS レベル仮想化を含む）は、永続性やセキュリティ境界を保証できないため、本マニュアルでは採用しません。
+これらの秘密鍵をオンライン環境（BP／リレー等）に置くと、ハッキングやマルウェア感染などにより、**資金やプール運営権限の奪取につながる重大なリスク**があります。  
+**秘密鍵の管理と署名処理は、必ずエアギャップ上で行ってください。**
 
 </Callout>
 
 
 
-## **エアギャップマシンの構築手順**
-<Callout type="error" title="注意点">
+## 方針 [#sec-1]
 
-Ubuntuインストール対象のエアギャップマシンはインストール中もネットワークに繋がないでください
+エアギャップ環境としての安全性を確保するため、本マニュアルでは USB ブートで Ubuntu 24.04 を物理マシンへネイティブインストールし、**既存 OS を削除した単一 OS 構成**で運用することを前提とします。
 
-準備パソコンは、2台です。  
+Live ブート、デュアルブート、およびホスト OS に依存する仮想化・コンテナ（ハイパーバイザー型・OS レベル仮想化を含む）は、永続性やセキュリティ境界を十分に保証できないため、本マニュアルでは採用しません。
 
-- **起動用USB作成PC**  
-Windows／macOS／Intel Mac／Apple Silicon Mac いずれでも可（ISOファイルの書き込み専用）
-- **Ubuntuインストール対象エアギャップPC**  
-UbuntuをインストールするPC（既存OSが消去されても問題ないPC / x86_64）  
-**推奨スペック**：CPU2コア以上、RAM4GB以上、ディスク25GB以上
+
+
+## エアギャップの構築手順 [#sec-2]
+
+<Callout type="error" title="インストール中はネットワークに接続しない">
+
+Ubuntu をインストールする対象のエアギャップは、**インストール作業中も LAN／Wi‑Fi などに接続しないでください。**
+
+</Callout>
+
+<Callout type="info" title="用意するPC（2台）">
+
+次の2役割のPCを用意します。
+
+| 役割 | 内容 |
+| --- | --- |
+| **起動用USB作成PC** | Windows／macOS（Intel Mac／Apple Silicon Mac を含む）いずれでも可。ISO を USB に書き込むためだけに使います。 |
+| **Ubuntu インストール対象（エアギャップPC）** | Ubuntu を入れる本体。**既存OSの消去を許容できる x86_64 マシン**にしてください。 |
+
+**推奨スペック**（インストール先）：CPU 2コア以上、RAM 4GB以上、ディスク 25GB以上
 
 </Callout>
 
 
 
-### **1. Ubuntu Desktopイメージの取得**
+### 1. Ubuntu Desktopイメージの取得 [#sec-3]
 Ubuntu **`Desktop`** イメージファイルをダウンロードします。
 
-[**Ubuntu 24.04.* (Noble Numbat)**](https://releases.ubuntu.com/noble)  
-※ ダウンロード完了まで少しかかるのでしばらくお待ちください。
+[Ubuntu 24.04.* (Noble Numbat)](https://releases.ubuntu.com/noble)  
+> ダウンロード完了まで少しかかるのでしばらくお待ちください。
 
 
-### **2. USBブートディスク作成（balenaEtcher）**
+### 2. USBブートディスク作成（balenaEtcher） [#sec-4]
 
-#### **前提条件**
+balenaEtcherは、無料かつオープンソースのUSB書き込みツールであり、Ubuntuインストールに使用するブート可能なUSBメディアを安全かつ簡単に作成できます。
+
+#### 前提条件 [#sec-5]
 <Callout type="info" title="ヒント">
 
-- 初期化しても問題ない容量**`12GB`**以上のUSBメモリデバイス  
+- 初期化しても問題ない容量 **12GB** 以上のUSBメモリデバイス  
 - `Windows`または`macOS`が動作するPC  
-- [1. Ubuntu Desktopイメージの取得](../setup/air-gapped-setup.md/#1-ubuntu-desktop)で取得したISOイメージファイル
+- [Ubuntu Desktopイメージの取得](/docs/cardano/setup/air-gapped-setup#sec-3)で取得したISOイメージファイル
 
 </Callout>
 
 
-#### **`balenaEtcher`の使用概要**
-balenaEtcherは、無料かつオープンソースのUSB書き込みツールであり、Ubuntuインストールに使用するブート可能なUSBメディアを安全かつ簡単に作成できます。
+<span id="sec-7"></span>
 
-##### **2-1. Etcherのインストール**
+**Etcherのインストール**
+
 balenaEtcherの公式サイトにアクセスし、インストーラーをダウンロードしてインストールします。
 
 [https://etcher.balena.io](https://etcher.balena.io)
@@ -85,8 +84,11 @@ balenaEtcherの公式サイトにアクセスし、インストーラーをダ�
 **2.** Windows 64-bit用のインストーラー（`balenaEtcher-*.*.*.Setup.exe`）をダウンロードします。  
 **3.** ダウンロードした`.exe`ファイルを実行し、画面の指示に従ってインストールを完了させます。
 
+実行までの一例は次のとおりです。
+
 - エクスプローラーを開き、左側メニューの「ダウンロード」を選択
-- `balenaEtcher-*.*.*.Setup.exe`ファイルをダブルクリック
+- `balenaEtcher-*.*.*.Setup.exe` をダブルクリック
+
 > **インストーラーの指示に従い進めてください**
 
 </Tab>
@@ -94,15 +96,15 @@ balenaEtcherの公式サイトにアクセスし、インストーラーをダ�
 
 **1.** 利用しているMacのアーキテクチャに応じて、対応する **`Etcher for macOS`** の「**`Download`**」を選択します。
 
-- **Apple Silicon (M1/M2/M3 など)** → **`Etcher for macOS (arm64)`**
+- **Apple Silicon (M1 ~ M5 など)** → **`Etcher for macOS (arm64)`**
 - **Intel Mac** → **`Etcher for macOS (x64)`**
 
-**2.** ダウンロードした `.dmg` ファイル（例：  
+**2.** ダウンロードした `.dmg` ファイルを開きます。
 
-- `balenaEtcher-*.*.*-arm64.dmg`  
-- `balenaEtcher-*.*.*-x64.dmg`  
+- Apple Silicon：`balenaEtcher-*.*.*-arm64.dmg`
+- Intel Mac：`balenaEtcher-*.*.*-x64.dmg`
 
-）を開き、**`Etcher`** アイコンを **アプリケーションフォルダへドラッグ＆ドロップ** してインストールします。
+開いたウィンドウで **`Etcher`** アイコンを **アプリケーションフォルダへドラッグ＆ドロップ** し、インストールします。
 
 **3.** 初回起動時に警告が表示されても、上記手順で取得したファイルであれば問題ありません。  
 「`開く`」を選択して続行してください。
@@ -114,10 +116,11 @@ balenaEtcherの公式サイトにアクセスし、インストーラーをダ�
 </Callout>
 
 
-##### **2-2. USBメディアの作成**
-USBブートディスクを作成します。
+<span id="sec-8"></span>
 
-<Callout type="info" title="手順">
+**USBメディアの作成**
+
+USBブートディスクを作成します。
 
 **1.** USBメモリをPCに挿入します。  
 > USBポートに正しく接続されていることを確認してください。
@@ -139,7 +142,7 @@ USB以外のストレージを選択するとデータが消去されます。
 
 **5.** 「Flash」を実行します。  
 「**Flash!**」を選択すると書き込み権限の付与が求められるのでPC（Windows/macOS）の管理者パスワードを入力し、「`Ok`」を選択します。  
-> 「“balenaEtcher.app” がリムーバブルボリューム上のファイルにアクセスしようとしています。」というダイアログが表示された場合は、「許可」を選択してください。  
+> 「`balenaEtcher.app` がリムーバブルボリューム上のファイルにアクセスしようとしています。」というダイアログが表示された場合は、「許可」を選択してください。  
 > USBメモリの書き込み速度に依存しますが、処理の完了まで数分から15分程度を要します。
 
 **6.** 書き込み完了後の確認
@@ -152,12 +155,8 @@ macOS環境では、USBメディアが「読み取れません」といった警
 </Callout>
 
 
-</Callout>
-
-
-
-### **3. USBブートによるUbuntuの起動**
-1. エアギャップマシンとして使用するPCに先ほど書き込んだUSBを挿入します。    
+### 3. USBブートによるUbuntuの起動 [#sec-9]
+1. エアギャップとして使用するPCに先ほど書き込んだUSBを挿入します。    
 2. コンピューターを起動します。  
 3. 表示されたメニューから「**`Try or Install Ubuntu`**」を選択し、Enterキーを押下します。  
 その後は画面の指示に従って通常のUbuntu Desktopのインストールを進めてください。  
@@ -166,8 +165,8 @@ macOS環境では、USBメディアが「読み取れません」といった警
 
 ![](/images/airgap/ubuntu-desktop-24.04.3/1_ubuntu-24.04.3-install.png)
 
-#### **3-1. インストーラーのセットアップ**
-※ 以降の画像は一例であり、環境によって表示が異なる場合があります。  
+#### インストーラーのセットアップ [#sec-10]
+> 以降の画像は一例であり、環境によって表示が異なる場合があります。  
 
 1. 言語を選択。  
 ![](/images/airgap/ubuntu-desktop-24.04.3/2_ubuntu-24.04.3-install.png)
@@ -193,7 +192,7 @@ macOS環境では、USBメディアが「読み取れません」といった警
 8. 不要なドライバやバイナリを最小化するため、サードパーティ製ソフトウェアはインストールしません。  
 ![](/images/airgap/ubuntu-desktop-24.04.3/9_ubuntu-24.04.3-install.png)
 
-#### **3-2. ディスクのセットアップ**
+#### ディスクのセットアップ [#sec-11]
 1. 「`ディスクを削除してUbuntuをインストールする`」を選択します。
 ![](/images/airgap/ubuntu-desktop-24.04.3/10_ubuntu-24.04.3-install.png)
 
@@ -207,7 +206,7 @@ macOS環境では、USBメディアが「読み取れません」といった警
 4. インストールの準備が完了したので確認し、「`インストール`」を選択します。  
 ![](/images/airgap/ubuntu-desktop-24.04.3/13_ubuntu-24.04.3-install.png)
 
-#### **3-3. インストールの完了**
+#### インストールの完了 [#sec-12]
 1. インストール完了画面を待機し、完了後「`今すぐ再起動`」を選択します。
 ![](/images/airgap/ubuntu-desktop-24.04.3/14_ubuntu-24.04.3-install.png)
 
@@ -218,7 +217,7 @@ macOS環境では、USBメディアが「読み取れません」といった警
 3. ログイン画面でパスワードを入力します。
 ![](/images/airgap/ubuntu-desktop-24.04.3/16_ubuntu-24.04.3-install.png)
 
-#### **3-4. 追加設定**
+#### 追加設定 [#sec-13]
 1. 以下の画面が表示されたら右上の「`次へ`」を選択します。  
 ![](/images/airgap/ubuntu-desktop-24.04.3/17_ubuntu-24.04.3-install.png)
 
@@ -234,15 +233,15 @@ macOS環境では、USBメディアが「読み取れません」といった警
 5. 追加設定が完了しました。    
 ![](/images/airgap/ubuntu-desktop-24.04.3/21_ubuntu-24.04.3-install.png)
 
-#### **3-5. ターミナルの設定**
+#### ターミナルの設定 [#sec-14]
 1. ターミナルの設定をするため左下のアイコンを選択し、「`端末`」アイコンを選択します。  
 ![](/images/airgap/ubuntu-desktop-24.04.3/22_ubuntu-24.04.3-install.png)
 
 2. ターミナルを右クリックして、「`ダッシュボードにピン留め`」を選択します。  
 ![](/images/airgap/ubuntu-desktop-24.04.3/23_ubuntu-24.04.3-install.png)
 
-#### **3-6. 各種設定**
-1. ブラケットモードの無効化設定をします。  
+#### 各種設定 [#sec-15]
+1. ブラケットペーストモードの無効化設定をします。  
 ```bash
 echo 'set enable-bracketed-paste off' >> ~/.inputrc
 ```
@@ -255,9 +254,9 @@ exit
 3. ディスプレイ設定（任意）  
 好みに応じて、画面を右クリックして「`Display Settings`」を開き、「`Scale`」を「`200%`」に設定します。
 
-#### **3-7. 通信機能の完全無効化**
-エアギャップ・オフラインマシンとして運用するため、`Wi-Fi` / `Bluetooth` / `有線通信`を含むすべてのネットワーク機能を`OS`レベルで無効化します。  
-※ 機内モードは再起動後に解除されるため使用しません。
+#### 通信機能の完全無効化 [#sec-16]
+エアギャップとして運用するため、`Wi-Fi` / `Bluetooth` / `有線通信`を含むすべてのネットワーク機能を`OS`レベルで無効化します。  
+> 機内モードは再起動後に解除されるため使用しません。
 
 1. `NetworkManager`の完全停止  
 ```bash
@@ -287,7 +286,7 @@ sudo rfkill block all
 ```bash
 rfkill list
 ```
-`Soft blocked: yes` であることを確認します。　　
+`Soft blocked: yes` であることを確認します。
 
 5. `rfkill` の永続化
 ```bash
@@ -324,8 +323,7 @@ sudo reboot
 ```bash
 nmcli general status
 ```
-期待される表示例：
-```yaml
+```yaml title="期待される表示例：" noCopy
 Error: NetworkManager is not running.
 ```  
 
@@ -333,8 +331,7 @@ Error: NetworkManager is not running.
 ```bash
 nmcli radio
 ```
-期待される表示例：
-```yaml
+```yaml title="期待される表示例：" noCopy
 Error: NetworkManager is not running.
 ```
 
@@ -348,8 +345,7 @@ rfkill list
 ```bash
 systemctl status bluetooth --no-pager
 ```
-期待される表示例：
-```yaml
+```yaml title="期待される表示例：" noCopy
 ○ bluetooth.service
      Loaded: masked (Reason: Unit bluetooth.service is masked.)
      Active: inactive (dead)
@@ -358,12 +354,23 @@ systemctl status bluetooth --no-pager
 以上の設定によりエアギャップ環境の構築が完了しました。
 
 
-### **4. 旧エアギャップからの移行**
+### 4. 旧エアギャップからの移行 [#sec-17]
 
-旧エアギャップ（VirtualBox等）から移行する場合の手順です。
+VirtualBox などで運用していた **旧エアギャップ**から、本ページで構築した物理マシン上の **新エアギャップ**へ、`cnode` と `cold-keys` を移します。
 
-#### **4-1. 環境変数の設定**
-```
+| 用語 | 意味 |
+| --- | --- |
+| **旧エアギャップ** | VirtualBox のゲスト OS など、これまで署名に使っていた側 |
+| **新エアギャップ** | 移行先の物理マシン（Ubuntu をインストールした本体） |
+
+手順はこのあとの見出し（環境変数 → ファイルの移動 → `cardano-cli`）の順です。  
+LAN／Wi‑Fi は接続せず、USB メモリ等でファイルのみを運んでください。
+
+#### 環境変数の設定 [#sec-18]
+
+**新エアギャップで実行します。**
+
+```bash
 echo 'export NODE_HOME="$HOME/cnode"' >> ~/.bashrc
 echo 'export NODE_NETWORK="--mainnet"' >> ~/.bashrc
 echo 'export CARDANO_NODE_NETWORK_ID=mainnet' >> ~/.bashrc
@@ -373,12 +380,14 @@ source ~/.bashrc
 mkdir -p ${NODE_HOME}
 ```
 
-<Callout type="info" title="テストネットの場合はこちら">
+
+<AccordionsBlue type="single">
+  <Accordion id="air-gapped-setup-testnet" title="テストネット（Preview / PreProd）の場合">
 
 <Tabs items={["Preview", "PreProd"]}>
 <Tab value="Preview">
 
-```
+```bash
 echo 'export NODE_HOME="$HOME/cnode"' >> $HOME/.bashrc
 echo 'export NODE_NETWORK="--testnet-magic 2"' >> $HOME/.bashrc
 echo 'export CARDANO_NODE_NETWORK_ID=2' >> $HOME/.bashrc
@@ -391,7 +400,7 @@ mkdir -p ${NODE_HOME}
 </Tab>
 <Tab value="PreProd">
 
-```
+```bash
 echo 'export NODE_HOME="$HOME/cnode"' >> $HOME/.bashrc
 echo 'export NODE_NETWORK="--testnet-magic 1"' >> $HOME/.bashrc
 echo 'export CARDANO_NODE_NETWORK_ID=1' >> $HOME/.bashrc
@@ -404,48 +413,33 @@ mkdir -p ${NODE_HOME}
 </Tab>
 </Tabs>
 
+</Accordion>
+</AccordionsBlue>
 
-</Callout>
+#### ファイルの移動 [#sec-19]
 
+オフラインのみで `$HOME/cnode` と `$HOME/cold-keys` を旧から新へ移管します（`$HOME` は各環境のログインユーザーのホーム、通常 `/home/<ユーザー名>`）。
 
-#### **4-2. ファイルの移動**
+**旧エアギャップ**
 
-**パーミッション変更**
-<Tabs items={["VirtualBox側"]}>
-<Tab value="VirtualBox側">
-
-
-
-</Tab>
-</Tabs>
-
-```
+```bash
 chmod u+rx $HOME/cold-keys
 ```
 
-**ディレクトリコピー**  
-VirtualBox側から以下のディレクトリをコピーして新エアギャップの$HOME直下に移動してください。
+共有フォルダまたはゲストへマウントした USB に、`cnode` と `cold-keys` をディレクトリ単位で書き出します。
 
-($HOMEは/home/&lt;user&gt;ディレクトリを指します)  
+**新エアギャップ**
 
-- $HOME/cnode  
-- $HOME/cold-keys  
+書き出した内容を **`$HOME/cnode`** と **`$HOME/cold-keys`** として配置します。
 
-**パーミッション変更**
-<Tabs items={["新エアギャップ側"]}>
-<Tab value="新エアギャップ側">
-
-
-
-</Tab>
-</Tabs>
-
-```
+```bash
 chmod a-rx $HOME/cold-keys
 ```
 
-#### **4-3. cardano-cliのインストール**
+#### cardano-cliのインストール [#sec-20]
 
-[バイナリーファイルコピー](../operation/node-update.md#4)を参照してください。
+**新エアギャップで実行します。**
+
+[バイナリーファイルコピー](/docs/cardano/operation/node-update#sec-15) に従って実行ファイルを配置してください。
 
 ---
