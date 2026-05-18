@@ -5,6 +5,7 @@ import { Check, Clipboard } from 'lucide-react';
 import { CodeBlock } from 'fumadocs-ui/components/codeblock';
 import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import { twMerge } from 'tailwind-merge';
+import { copyTextToClipboard } from '@/components/copy-to-clipboard';
 
 export type AnnotatedCodeProps = {
   /** フェンス直下に表示するタイトル（任意） */
@@ -22,11 +23,12 @@ export function AnnotatedCode({ title, code, annotations, allowCopy = true }: An
   const baseId = useId().replace(/:/g, '');
   const [copied, setCopied] = useState(false);
 
-  const onCopy = () => {
-    void navigator.clipboard.writeText(code).then(() => {
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 2000);
-    });
+  const onCopy = async () => {
+    const ok = await copyTextToClipboard(code);
+    if (!ok) return;
+
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -43,7 +45,7 @@ export function AnnotatedCode({ title, code, annotations, allowCopy = true }: An
                   title="コピー"
                   aria-label={copied ? 'コピー済み' : 'コードをコピー'}
                   data-checked={copied || undefined}
-                  onClick={onCopy}
+                  onClick={() => void onCopy()}
                   className={buttonVariants({
                     size: 'icon-xs',
                     variant: 'ghost',
