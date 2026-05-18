@@ -1,3 +1,4 @@
+import { GoogleAnalyticsConsent } from '@/components/google-analytics-consent';
 import { SiteFooter } from '@/components/site-footer';
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
@@ -51,6 +52,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
             <SiteFooter />
           </div>
         </RootProvider>
+        <GoogleAnalyticsConsent />
       </body>
     </html>
   );
