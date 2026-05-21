@@ -6,6 +6,12 @@ import type { ComponentPropsWithoutRef } from 'react';
 
 const DUMMY_ORIGIN = 'http://docs-link.normalize';
 
+const BLOCKED_PROTOCOL = /^(javascript|data|vbscript|file):/i;
+
+function isBlockedHref(href: string): boolean {
+  return BLOCKED_PROTOCOL.test(href.trim());
+}
+
 /** `/docs/**` のパスから `.md` と `.md/` を除去（`?.md`、`#`、`/` 直後の `.md/` に対応） */
 function stripMdFromDocsPath(pathname: string): string {
   return pathname
@@ -50,8 +56,10 @@ function normalizeHref(href: string, pathname: string | null): string {
   // 同一ページ内アンカー
   if (!href || href.startsWith('#')) return href;
 
-  // mailto:, https:, javascript: など
-  if (/^[a-z][a-z0-9+.-]*:/i.test(href) || href.startsWith('//')) return href;
+  // mailto:, https: など（javascript: / data: はブロック）
+  if (/^[a-z][a-z0-9+.-]*:/i.test(href) || href.startsWith('//')) {
+    return isBlockedHref(href) ? '#' : href;
+  }
 
   let pathQueryHash = href;
 
@@ -76,13 +84,40 @@ function normalizeHref(href: string, pathname: string | null): string {
 
 export function DocsMdxAnchor(props: ComponentPropsWithoutRef<typeof Link>) {
   const pathname = usePathname();
-  const { href, ...rest } = props;
+  const { href, children, className, ...rest } = props;
 
   if (typeof href !== 'string') {
     return <Link {...props} />;
   }
 
+  if (isBlockedHref(href)) {
+    return (
+      <span className={className} data-blocked-href>
+        {children}
+      </span>
+    );
+  }
+
   const normalized = normalizeHref(href, pathname);
+
+  if (normalized === '#' || isBlockedHref(normalized)) {
+    return (
+      <span className={className} data-blocked-href>
+        {children}
+      </span>
+    );
+  }
+
   const hasFragment = normalized.includes('#');
-  return <Link {...rest} href={normalized} prefetch={hasFragment ? false : rest.prefetch} />;
+  const opensNewTab = rest.target === '_blank';
+
+  return (
+    <Link
+      {...rest}
+      className={className}
+      href={normalized}
+      prefetch={hasFragment ? false : rest.prefetch}
+      {...(opensNewTab ? { rel: rest.rel ?? 'noopener noreferrer' } : {})}
+    />
+  );
 }

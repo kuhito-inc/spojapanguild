@@ -6,6 +6,7 @@ import { CodeBlock } from 'fumadocs-ui/components/codeblock';
 import { buttonVariants } from 'fumadocs-ui/components/ui/button';
 import { twMerge } from 'tailwind-merge';
 import { copyTextToClipboard } from '@/components/copy-to-clipboard';
+import { usePersistentCopyFeedback } from './use-persistent-copy-feedback';
 
 export type AnnotatedCodeProps = {
   /** フェンス直下に表示するタイトル（任意） */
@@ -21,14 +22,14 @@ export type AnnotatedCodeProps = {
 export function AnnotatedCode({ title, code, annotations, allowCopy = true }: AnnotatedCodeProps) {
   const lines = code.replace(/\n$/, '').split('\n');
   const baseId = useId().replace(/:/g, '');
-  const [copied, setCopied] = useState(false);
+  const { copied, markCopied } = usePersistentCopyFeedback();
+  const [openNoteLine, setOpenNoteLine] = useState<number | null>(null);
 
   const onCopy = async () => {
     const ok = await copyTextToClipboard(code);
     if (!ok) return;
 
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 2000);
+    markCopied();
   };
 
   return (
@@ -51,7 +52,7 @@ export function AnnotatedCode({ title, code, annotations, allowCopy = true }: An
                     variant: 'ghost',
                     color: 'ghost',
                     className:
-                      'text-fd-muted-foreground hover:text-fd-accent-foreground data-checked:text-fd-accent-foreground',
+                      'text-fd-muted-foreground hover:text-fd-accent-foreground data-checked:bg-fd-primary/20 data-checked:text-fd-primary data-checked:ring-1 data-checked:ring-fd-primary/55 data-checked:shadow-sm',
                   })}
                 >
                   {copied ? <Check className="size-3.5" /> : <Clipboard className="size-3.5" />}
@@ -62,7 +63,7 @@ export function AnnotatedCode({ title, code, annotations, allowCopy = true }: An
           : undefined
       }
     >
-      <div className="px-4 py-1 font-mono text-[0.8125rem] leading-relaxed tracking-normal text-fd-foreground">
+      <div className="px-4 py-1 font-mono text-[0.9375rem] leading-[1.55] tracking-normal text-fd-foreground md:text-[1rem]">
         {lines.map((line, i) => {
           const n = i + 1;
           const note = annotations[n];
@@ -75,27 +76,31 @@ export function AnnotatedCode({ title, code, annotations, allowCopy = true }: An
                 {line}
               </span>
               {note ? (
-                <details className="relative shrink-0 pt-px">
-                  <summary
-                    className={twMerge(
-                      buttonVariants({
-                        size: 'icon-xs',
-                        variant: 'ghost',
-                        color: 'ghost',
-                        className:
-                          'list-none appearance-none [&::-webkit-details-marker]:hidden cursor-pointer rounded-md px-2 font-sans text-xs font-semibold leading-none text-fd-primary hover:bg-fd-primary/15',
-                      }),
-                    )}
+                <div className="relative shrink-0 pt-px">
+                  <button
+                    type="button"
+                    aria-expanded={openNoteLine === n}
+                    aria-controls={`anno-${baseId}-${n}`}
+                    onClick={() => setOpenNoteLine((current) => (current === n ? null : n))}
+                    className={buttonVariants({
+                      size: 'icon-xs',
+                      variant: 'ghost',
+                      color: 'ghost',
+                      className:
+                        'cursor-pointer rounded-md px-2 font-sans text-sm font-semibold leading-none text-fd-primary hover:bg-fd-primary/15 aria-expanded:bg-fd-primary/15 aria-expanded:ring-1 aria-expanded:ring-fd-primary/40',
+                    })}
                   >
                     ＋
-                  </summary>
-                  <div
-                    id={`anno-${baseId}-${n}`}
-                    className="absolute end-0 top-full z-40 mt-1 w-max max-w-[min(320px,calc(100vw-8rem))] rounded-lg border border-fd-border bg-fd-card px-3 py-2 font-sans text-xs leading-snug text-fd-card-foreground shadow-md"
-                  >
-                    {note}
-                  </div>
-                </details>
+                  </button>
+                  {openNoteLine === n ? (
+                    <div
+                      id={`anno-${baseId}-${n}`}
+                      className="absolute end-0 top-full z-40 mt-1 w-max max-w-[min(360px,calc(100vw-8rem))] rounded-lg border border-fd-border bg-fd-card px-3.5 py-2.5 font-sans text-sm leading-relaxed text-fd-card-foreground shadow-md"
+                    >
+                      {note}
+                    </div>
+                  ) : null}
+                </div>
               ) : null}
             </div>
           );
