@@ -46,7 +46,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="ja" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
-        <RootProvider>
+        <RootProvider search={{ options: { type: 'static' } }}>
           <div className="flex min-h-screen flex-1 flex-col">
             <div className="flex flex-1 flex-col">{children}</div>
             <SiteFooter />

@@ -1,5 +1,7 @@
 import { ImageResponse } from 'next/og';
 
+export const dynamic = 'force-static';
+
 export const alt = 'SPO JAPAN GUILD ドキュメント';
 export const size = {
   width: 1200,

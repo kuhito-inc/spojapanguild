@@ -6,6 +6,11 @@ const withMDX = createMDX();
 const config = {
   reactStrictMode: true,
   allowedDevOrigins: ['49.12.225.142'],
+  // GitHub Pages 向け静的エクスポート
+  output: 'export',
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default withMDX(config);
