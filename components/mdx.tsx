@@ -1,6 +1,6 @@
 import defaultMdxComponents from 'fumadocs-ui/mdx';
 import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
-import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
+import { Accordion, Accordions } from '@/components/docs-accordion';
 import { AccordionsBlue, AccordionsRed, AccordionsYellow, DocsAccordions } from '@/components/docs-colored-accordions';
 import { AnnotatedCode } from '@/components/docs-annotated-code';
 import { DocsMdxAnchor } from '@/components/docs-mdx-anchor';

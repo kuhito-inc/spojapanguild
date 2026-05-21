@@ -10,7 +10,7 @@ import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/components/mdx';
 import type { Metadata } from 'next';
 
-const ogImageUrl = 'https://spojapanguild.net/wp-content/uploads/2022/04/ogp-image-main.png';
+const ogImageUrl = 'https://spojapanguild.net/wp-content/uploads/2026/05/ogp2026.png';
 
 export default async function Page(props: PageProps<'/docs/[[...slug]]'>) {
   const params = await props.params;

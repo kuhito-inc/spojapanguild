@@ -1,4 +1,5 @@
 import { createMDX } from 'fumadocs-mdx/next';
+import { securityHeadersConfig } from './lib/security-headers.mjs';
 
 const withMDX = createMDX();
 
@@ -6,6 +7,7 @@ const withMDX = createMDX();
 const config = {
   reactStrictMode: true,
   allowedDevOrigins: ['49.12.225.142'],
+  headers: securityHeadersConfig(),
 };
 
 export default withMDX(config);

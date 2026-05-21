@@ -1,6 +1,6 @@
 'use client';
 
-import { Accordions } from 'fumadocs-ui/components/accordion';
+import { Accordions } from '@/components/docs-accordion';
 import { twMerge } from 'tailwind-merge';
 import type { ComponentProps, CSSProperties } from 'react';
 
@@ -34,7 +34,7 @@ function ColoredAccordionsShell({
     <div
       className={twMerge(
         // 背景・枠線は inline style で色相をつける（bg-fd-card は指定しない）
-        'my-3 flex gap-1.5 rounded-xl border py-1.5 ps-1 pe-2 text-sm text-fd-card-foreground shadow-md',
+        'sjg-colored-accordions my-3 flex gap-1.5 rounded-xl border py-1.5 ps-1 pe-2 text-fd-card-foreground shadow-md',
         '[&_button]:min-h-0 [&_button]:py-1 [&_button]:px-2 [&_button]:leading-snug [&_button_svg]:size-3.5',
         // トリガー左シェブロンをアクセント色に寄せる
         '[&_button>svg:first-of-type]:text-(--callout-color)',

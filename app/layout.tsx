@@ -4,7 +4,7 @@ import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
 import type { Metadata } from 'next';
 
-const ogImageUrl = 'https://spojapanguild.net/wp-content/uploads/2022/04/ogp-image-main.png';
+const ogImageUrl = 'https://spojapanguild.net/wp-content/uploads/2026/05/ogp2026.png';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://spojapanguild.net'),
