@@ -39,7 +39,7 @@ export default function HomePage() {
 
           {/* Cardano */}
           <Link
-            href="/docs/cardano"
+            href="/cardano"
             className="group relative flex min-h-[270px] flex-col overflow-hidden rounded-2xl border border-fd-border bg-fd-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-fd-primary/60 hover:shadow-xl sm:min-h-[285px] lg:min-h-[clamp(18rem,26vh,22rem)] lg:p-7"
           >
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_88%_88%,rgba(59,130,246,0.10),transparent_42%)]" />
@@ -79,7 +79,7 @@ export default function HomePage() {
 
           {/* Midnight */}
           <Link
-            href="/docs/midnight"
+            href="/midnight"
             className="group relative flex min-h-[270px] flex-col overflow-hidden rounded-2xl border border-fd-border bg-fd-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-fd-primary/60 hover:shadow-xl sm:min-h-[285px] lg:min-h-[clamp(18rem,26vh,22rem)] lg:p-7"
           >
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_88%_88%,rgba(99,102,241,0.11),transparent_42%)]" />
@@ -119,7 +119,7 @@ export default function HomePage() {
 
           {/* Learning */}
           <Link
-            href="/docs/learning"
+            href="/learning"
             className="group relative flex min-h-[270px] flex-col overflow-hidden rounded-2xl border border-fd-border bg-fd-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-fd-primary/60 hover:shadow-xl sm:min-h-[285px] lg:min-h-[clamp(18rem,26vh,22rem)] lg:p-7"
           >
             <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_88%_88%,rgba(59,130,246,0.10),transparent_42%)]" />

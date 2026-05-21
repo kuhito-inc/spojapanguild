@@ -1,6 +1,6 @@
 /**
  * Rewrite relative markdown links (./foo.md, ../bar.md) under content/docs
- * to absolute /docs/... URLs (drop .md suffix; index.mdx maps to parent segment).
+ * to absolute /... URLs (drop .md suffix; index.mdx maps to parent segment).
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -19,7 +19,7 @@ function walkMdx(relDir, keys) {
   }
 }
 
-/** URL path under /docs: drop leading (...)/ route groups, strip trailing /index. */
+/** URL path: drop leading (...)/ route groups, strip trailing /index. */
 function docPathToSlug(relNoExt) {
   let s = relNoExt.replace(/\\/g, "/").replace(/^(\([^/]+\)\/)+/, "");
   if (s.endsWith("/index")) s = s.slice(0, -"/index".length);
@@ -64,14 +64,14 @@ function lookupPageKey(joinedNoExt, keys) {
   return null;
 }
 
-/** Deleted or renamed `.md` targets → absolute /docs slug (logical path keys). */
+/** Deleted or renamed `.md` targets → absolute slug (logical path keys). */
 const LEGACY_REDIRECT = {
-  "midnight/midnight-glacier-drop": "/docs/midnight",
-  "cardano/operation/blocknotify-reinstall": "/docs/cardano/setup/blocknotify-setup",
-  "cardano/operation/ubuntu22-migration": "/docs/cardano/operation/ubuntu24-migration",
-  "cardano/operation/grafana-repo": "/docs/cardano/operation/grafana-security",
-  "cardano/operation/p2p-settings": "/docs/cardano/setup/relay-bp-setup",
-  "cardano/operation/add-relay": "/docs/cardano/operation/relay-migration",
+  "midnight/midnight-glacier-drop": "/midnight",
+  "cardano/operation/blocknotify-reinstall": "/cardano/setup/blocknotify-setup",
+  "cardano/operation/ubuntu22-migration": "/cardano/operation/ubuntu24-migration",
+  "cardano/operation/grafana-repo": "/cardano/operation/grafana-security",
+  "cardano/operation/p2p-settings": "/cardano/setup/relay-bp-setup",
+  "cardano/operation/add-relay": "/cardano/operation/relay-migration",
 };
 
 function legacyHref(joinedNoExt, fragment) {
@@ -93,7 +93,7 @@ function rewriteHref(fromFileRelSlash, innerHref, keys) {
   pathOnly = pathOnly.replace(/\/*$/, "");
 
   if (!(pathOnly.startsWith("./") || pathOnly.startsWith("../"))) {
-    if (pathOnly.startsWith("/docs")) return pathOnly.replace(/\.md$/i, "") + fragment;
+    if (pathOnly.startsWith("/")) return pathOnly.replace(/\.md$/i, "") + fragment;
     return raw;
   }
 
@@ -102,7 +102,7 @@ function rewriteHref(fromFileRelSlash, innerHref, keys) {
   joined = joined.replace(/\.md$/i, "").replace(/\/+$/, "");
 
   const key = lookupPageKey(joined, keys);
-  if (key) return `/docs/${docPathToSlug(key)}${fragment}`;
+  if (key) return `/${docPathToSlug(key)}${fragment}`;
 
   const leg = legacyHref(joined, fragment);
   if (leg) return leg;
