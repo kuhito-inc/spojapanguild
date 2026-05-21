@@ -1,4 +1,8 @@
 import { createMDX } from 'fumadocs-mdx/next';
+import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
+
+// Cloudflare バインディングをローカル `next dev` で利用可能にする
+initOpenNextCloudflareForDev();
 
 const withMDX = createMDX();
 
