@@ -22,13 +22,13 @@ title: "リレーサーバー移行（旧VPS会社→新VPS会社）"
 
 
 ### Ubuntu初期設定 [#sec-2]
-新サーバーで[Ubuntu初期設定](/docs/cardano/setup/ubuntu-setup)を実施します。  
+新サーバーで[Ubuntu初期設定](/cardano/setup/ubuntu-setup)を実施します。  
 
 
 ### ノードセットアップ [#sec-3]
-1. [1. 依存関係インストール](/docs/cardano/setup/node-setup#sec-1) 〜
-[7. gLiveViewのインストール](/docs/cardano/setup/node-setup#sec-12)まで実施します。
-2. [2. トポロジーファイル設定変更](/docs/cardano/setup/relay-bp-setup#sec-5)のリレーの手順を実施します。
+1. [1. 依存関係インストール](/cardano/setup/node-setup#sec-1) 〜
+[7. gLiveViewのインストール](/cardano/setup/node-setup#sec-12)まで実施します。
+2. [2. トポロジーファイル設定変更](/cardano/setup/relay-bp-setup#sec-5)のリレーの手順を実施します。
 
 
 ## 2. BP設定修正 [#sec-4]
@@ -98,14 +98,14 @@ cd $NODE_HOME/scripts
 <Tabs items={["新リレーでGrafanaも運用する場合", "新リレーでGrafanaを運用しない場合"]}>
 <Tab value="新リレーでGrafanaも運用する場合">
 
-[監視ツール設定](/docs/cardano/setup/monitoring-setup)のリレー1タブと[3. Grafanaダッシュボードの設定](/docs/cardano/setup/monitoring-setup#sec-4)を実行する。
+[監視ツール設定](/cardano/setup/monitoring-setup)のリレー1タブと[3. Grafanaダッシュボードの設定](/cardano/setup/monitoring-setup#sec-4)を実行する。
 
 <Callout type="info" title="Grafana追加設定">
 
 Grafanaは追加設定がありますので必要に応じて実施してください。
 
-- [Grafanaアラート設定](/docs/cardano/operation/grafana-alert)
-- [Grafanaセキュリティ強化](/docs/cardano/operation/grafana-security)
+- [Grafanaアラート設定](/cardano/operation/grafana-alert)
+- [Grafanaセキュリティ強化](/cardano/operation/grafana-security)
 
 </Callout>
 
@@ -179,7 +179,7 @@ Grafanaに新リレーのメトリクス(Slotなど)が表示されているか�
 </Tabs>
 
 ## 4. プール情報更新 [#sec-8]
-DNS運用の場合は不要ですが、IP運用の方は、[運用証明書(pool.cert)の更新](/docs/cardano/operation/cert-update)を用いて、チェーン登録中のリレーIPを変更します。  
+DNS運用の場合は不要ですが、IP運用の方は、[運用証明書(pool.cert)の更新](/cardano/operation/cert-update)を用いて、チェーン登録中のリレーIPを変更します。  
 
 ---
 ## 5. 補足 [#sec-9]
@@ -246,6 +246,6 @@ AWSやVSPによっては管理画面でセキュリティ設定(ファイアウ�
 ### Mithril-Signer再セットアップ [#sec-12]
 
 旧サーバーでMithril-Signer-Relayを実行していた場合は、新サーバーでも再セットアップしてください。  
-[Mithril Signerノードの設定、更新](/docs/cardano/operation/mithril-signer-node-setup-and-updates)
+[Mithril Signerノードの設定、更新](/cardano/operation/mithril-signer-node-setup-and-updates)
 
 ---

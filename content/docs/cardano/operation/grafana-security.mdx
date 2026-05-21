@@ -12,7 +12,7 @@ title: "Grafanaセキュリティ強化"
 
 ## 事前確認 [#sec-1]
 
-以下の手順は、[監視ツール設定](/docs/cardano/setup/monitoring-setup)で設定したGrafana導入サーバーで実施してください。
+以下の手順は、[監視ツール設定](/cardano/setup/monitoring-setup)で設定したGrafana導入サーバーで実施してください。
 
 ～作業の流れ～
 
@@ -132,7 +132,7 @@ sudo ufw reload
 
 
 
-`xxxx.bbb.com`を[1. ドメイン(サブドメイン)の取得](/docs/cardano/operation/grafana-security#sec-2)で取得したドメイン(サブドメイン)に置き換えて実行します。
+`xxxx.bbb.com`を[1. ドメイン(サブドメイン)の取得](/cardano/operation/grafana-security#sec-2)で取得したドメイン(サブドメイン)に置き換えて実行します。
 
 ```bash
 domain=xxxx.bbb.com
@@ -267,7 +267,7 @@ sudo certbot --nginx
 echo $domain
 ```
 > 戻り値が設定したドメインであること。  
-> そうでなければ、変数domainに[1. ドメイン(サブドメイン)の取得](/docs/cardano/operation/grafana-security#sec-2)で取得したドメイン(サブドメイン)を代入してください。
+> そうでなければ、変数domainに[1. ドメイン(サブドメイン)の取得](/cardano/operation/grafana-security#sec-2)で取得したドメイン(サブドメイン)を代入してください。
 
 **仮想ホストファイルの編集**
 
