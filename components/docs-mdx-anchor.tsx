@@ -118,6 +118,8 @@ export function DocsMdxAnchor(props: ComponentPropsWithoutRef<typeof Link>) {
       href={normalized}
       prefetch={hasFragment ? false : rest.prefetch}
       {...(opensNewTab ? { rel: rest.rel ?? 'noopener noreferrer' } : {})}
-    />
+    >
+      {children}
+    </Link>
   );
 }
