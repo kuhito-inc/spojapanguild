@@ -11,9 +11,6 @@
     "docs:fix-relative-fragments": "node scripts/fix-relative-doc-fragments.mjs",
     "docs:infer-fence-lang": "node scripts/infer-code-fence-lang.mjs",
     "start": "next start",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
     "test": "pnpm run types:check",
     "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
@@ -24,7 +21,6 @@
     }
   },
   "dependencies": {
-    "@opennextjs/cloudflare": "^1.19.10",
     "beautiful-mermaid": "^1.1.3",
     "fumadocs-core": "16.8.7",
     "fumadocs-mdx": "14.3.2",
@@ -45,7 +41,6 @@
     "github-slugger": "^2.0.0",
     "postcss": "^8.5.13",
     "tailwindcss": "^4.2.4",
-    "typescript": "^6.0.3",
-    "wrangler": "^4.92.0"
+    "typescript": "^6.0.3"
   }
 }
