@@ -80,11 +80,6 @@ export function baseOptions(): BaseLayoutProps {
           ]
         : []),
       {
-        text: 'ドキュメント',
-        url: '/',
-        active: 'nested-url',
-      },
-      {
         text: '更新履歴',
         url: '/changelogs',
       },
