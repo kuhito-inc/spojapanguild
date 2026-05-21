@@ -1,30 +1,26 @@
-# Cloudflare デプロイ マニュアル
+# GitHub Pages デプロイ マニュアル
 
-SPO JAPAN GUILD ドキュメント（fumadocs / Next.js 16）を Cloudflare Workers に
-デプロイする手順。OpenNext アダプタ（`@opennextjs/cloudflare`）で SSR・検索・
-OG 画像・セキュリティヘッダをそのまま動かす。静的エクスポート改修は不要。
+SPO JAPAN GUILD ドキュメント（fumadocs / Next.js 16）を **静的サイト**として
+ビルドし、GitHub Pages で配信する手順。`main` への push で
+GitHub Actions が自動ビルド&デプロイする。
 
-参考: https://opennext.js.org/cloudflare
-
-デプロイは **Cloudflare の Git 連携（Workers Builds）** で行う。
-リポジトリを連携すれば `main` への push で Cloudflare が自動ビルド&デプロイする。
-GitHub Actions は不要。
+サーバー・第三者サービス・ビルドアダプタ不要。完全無料。
+Cloudflare Workers のような実行リソース上限（Error 1102）も発生しない。
 
 ---
 
-## 1. ビルド環境について
+## 1. 仕組み
 
-OpenNext / wrangler のビルドには **Node.js 22** が必要。
-Cloudflare の Workers Builds は `.nvmrc`（このリポジトリに含まれる `22`）を
-読み取って Node 22 でビルドするため、追加設定は不要。
-
-ローカルで `pnpm deploy` / `pnpm preview` を実行する場合のみ手元も Node 22 が必要。
-
-```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
-source ~/.bashrc
-nvm install 22 && nvm use 22 && nvm alias default 22
-corepack enable pnpm
+```
+main に push
+  ↓
+GitHub Actions（.github/workflows/deploy.yml）
+  ↓
+pnpm build  →  next build（output: 'export'）→  out/ に静的ファイル生成
+  ↓
+actions/upload-pages-artifact → actions/deploy-pages
+  ↓
+GitHub Pages に公開（docs.spojapanguild.net）
 ```
 
 ---
@@ -33,59 +29,75 @@ corepack enable pnpm
 
 | ファイル | 役割 |
 |---|---|
-| `wrangler.jsonc` | Worker 名 `spojapanguild-docs`、assets/images バインディング |
-| `open-next.config.ts` | OpenNext 設定 |
-| `next.config.mjs` | `initOpenNextCloudflareForDev()` 追加 |
-| `package.json` | `preview` / `deploy` / `cf-typegen` スクリプト |
-| `public/_headers` | `/_next/static/*` の長期キャッシュ |
-| `.nvmrc` | Cloudflare ビルド環境の Node バージョン固定（22） |
+| `next.config.mjs` | `output: 'export'` + `images.unoptimized` |
+| `app/api/search/route.ts` | 検索を静的インデックスとして出力（`staticGET`） |
+| `app/layout.tsx` | `RootProvider` の検索を `type: 'static'` に設定 |
+| `app/llms*.txt` ほか | `dynamic = 'force-static'` で静的化 |
+| `public/CNAME` | 独自ドメイン `docs.spojapanguild.net` |
+| `public/.nojekyll` | GitHub Pages の Jekyll 処理を無効化（`_next` 配信に必須） |
+| `.github/workflows/deploy.yml` | main push 時の自動ビルド&デプロイ |
 
 ---
 
-## 3. 初回セットアップ（Git 連携）
+## 3. 初回セットアップ（1回だけ）
 
-1. Cloudflare ダッシュボード → **Workers & Pages**（または **Compute / Workers**）
-2. **Create** → **Import a repository**（Git 連携）
-3. GitHub 連携 → `kuhito-inc/spojapanguild` を選択
-4. ビルド設定:
-   - **Framework preset**: Next.js（または None）
-   - **Build command**: `pnpm run deploy`
-   - **Deploy command**: 空欄（build コマンド内の `opennextjs-cloudflare deploy` が実行）
-   - **Production branch**: `main`
-5. 保存 → 初回ビルドが走る
+### 3-1. GitHub Pages を有効化
 
-> `pnpm run deploy` = `opennextjs-cloudflare build && opennextjs-cloudflare deploy`
+リポジトリ → **Settings** → **Pages**
+→ **Build and deployment** → **Source** を **「GitHub Actions」** に設定
 
-以降、`main` への push で自動ビルド&デプロイされる。
+### 3-2. 独自ドメインの DNS 設定
+
+`spojapanguild.net` の DNS に CNAME レコードを追加:
+
+| Type | Name | Value |
+|---|---|---|
+| CNAME | `docs` | `kuhito-inc.github.io` |
+
+リポジトリ内の `public/CNAME` がビルド成果物に含まれ、
+Pages 側のカスタムドメインが自動設定される。
+
+### 3-3. 初回デプロイ
+
+`main` へ push（または Actions タブ → Deploy to GitHub Pages → Run workflow）。
+DNS 伝播後 `https://docs.spojapanguild.net` でアクセス可能。
+Pages 設定で **Enforce HTTPS** を有効化推奨。
 
 ---
 
 ## 4. 日常運用
 
 `main` に push するだけで自動デプロイ。手動操作不要。
-進捗は Cloudflare ダッシュボードの対象 Worker → **Deployments** で確認。
+進捗は GitHub の **Actions** タブで確認。
 
 ---
 
-## 5. ローカルでの確認（任意・Node 22 必須）
+## 5. ローカルでの確認
 
 ```bash
 pnpm install
-pnpm dev --port 8002   # 開発サーバー
-pnpm preview           # CF Workers 環境でローカルプレビュー
 
-# ローカルから直接デプロイ
-pnpm exec wrangler login
-pnpm deploy
+# 開発サーバー
+pnpm dev --port 8002
+
+# 本番と同じ静的ビルドを生成して確認
+pnpm build                              # out/ に出力
+cd out && python3 -m http.server 8003   # http://localhost:8003
 ```
 
 ---
 
-## 6. 独自ドメイン設定（任意）
+## 6. 制約（静的エクスポートのため）
 
-1. Cloudflare ダッシュボード → 対象 Worker → **Settings** → **Domains & Routes**
-2. **Add** → **Custom Domain** → `docs.spojapanguild.net`
-3. ドメインが Cloudflare 管理下なら DNS は自動設定される
+| 項目 | 状態 |
+|---|---|
+| SSR / 動的ルート | 不可（全ページ事前生成） |
+| `next.config.mjs` の `headers`（セキュリティヘッダ） | **無効**。GitHub Pages はカスタムヘッダ非対応 |
+| 動的 OG 画像 | 不可（`metadata` の固定画像URLを使用） |
+| 検索 | 静的インデックス（Orama static）で動作 |
+
+> セキュリティヘッダを付与したい場合は、Cloudflare 等の
+> ヘッダ設定可能なホスト／プロキシを前段に置く必要がある。
 
 ---
 
@@ -93,17 +105,17 @@ pnpm deploy
 
 | 症状 | 対処 |
 |---|---|
-| `ERR_IMPORT_ASSERTION_TYPE_MISSING` | Node が古い。ビルド環境を 22 に（`.nvmrc` 確認） |
-| `Error connecting to git account` | GitHub App を一旦アンインストール→再連携。組織リポジトリは組織オーナーの承認が必要 |
-| `opennextjs-cloudflare: command not found` | `pnpm install` 未実行 |
-| ビルドが `.source` 関連で失敗 | `pnpm install`（postinstall の fumadocs-mdx）を再実行 |
+| `output: export` でビルド失敗 | 動的ルートに `dynamic = 'force-static'` が必要 |
+| `_next` のCSS/JSが404 | `public/.nojekyll` の存在を確認 |
+| カスタムドメインが効かない | DNS の CNAME / Pages 設定のカスタムドメイン欄を確認 |
+| 検索が動かない | `pnpm build` で `out/api/search` が生成されているか確認 |
 
 ---
 
 ## 8. コマンド早見表
 
 ```bash
-pnpm dev --port 8002   # 開発サーバー
-pnpm preview           # CF Workers 環境でローカルプレビュー
-pnpm deploy            # ローカルからビルド + デプロイ
+pnpm dev --port 8002                    # 開発サーバー
+pnpm build                              # 静的ビルド（out/ 生成）
+cd out && python3 -m http.server 8003   # ローカルで本番確認
 ```

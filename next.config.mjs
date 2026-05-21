@@ -1,9 +1,4 @@
 import { createMDX } from 'fumadocs-mdx/next';
-import { securityHeadersConfig } from './lib/security-headers.mjs';
-import { initOpenNextCloudflareForDev } from '@opennextjs/cloudflare';
-
-// Cloudflare バインディングをローカル `next dev` で利用可能にする
-initOpenNextCloudflareForDev();
 
 const withMDX = createMDX();
 
@@ -11,7 +6,11 @@ const withMDX = createMDX();
 const config = {
   reactStrictMode: true,
   allowedDevOrigins: ['49.12.225.142'],
-  headers: securityHeadersConfig(),
+  // GitHub Pages 向け静的エクスポート
+  output: 'export',
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default withMDX(config);
