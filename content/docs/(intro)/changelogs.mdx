@@ -2,8 +2,10 @@
 title: "更新履歴"
 ---
 
-{/* 追加時テンプレート:
-## YYYY/M/D ver.X.Y.Z
+{/* 追加時テンプレート: <Changelog> の先頭に新しい順で追加し、
+    直前まで latest だった <Release> から latest を外す。
+
+<Release version="X.Y.Z" date="YYYY/M/D" latest>
 
 **追加**
 
@@ -16,13 +18,17 @@ title: "更新履歴"
 **リリース**
 
 - リリース内容
+
+</Release>
 */}
 
 <Callout type="info">
 ドキュメントサイトの全面リニューアルに伴い、バージョンを `ver.1.0.0` から再スタートしました。リニューアル以前の更新履歴は[更新履歴アーカイブ](/docs/changelogs-archive)をご覧ください。
 </Callout>
 
-## 2026/5/22 ver.1.0.0
+<Changelog>
+
+<Release version="1.0.0" date="2026/5/22" latest>
 
 **リニューアル**
 
@@ -32,8 +38,6 @@ title: "更新履歴"
 
 - cardano-node v11.0.1対応 [インストール](/docs/cardano/setup/node-setup.md) / [アップデート](/docs/cardano/operation/node-update.md)
 
-**リリース**
+</Release>
 
-- なし
-
----
+</Changelog>
