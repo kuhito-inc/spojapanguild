@@ -170,11 +170,11 @@ export function Accordion({
   return (
     <AccordionItem value={value} {...props}>
       <AccordionHeader id={id} data-accordion-value={value}>
-        <AccordionTrigger>{title}</AccordionTrigger>
+        <AccordionTrigger className="sjg-accordion-trigger">{title}</AccordionTrigger>
         {id ? <AccordionHashLink id={id} /> : null}
       </AccordionHeader>
       <AccordionContent>
-        <div className="px-4 pb-2 text-[0.9375rem] prose-no-margin">{children}</div>
+        <div className="sjg-accordion-content px-4 pb-2 prose-no-margin">{children}</div>
       </AccordionContent>
     </AccordionItem>
   );
