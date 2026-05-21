@@ -1,6 +1,6 @@
 'use client';
 
-import { Accordions } from 'fumadocs-ui/components/accordion';
+import { Accordions } from '@/components/docs-accordion';
 import { twMerge } from 'tailwind-merge';
 import type { ComponentProps, CSSProperties } from 'react';
 
