@@ -12,7 +12,7 @@ function isBlockedHref(href: string): boolean {
   return BLOCKED_PROTOCOL.test(href.trim());
 }
 
-/** `/docs/**` のパスから `.md` と `.md/` を除去（`?.md`、`#`、`/` 直後の `.md/` に対応） */
+/** 内部リンクのパスから `.md` と `.md/` を除去（`?.md`、`#`、`/` 直後の `.md/` に対応） */
 function stripMdFromDocsPath(pathname: string): string {
   return pathname
     .replace(/\.md\//gi, '/')
@@ -50,7 +50,7 @@ function collapseDuplicateHashSegments(full: string): string {
 
 /**
  * Markdown `<a>` 用。
- * `./` など相対リンクを現在のページから `/docs/**` に解決し、`/docs` では `.md` 修飾子を除去する。
+ * `./` など相対リンクを現在のページから解決し、内部リンクでは `.md` 修飾子を除去する。
  */
 function normalizeHref(href: string, pathname: string | null): string {
   // 同一ページ内アンカー
@@ -64,7 +64,8 @@ function normalizeHref(href: string, pathname: string | null): string {
   let pathQueryHash = href;
 
   if (!href.startsWith('/')) {
-    const basePath = pathname?.startsWith('/docs') ? pathname : null;
+    // コンテンツページのパスを基準に相対リンクを解決する
+    const basePath = pathname ?? null;
     if (!basePath) return href;
     try {
       const resolved = new URL(href, `${DUMMY_ORIGIN}${basePath}`);
@@ -74,11 +75,12 @@ function normalizeHref(href: string, pathname: string | null): string {
     }
   }
 
-  if (!pathQueryHash.startsWith('/docs')) return pathQueryHash;
+  // ここまでで内部のルート相対パス（先頭 `/`）のみが残る
+  if (!pathQueryHash.startsWith('/')) return pathQueryHash;
 
   let normalized = normalizeDocsPathAndQuery(pathQueryHash);
-  // `/docs/...#4#4-見出し` のように番号が二重になったフラグメント先頭
-  normalized = normalized.replace(/^(\/docs\/[^#]*)#(\d)#\2-/, '$1#$2-');
+  // `/...#4#4-見出し` のように番号が二重になったフラグメント先頭
+  normalized = normalized.replace(/^(\/[^#]*)#(\d)#\2-/, '$1#$2-');
   return collapseDuplicateHashSegments(normalized);
 }
 
@@ -118,6 +120,8 @@ export function DocsMdxAnchor(props: ComponentPropsWithoutRef<typeof Link>) {
       href={normalized}
       prefetch={hasFragment ? false : rest.prefetch}
       {...(opensNewTab ? { rel: rest.rel ?? 'noopener noreferrer' } : {})}
-    />
+    >
+      {children}
+    </Link>
   );
 }

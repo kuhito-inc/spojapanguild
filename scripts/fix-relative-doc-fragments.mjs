@@ -70,7 +70,7 @@ function newHeadingSecIds(headings) {
 function fileAbsToDocsUrlPath(absFile) {
   const rel = path.relative(ROOT, absFile).replace(/\\/g, "/");
   const slug = docPathToSlug(rel.replace(/\.mdx$/, ""));
-  return `/docs/${slug}`;
+  return `/${slug}`;
 }
 
 function gitShowHead(relFromRepoRoot) {
@@ -128,7 +128,7 @@ function resolvePathPartToDocSlug(fromFileAbs, pathPart) {
   const basePath = fileAbsToDocsUrlPath(fromFileAbs);
   try {
     const u = new URL(pathPart, `http://_a${basePath}`);
-    let p = u.pathname.replace(/^\/docs\/?/, "").replace(/\.mdx?$/i, "");
+    let p = u.pathname.replace(/^\//, "").replace(/\.mdx?$/i, "");
     return docPathToSlug(p);
   } catch {
     return null;

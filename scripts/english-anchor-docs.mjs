@@ -99,7 +99,7 @@ function applyHeadingRewrites(lines, rows) {
 }
 
 function hrefToKey(hrefPath, fragment) {
-  let p = hrefPath.replace(/^\/docs\/?/, "").replace(/\.mdx?$/i, "").replace(/\/$/, "");
+  let p = hrefPath.replace(/^\//, "").replace(/\.mdx?$/i, "").replace(/\/$/, "");
   p = docPathToSlug(p);
   if (!fragment) return null;
   try {
@@ -110,7 +110,7 @@ function hrefToKey(hrefPath, fragment) {
 }
 
 function replaceDocLinks(content, fragmentMap) {
-  return content.replace(/\]\(\s*(\/docs\/[^)]+)\s*\)/g, (full, inner) => {
+  return content.replace(/\]\(\s*(\/[^)]+)\s*\)/g, (full, inner) => {
     const hashIdx = inner.indexOf("#");
     if (hashIdx === -1) return full;
 

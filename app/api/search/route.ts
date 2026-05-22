@@ -1,7 +1,9 @@
 import { source } from '@/lib/source';
 import { createFromSource } from 'fumadocs-core/search/server';
 
-export const { GET } = createFromSource(source, {
-  // https://docs.orama.com/docs/orama-js/supported-languages
-  language: 'english',
-});
+// 静的エクスポート: 検索インデックスをビルド時に静的ファイルとして出力。
+// 日本語のトークナイズはクライアント側（components/search-dialog.tsx の
+// initOrama）で行うため、ここでは language を指定しない。
+export const revalidate = false;
+
+export const { staticGET: GET } = createFromSource(source);

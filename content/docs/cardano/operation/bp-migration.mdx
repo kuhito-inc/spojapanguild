@@ -7,7 +7,7 @@ title: "BPサーバー移行（旧VPS会社→新VPS会社）"
 - 本まとめは現VPS会社→新VPS会社へと `BPのみ` を移行するまとめです。
 - 実際に行う際には手順をよく読みながら進めてください。
 - ブロック生成予定まで余裕がある時に実施してください。
-- 旧BPは[6-1. 旧BPシャットダウン](/docs/cardano/operation/bp-migration#sec-21)まで、**起動状態** にしておいてください。
+- 旧BPは[6-1. 旧BPシャットダウン](/cardano/operation/bp-migration#sec-21)まで、**起動状態** にしておいてください。
 
 </Callout>
 
@@ -25,13 +25,13 @@ title: "BPサーバー移行（旧VPS会社→新VPS会社）"
 </Callout>
 
 ### Ubuntu初期設定 [#sec-2]
-新サーバーで[Ubuntu初期設定](/docs/cardano/setup/ubuntu-setup)を実施します。  
+新サーバーで[Ubuntu初期設定](/cardano/setup/ubuntu-setup)を実施します。  
 
 
 ### ノードセットアップ [#sec-3]
-1. [1. 依存関係インストール](/docs/cardano/setup/node-setup#sec-1) 〜
-[7. gLiveViewのインストール](/docs/cardano/setup/node-setup#sec-12)まで実施します。
-2. [2. トポロジーファイル設定変更](/docs/cardano/setup/relay-bp-setup#sec-5)の`BP`の手順を実施します。
+1. [1. 依存関係インストール](/cardano/setup/node-setup#sec-1) 〜
+[7. gLiveViewのインストール](/cardano/setup/node-setup#sec-12)まで実施します。
+2. [2. トポロジーファイル設定変更](/cardano/setup/relay-bp-setup#sec-5)の`BP`の手順を実施します。
 
 
 ## 2. 既存リレーでの作業 [#sec-4]
@@ -169,7 +169,7 @@ tar -xvf bp-move.zst
 rm bp-move.zst
 ```
 
-新規BPサーバーで[5. BPノードとして再起動](/docs/cardano/setup/bp-key-setup#5-bp)を実行し、「`startBlockProducingNode.sh`」を生成してください。
+新規BPサーバーで[5. BPノードとして再起動](/cardano/setup/bp-key-setup#5-bp)を実行し、「`startBlockProducingNode.sh`」を生成してください。
 > 旧BPと新BPのユーザー名とノードポート番号は同じにしておくこと
 
 </Tab>
@@ -231,12 +231,12 @@ cardano-cli latest query protocol-parameters \
 
 ### ブロックログ設定 [#sec-13]
 
-- [ブロックログ設定](/docs/cardano/setup/blocklog-setup)
+- [ブロックログ設定](/cardano/setup/blocklog-setup)
 
 
 ### SJGツール導入 [#sec-14]
 
-- [SJGツール導入設定](/docs/cardano/operation/sjg-tool-setup)
+- [SJGツール導入設定](/cardano/operation/sjg-tool-setup)
 
 
 ### ブロック生成状態チェック [#sec-15]
@@ -250,7 +250,7 @@ SJGツールを起動し、「[2] ブロック生成状態チェック」です�
 <Tab value="旧BPで導入済みの場合">
 
 
-1. 新BPで[1. 依存プログラムのインストール](/docs/cardano/setup/blocknotify-setup#1)のみを実施
+1. 新BPで[1. 依存プログラムのインストール](/cardano/setup/blocknotify-setup#1)のみを実施
 2. 旧BPで設定ファイルを確認
 
 ```bash
@@ -265,14 +265,14 @@ cat $NODE_HOME/guild-db/blocklog/.env
 cat $NODE_HOME/scripts/block-notify/config.ini
 ```
 
-3. 新BPで[3. 通知プログラムの設定](/docs/cardano/setup/blocknotify-setup#3)を実施します。
+3. 新BPで[3. 通知プログラムの設定](/cardano/setup/blocknotify-setup#3)を実施します。
 （config.iniの設定値は旧BPで表示された設定ファイルの内容を参考にしてください。）
 
 </Tab>
 <Tab value="旧BPで未導入の場合">
 
 
-[SPO BlockNotify設定](/docs/cardano/setup/blocknotify-setup)から導入してください。
+[SPO BlockNotify設定](/cardano/setup/blocknotify-setup)から導入してください。
 
 </Tab>
 </Tabs>
@@ -376,6 +376,6 @@ sudo systemctl reload-or-restart cardano-node
 ### Mithril-Signer再セットアップ [#sec-23]
 
 旧サーバーでMithril-Signer-Relayを実行していた場合は、新サーバーでも再セットアップしてください。  
-[Mithril Signerノードの設定、更新](/docs/cardano/operation/mithril-signer-node-setup-and-updates)
+[Mithril Signerノードの設定、更新](/cardano/operation/mithril-signer-node-setup-and-updates)
 
 ---

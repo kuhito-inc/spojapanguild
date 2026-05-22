@@ -125,7 +125,7 @@ mkdir -p ~/.ssh
 
 <Callout type="warn" title="ファイル転送">
 
-[SSH鍵作成](/docs/cardano/setup#sec-3)で生成した`authorized_keys`を対象サーバーの`$HOME/.ssh`ディレクトリにコピーします。
+[SSH鍵作成](/cardano/setup#sec-3)で生成した`authorized_keys`を対象サーバーの`$HOME/.ssh`ディレクトリにコピーします。
 ```mermaid
 graph LR
     A[ローカルのホストマシン] -->|authorized_keys| B[対象サーバー];
@@ -367,7 +367,7 @@ sudo nano /etc/fail2ban/jail.local
 ```
 
 ファイルの最後に次の行を追加し保存します。
-> コマンド中の (SSHポートを入力してください) については[3. SSH設定変更](/docs/cardano/setup/ubuntu-setup#sec-3)で設定したSSHポートを入力してください。  
+> コマンド中の (SSHポートを入力してください) については[3. SSH設定変更](/cardano/setup/ubuntu-setup#sec-3)で設定したSSHポートを入力してください。  
 (**)は不要です。
 
 ```bash

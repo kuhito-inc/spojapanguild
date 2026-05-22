@@ -13,7 +13,7 @@ title: "Grafanaアラート設定"
 ## 1. 事前確認 [#sec-1]
 
 - grafana version 12.4.1以上
-- Grafana [SJG最新ダッシュボード](/docs/cardano/setup/monitoring-setup#sec-4)適用済み
+- Grafana [SJG最新ダッシュボード](/cardano/setup/monitoring-setup#sec-4)適用済み
 
 ### Grafanaバージョン確認 [#sec-2]
 
@@ -31,7 +31,7 @@ sudo apt update && sudo apt upgrade -y
 <Callout type="info" title="通知先アプリの設定">
 
 アラートの通知先はLINE/Discord/Telegram/Slackを複数指定することが可能です。  
-ブロック生成ステータス通知の[2. 通知アプリの設定](/docs/cardano/setup/blocknotify-setup#sec-2)で設定した手順と同様に、通知先名などを変えてトークンを発行してください。  
+ブロック生成ステータス通知の[2. 通知アプリの設定](/cardano/setup/blocknotify-setup#sec-2)で設定した手順と同様に、通知先名などを変えてトークンを発行してください。  
 
 </Callout>
 
@@ -68,7 +68,7 @@ sudo apt update && sudo apt upgrade -y
 - 「`Create contact point`」→「`Name *`」に任意の通知名「`Self-Alert`」を入力
 - 「`Integration`」→「通知先(Discord,Telegram,Slack等)」を選択し、情報を入力
 > ここではDiscordを選択しています。
-- [2. 通知アプリの設定](/docs/cardano/setup/blocknotify-setup#sec-2)で取得した通知アプリごとのトークンIDやWebhookURLを入力
+- [2. 通知アプリの設定](/cardano/setup/blocknotify-setup#sec-2)で取得した通知アプリごとのトークンIDやWebhookURLを入力
 > LINEはAPIの仕様変更に伴い選択肢から除外されています。
 - 「`Optional * settings`」→「`Message Content`」→「`Edit Message Content`」→「`Select notification template`」→「`Choose notification template`」欄から、「`mymessage`」を選択し、「`Save`」
 - 「`Save contact point`」を選択
@@ -347,14 +347,14 @@ Relay1のディスク使用率が90%を超えています。100%に達する前�
 
 <Callout type="info" title="注意">
 
-- 事前に[Grafanaセキュリティ強化](/docs/cardano/operation/grafana-security)を実施してください。
+- 事前に[Grafanaセキュリティ強化](/cardano/operation/grafana-security)を実施してください。
 - 以下はGrafanaインストールサーバーで実施してください。
 
 </Callout>
 
 
 
-`xxxx.bbb.com`を[Grafanaセキュリティ強化](/docs/cardano/operation/grafana-security#sec-2)で取得したドメイン(サブドメイン)に置き換えて実行  
+`xxxx.bbb.com`を[Grafanaセキュリティ強化](/cardano/operation/grafana-security#sec-2)で取得したドメイン(サブドメイン)に置き換えて実行  
 `https://`は不要
 ```bash
 domain=xxxx.bbb.com
