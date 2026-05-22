@@ -1,4 +1,5 @@
 import { GoogleAnalyticsConsent } from '@/components/google-analytics-consent';
+import SearchDialog from '@/components/search-dialog';
 import { SiteFooter } from '@/components/site-footer';
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import './global.css';
@@ -46,7 +47,7 @@ export default function Layout({ children }: LayoutProps<'/'>) {
   return (
     <html lang="ja" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
-        <RootProvider search={{ options: { type: 'static' } }}>
+        <RootProvider search={{ SearchDialog }}>
           <div className="flex min-h-screen flex-1 flex-col">
             <div className="flex flex-1 flex-col">{children}</div>
             <SiteFooter />
