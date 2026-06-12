@@ -80,13 +80,8 @@ export function baseOptions(): BaseLayoutProps {
           ]
         : []),
       {
-        text: 'ドキュメント',
-        url: '/docs',
-        active: 'nested-url',
-      },
-      {
         text: '更新履歴',
-        url: '/docs/changelogs',
+        url: '/changelogs',
       },
     ],
     githubUrl: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,

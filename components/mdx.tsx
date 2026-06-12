@@ -3,6 +3,7 @@ import { Tab, Tabs } from 'fumadocs-ui/components/tabs';
 import { Accordion, Accordions } from '@/components/docs-accordion';
 import { AccordionsBlue, AccordionsRed, AccordionsYellow, DocsAccordions } from '@/components/docs-colored-accordions';
 import { AnnotatedCode } from '@/components/docs-annotated-code';
+import { Changelog, Release } from '@/components/docs-changelog';
 import { DocsMdxAnchor } from '@/components/docs-mdx-anchor';
 import { Mermaid } from '@/components/mermaid';
 import { MdxCodeBlock } from '@/components/mdx-code-block';
@@ -78,6 +79,8 @@ export function getMDXComponents(components?: MDXComponents) {
     AccordionsYellow,
     AccordionsRed,
     AnnotatedCode,
+    Changelog,
+    Release,
     img: ZoomableImage,
     ZoomImage: ZoomableImage,
     Mermaid,

@@ -3,7 +3,7 @@ title: "KESの更新"
 ---
 
 以降は、すべて手動で行うKES更新手順です。  
-ドキュメントとして記載しておきますが、実運用では、半自動更新が可能な[SJGツール](/docs/cardano/operation/sjg-tool-setup)の利用を推奨します。
+ドキュメントとして記載しておきますが、実運用では、半自動更新が可能な[SJGツール](/cardano/operation/sjg-tool-setup)の利用を推奨します。
 
 <Callout type="info" title="概要">
 
@@ -39,7 +39,7 @@ title: "KESの更新"
 5. **BP**：オンチェーンカウンター番号を算出  
 6. **エアギャップ**：`node.counter`を生成  
 7. **BP**：現在の`KesPeriod`を算出  
-8. **エアギャップ**：`node.cert`を生成 ([項目7](/docs/cardano/operation/kes-update#sec-7)で算出した`KesPeriod`を使うこと)   
+8. **エアギャップ**：`node.cert`を生成 ([項目7](/cardano/operation/kes-update#sec-7)で算出した`KesPeriod`を使うこと)   
 9. **エアギャップ**：`node.cert`をBPのcnodeディレクトリへコピー  
 10. **BP** & **エアギャップ**：`node.cert`ファイルハッシュを比較  
 11. **BP**：ノードを再起動  
@@ -166,7 +166,7 @@ cd $NODE_HOME
 read -p "BPで算出した更新カウンター番号を入力してください: " cnt_No
 ```
 > 上記のコマンドをそのままコピーしてターミナルに入力してください。  
-> コマンド実行後に、数字入力モードになりますので[項目5](/docs/cardano/operation/kes-update#sec-5)で確認した更新カウンター番号を入力します。
+> コマンド実行後に、数字入力モードになりますので[項目5](/cardano/operation/kes-update#sec-5)で確認した更新カウンター番号を入力します。
 
 ```bash
 chmod u+rwx $HOME/cold-keys
@@ -214,7 +214,7 @@ cd $NODE_HOME
 read -p "BPで算出した startKesPeriod を入力してください: " kes
 ```
 > 上記のコマンドをそのままコピーしてターミナルに入力してください。  
-> コマンド実行後に、数字入力モードになりますので[項目7](/docs/cardano/operation/kes-update#sec-7)で算出した`startKesPeriod`の数字を入力します。  
+> コマンド実行後に、数字入力モードになりますので[項目7](/cardano/operation/kes-update#sec-7)で算出した`startKesPeriod`の数字を入力します。  
 > 必ずBPで算出した値と一致していることを確認してから入力してください。
 
 </Tab>
@@ -352,7 +352,7 @@ glive
 
 
 ## 12. チェックプログラム実行 [#sec-12]
-確認のため、[SJGツール](/docs/cardano/operation/sjg-tool-setup)を実行します。
+確認のため、[SJGツール](/cardano/operation/sjg-tool-setup)を実行します。
 
 ```bash
 gtool
