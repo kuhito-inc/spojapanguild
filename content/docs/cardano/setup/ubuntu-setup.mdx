@@ -338,7 +338,7 @@ sudo passwd -u root
 
 以下の設定を`/etc/fstab`の最終行に追記します。
 ```bash
-echo 'tmpfs /dev/shm tmpfs ro,noexec,nosuid 0 0' | sudo tee -a /etc/fstab
+echo 'tmpfs /run/shm tmpfs ro,noexec,nosuid 0 0' | sudo tee -a /etc/fstab
 ```
 
 追記の確認をします。
