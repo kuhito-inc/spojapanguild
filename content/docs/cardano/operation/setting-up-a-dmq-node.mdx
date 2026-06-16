@@ -1,0 +1,399 @@
+---
+title: "DMQノードの設定"
+---
+
+このマニュアルは、Stake Pool Operator（SPO）が DMQ Node を安全に運用するための設定手順をまとめたものです。  
+ドキュメント作成時点では、DMQ Node はテストネット（preview）のみサポートされており、メインネットでの利用には対応していません。  
+
+以下は、[Mithril Signerノードの設定](/cardano/operation/mithril-signer-node-setup-and-updates)をしている方のみ対象です。
+
+
+## 1. DMQ Nodeのインストール [#sec-1]
+
+システムのアップデート
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+作業ディレクトリの作成
+```bash
+mkdir -p $HOME/git/mithril/dmq
+cd $HOME/git/mithril/dmq
+```
+
+ビルド済みバイナリファイルのダウンロード
+```bash
+wget -O dmq-node.tar.gz https://github.com/IntersectMBO/dmq-node/releases/download/0.4.2.0/dmq-node-linux.tar.gz
+```
+
+解凍してtar.gzファイルの削除
+```bash
+tar -xzf dmq-node.tar.gz --strip-components=2 result/bin
+rm dmq-node.tar.gz
+```
+
+バージョン確認
+```bash
+./dmq-node --version
+```
+
+```yaml title="期待される表示例：" noCopy
+dmq-node version: 0.4.2.0
+```
+
+バイナリファイルをシステムフォルダへコピー
+```bash
+sudo cp dmq-node /usr/local/bin/dmq-node
+```
+
+システムに反映されたバージョン確認
+```bash
+dmq-node --version
+```
+
+```yaml title="期待される表示例：" noCopy
+dmq-node version: 0.4.2.0
+```
+
+
+## 2. ソケット・設定ディレクトリ作成 [#sec-2]
+
+### DMQ Node設定ディレクトリの作成
+
+設定ファイル格納ディレクトリの作成
+```bash
+mkdir -p $HOME/mithril/dmq
+```
+
+DMQ Nodeソケットパス
+```bash
+grep -q '^export DMQ_NODE_SOCKET_PATH=' $HOME/.bashrc || echo "export DMQ_NODE_SOCKET_PATH=\"$HOME/mithril/dmq/socket\"" >> $HOME/.bashrc
+source $HOME/.bashrc
+```
+
+設定内容の確認
+```bash
+echo $DMQ_NODE_SOCKET_PATH
+```
+
+```yaml title="期待される表示例：" noCopy
+/home/cardano/mithril/dmq/socket
+```
+
+
+#### 設定ファイルの作成
+
+
+<Tabs items={["リレー", "BP"]}>
+<Tab value="リレー">
+
+```bash
+cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json << EOF
+{
+  "CardanoNetworkMagic": ${NODE_NETWORK_ID},
+  "CardanoNodeSocket": "${CARDANO_NODE_SOCKET_PATH}",
+  "PeerSharing": true,
+  "PeerSelectionCounters": true,
+  "TraceOptions": {
+    "": {
+      "backends": [
+        "Stdout MachineFormat",
+        "PrometheusSimple suffix 127.0.0.1 12000"
+      ],
+      "severity": "Debug"
+    }
+  }
+}
+EOF
+```
+
+</Tab>
+<Tab value="BP">
+
+```bash
+cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json << EOF
+{
+  "CardanoNetworkMagic": ${NODE_NETWORK_ID},
+  "CardanoNodeSocket": "${CARDANO_NODE_SOCKET_PATH}",
+  "PeerSharing": false,
+  "PeerSelectionCounters": true,
+  "TraceOptions": {
+    "": {
+      "backends": [
+        "Stdout MachineFormat",
+        "PrometheusSimple suffix 127.0.0.1 12000"
+      ],
+      "severity": "Debug"
+    }
+  }
+}
+EOF
+```
+
+</Tab>
+</Tabs>
+
+
+
+## 3. トポロジーファイル作成 [#sec-3]
+
+<Tabs items={["リレー", "BP"]}>
+<Tab value="リレー">
+
+<Callout type="warn" title="クラウドのセキュリティグループでファイアウォールを開けている場合">
+
+`ufw` は使わず、コンソールで **BPサーバーから DMQ 通信に使用するIP のみ Relayサーバーの DMQ ポート（例: 6161）へのインバウンド** を許可してください。
+
+</Callout>
+
+
+```bash
+sudo ufw allow from <BPのIP> to any port 6161 proto tcp
+```
+
+```bash
+sudo ufw reload
+```
+
+```bash
+dmq_bootstrap_peer_ip=34.76.22.193
+dmq_bootstrap_peer_port=6161
+```
+
+```bash
+cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-topology.json << EOF
+{
+  "bootstrapPeers": [],
+  "localRoots": [
+    {
+      "accessPoints": [
+        {
+          "address": "${dmq_bootstrap_peer_ip}",
+          "port": ${dmq_bootstrap_peer_port}
+        }
+      ],
+      "advertise": true,
+      "trustable": false,
+      "hotValency": 1
+    }
+  ],
+  "peerSnapshotFile": null,
+  "publicRoots": []
+}
+EOF
+```
+
+</Tab>
+<Tab value="BP">
+
+<Callout type="warn" title="クラウドのセキュリティグループでファイアウォールを開けている場合">
+
+`ufw` は使わず、コンソールで **Relayサーバーから DMQ 通信に使用するIP のみ BPサーバーの DMQ ポート（例: 6161）へのインバウンド** を許可してください。
+
+</Callout>
+
+
+```bash
+sudo ufw allow from <リレーのIP> to any port 6161 proto tcp
+```
+
+```bash
+sudo ufw reload
+```
+
+自身のRelayサーバーで稼働する`DMQ Node`の`IPアドレス`を調べ、BPタブの変数`relay_dmq_ip`に代入してください。
+```bash
+relay_dmq_ip=***.***.***.***
+relay_dmq_port=6161
+```
+
+```bash
+cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-topology.json << EOF
+{
+  "bootstrapPeers": [],
+  "localRoots": [
+    {
+      "accessPoints": [
+        {
+          "address": "${relay_dmq_ip}",
+          "port": ${relay_dmq_port}
+        }
+      ],
+      "advertise": false,
+      "trustable": false,
+      "hotValency": 1
+    }
+  ],
+  "peerSnapshotFile": null,
+  "publicRoots": []
+}
+EOF
+```
+
+</Tab>
+</Tabs>
+
+
+## 4. systemd サービス作成 [#sec-4]
+
+<Tabs items={["リレー", "BP"]}>
+<Tab value="リレー">
+
+```bash
+cat > $HOME/mithril/dmq/dmq-node.service << EOF
+[Unit]
+Description=DMQ relay service
+Wants=network-online.target
+After=network-online.target cardano-node.service
+StartLimitIntervalSec=0
+
+[Service]
+User=${USER}
+Type=simple
+WorkingDirectory=$NODE_HOME
+Restart=always
+RestartSec=60
+LimitNOFILE=32768
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=dmq-node
+ExecStart=/usr/local/bin/dmq-node --configuration-file $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json --topology-file $HOME/mithril/dmq/${NODE_CONFIG}-dmq-topology.json --local-socket ${DMQ_NODE_SOCKET_PATH} --host-addr $(curl -s https://api.ipify.org) --port 6161
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+</Tab>
+<Tab value="BP">
+```bash
+cat > $HOME/mithril/dmq/dmq-node.service << EOF
+[Unit]
+Description=DMQ block producer service
+Wants=network-online.target
+After=network-online.target cardano-node.service
+StartLimitIntervalSec=0
+
+[Service]
+User=${USER}
+Type=simple
+WorkingDirectory=$NODE_HOME
+Restart=always
+RestartSec=60
+LimitNOFILE=32768
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=dmq-node
+ExecStart=/usr/local/bin/dmq-node --configuration-file $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json --topology-file $HOME/mithril/dmq/${NODE_CONFIG}-dmq-topology.json --local-socket ${DMQ_NODE_SOCKET_PATH} --host-addr $(curl -s https://api.ipify.org) --port 6161
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+</Tab>
+</Tabs>
+
+システムディレクトリへ配置
+```bash
+sudo cp $HOME/mithril/dmq/dmq-node.service /etc/systemd/system/dmq-node.service
+```
+```bash
+sudo chmod 644 /etc/systemd/system/dmq-node.service
+```
+
+サービス設定反映
+```bash
+sudo systemctl daemon-reload
+```
+
+自動起動登録して起動
+```bash
+sudo systemctl enable dmq-node --now
+```
+
+状態確認
+```bash
+sudo systemctl status dmq-node --no-pager
+```
+```yaml title="期待される表示例：" noCopy
+● dmq-node.service - DMQ xxx service
+~
+     Active: active (running)
+```
+
+ログの確認
+```bash
+journalctl -u dmq-node -f
+```
+
+エイリアス設定
+```bash
+echo alias dmqnode='"journalctl -u dmq-node -f"' >> $HOME/.bashrc
+source $HOME/.bashrc
+```
+
+## 5. DMQ Node の動作確認 [#sec-5]
+
+DMQ Node のログを確認します。
+```bash
+sudo journalctl -u dmq-node -f
+```
+
+ソケットファイルの確認
+```bash
+ls -l ${DMQ_NODE_SOCKET_PATH}
+```
+```yaml title="期待される表示例：" noCopy
+srwxr-xr-x 1 cardano cardano 0 xxx xx xx:xx /home/cardano/mithril/dmq/socket
+```
+
+サービスポート確認
+
+```bash
+sudo ss -lntp | grep 6161
+```
+```yaml title="期待される表示例：" noCopy
+LISTEN 0      8       xxx.xxx.xxx.xxx:6161       0.0.0.0:*    users:(("dmq-node",pid=***,fd=***))   
+```
+
+## 6. Mithril Signer と連携 [#sec-6]
+
+Mithril Signer が DMQ Node を利用するよう設定します。
+
+<Tabs items={["BP"]}>
+<Tab value="BP">
+```bash
+grep -q '^DMQ_NODE_SOCKET_PATH=' $HOME/mithril/mithril-signer.env || echo "DMQ_NODE_SOCKET_PATH=${DMQ_NODE_SOCKET_PATH}" | sudo tee -a $HOME/mithril/mithril-signer.env > /dev/null
+```
+```bash
+grep DMQ_NODE_SOCKET_PATH $HOME/mithril/mithril-signer.env
+```
+
+```yaml title="期待される表示例：" noCopy
+DMQ_NODE_SOCKET_PATH=/home/cardano/mithril/dmq/socket
+```
+
+Mithril Signer を再起動
+```bash
+sudo systemctl restart mithril-signer
+```
+
+状態確認
+```bash
+sudo systemctl status mithril-signer --no-pager
+```
+```yaml title="期待される表示例：" noCopy
+● mithril-signer.service - Mithril Signer service
+~
+     Active: active (running)
+```
+
+ログ確認
+```bash
+journalctl -u mithril-signer -f --output=cat
+```
+</Tab>
+</Tabs>
+
+---
