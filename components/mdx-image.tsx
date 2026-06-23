@@ -1,8 +1,25 @@
 'use client';
 
 import { X, ZoomIn } from 'lucide-react';
-import { useEffect, useState, type ComponentPropsWithoutRef } from 'react';
+import { useEffect, useState, type CSSProperties, type ComponentPropsWithoutRef } from 'react';
 import { createPortal } from 'react-dom';
+
+function getPreviewMaxWidth(src: string): string | undefined {
+  const laceImage = src.match(/^\/images\/lace-(chrome|mobile)\/(?:chrome|mobile)-lace_(\d+)\.(?:png|PNG)$/);
+  if (!laceImage) return undefined;
+
+  const [, type, imageNumber] = laceImage;
+  const number = Number(imageNumber);
+
+  if (type === 'mobile') {
+    return number <= 2 ? '720px' : '360px';
+  }
+
+  if (number <= 2) return '720px';
+  if (number >= 9) return '420px';
+
+  return undefined;
+}
 
 export function MdxImage({ alt = '', className, src, ...props }: ComponentPropsWithoutRef<'img'>) {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,6 +39,14 @@ export function MdxImage({ alt = '', className, src, ...props }: ComponentPropsW
     return <img {...props} src={src} alt={alt} className={className} />;
   }
 
+  const previewMaxWidth = getPreviewMaxWidth(src);
+  const previewStyle: CSSProperties | undefined = previewMaxWidth
+    ? { maxWidth: previewMaxWidth, width: '100%' }
+    : undefined;
+  const imageStyle: CSSProperties | undefined = previewMaxWidth
+    ? { ...props.style, width: '100%', height: 'auto' }
+    : props.style;
+
   return (
     <>
       <button
@@ -29,8 +54,9 @@ export function MdxImage({ alt = '', className, src, ...props }: ComponentPropsW
         className="not-prose group relative my-6 inline-block cursor-zoom-in overflow-hidden rounded-lg border border-fd-border bg-fd-card p-1 transition hover:border-fd-primary/60 hover:shadow-md"
         aria-label={alt ? `${alt}を拡大表示` : '画像を拡大表示'}
         onClick={() => setIsOpen(true)}
+        style={previewStyle}
       >
-        <img {...props} src={src} alt={alt} className={className} />
+        <img {...props} src={src} alt={alt} className={className} style={imageStyle} />
         <span className="absolute right-3 top-3 rounded-full bg-black/70 p-2 text-white shadow transition group-hover:bg-black">
           <ZoomIn className="size-4" aria-hidden="true" />
         </span>

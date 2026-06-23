@@ -26,6 +26,10 @@
     "---その他---",
     "pool-retire",
     "mithril-signer-node-setup-and-updates",
-    "linux-commands"
+    "setting-up-a-dmq-node",
+    "linux-commands",
+    "---ウォレット作成---",
+    "create-a-lace-chrome",
+    "create-a-lace-mobile"
   ]
 }

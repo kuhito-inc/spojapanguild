@@ -8,7 +8,7 @@ title: "Mithril Signerノードの設定、更新"
 
 | Node | Mithril-signer | squid |
 | :---------- | :---------- | :---------- |
-| 10.7.1 | 1.0.0 | 7.5 |
+| 11.0.1 | 1.0.0 | 7.6 |
 
 </Callout>
 
@@ -154,12 +154,12 @@ sudo apt update && sudo apt upgrade -y
 `squid`のインストール
 ```bash
 cd $HOME
-wget https://github.com/squid-cache/squid/releases/download/SQUID_7_5/squid-7.5.tar.gz
+wget https://github.com/squid-cache/squid/releases/download/SQUID_7_6/squid-7.6.tar.gz
 ```
 
 ```bash
-tar xzf squid-7.5.tar.gz
-cd squid-7.5
+tar xzf squid-7.6.tar.gz
+cd squid-7.6
 ```
 
 `squid`のビルド
@@ -189,7 +189,7 @@ sudo make install
 /opt/squid/sbin/squid -v
 ```
 ```yaml title="期待される表示例：" noCopy
-Squid Cache: Version 7.5
+Squid Cache: Version 7.6
 Service Name: squid
 configure options:  '--prefix=/opt/squid' '--localstatedir=/opt/squid/var' '--libexecdir=/opt/squid/lib/squid' '--datadir=/opt/squid/share/squid' '--sysconfdir=/etc/squid' '--with-default-user=squid' '--with-logdir=/opt/squid/var/log/squid' '--with-pidfile=/opt/squid/var/run/squid.pid' 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:'
 ```
@@ -197,8 +197,8 @@ configure options:  '--prefix=/opt/squid' '--localstatedir=/opt/squid/var' '--li
 インストールファイルの削除
 ```bash
 cd $HOME
-rm squid-7.5.tar.gz
-rm -rf squid-7.5
+rm squid-7.6.tar.gz
+rm -rf squid-7.6
 ```
 
 `squid`のアカウント作成
@@ -593,7 +593,7 @@ journalctl -u mithril-signer -f --output=cat
 
 <Callout type="info" title="ヒント">
 
-`Squid Cache: Version 7.5` の戻り値がある場合、以降実施不要です。
+`Squid Cache: Version 7.6` の戻り値がある場合、以降実施不要です。
 
 </Callout>
 
@@ -611,15 +611,15 @@ sudo systemctl disable squid
 sudo apt update && sudo apt upgrade -y
 ```
 
-`squid7.5`のインストール
+`squid7.6`のインストール
 ```bash
 cd $HOME
-wget https://github.com/squid-cache/squid/releases/download/SQUID_7_5/squid-7.5.tar.gz
+wget https://github.com/squid-cache/squid/releases/download/SQUID_7_6/squid-7.6.tar.gz
 ```
 
 ```bash
-tar xzf squid-7.5.tar.gz
-cd squid-7.5
+tar xzf squid-7.6.tar.gz
+cd squid-7.6
 ```
 
 `squid`のビルド
@@ -650,7 +650,7 @@ sudo make install
 
 戻り値
 ```yaml title="期待される表示例：" noCopy
-Squid Cache: Version 7.5
+Squid Cache: Version 7.6
 ```
 
 `squid`のサービス有効化
@@ -666,8 +666,8 @@ sudo systemctl start squid
 インストールファイルの削除
 ```bash
 cd $HOME
-rm squid-7.5.tar.gz
-rm -rf squid-7.5
+rm squid-7.6.tar.gz
+rm -rf squid-7.6
 ```
 
 </Tab>
