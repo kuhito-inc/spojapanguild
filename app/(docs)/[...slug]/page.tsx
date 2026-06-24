@@ -11,10 +11,22 @@ import { getMDXComponents } from '@/components/mdx';
 import type { Metadata } from 'next';
 
 const ogImageUrl = 'https://spojapanguild.net/wp-content/uploads/2026/05/ogp2026.png';
+const legacyPageSlugs: Record<string, string[]> = {
+  'cardano/operation/create-a-lace-wallet': ['cardano', 'operation', 'lace-wallet', 'create-a-lace-chrome'],
+  'cardano/operation/create-a-lace-chrome': ['cardano', 'operation', 'lace-wallet', 'create-a-lace-chrome'],
+  'cardano/operation/create-a-lace-mobile': ['cardano', 'operation', 'lace-wallet', 'create-a-lace-mobile'],
+};
+const staticNotFoundSlugs = [['favicon.ico']];
+
+export const dynamicParams = false;
+
+function resolvePageSlug(slug: string[]) {
+  return legacyPageSlugs[slug.join('/')] ?? slug;
+}
 
 export default async function Page(props: PageProps<'/[...slug]'>) {
   const params = await props.params;
-  const page = source.getPage(params.slug);
+  const page = source.getPage(resolvePageSlug(params.slug));
   if (!page) notFound();
 
   const MDX = page.data.body;
@@ -41,12 +53,16 @@ export default async function Page(props: PageProps<'/[...slug]'>) {
 }
 
 export async function generateStaticParams() {
-  return source.generateParams();
+  return [
+    ...source.generateParams(),
+    ...Object.keys(legacyPageSlugs).map((slug) => ({ slug: slug.split('/') })),
+    ...staticNotFoundSlugs.map((slug) => ({ slug })),
+  ];
 }
 
 export async function generateMetadata(props: PageProps<'/[...slug]'>): Promise<Metadata> {
   const params = await props.params;
-  const page = source.getPage(params.slug);
+  const page = source.getPage(resolvePageSlug(params.slug));
   if (!page) notFound();
 
   return {
