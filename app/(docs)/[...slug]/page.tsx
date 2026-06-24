@@ -12,7 +12,9 @@ import type { Metadata } from 'next';
 
 const ogImageUrl = 'https://spojapanguild.net/wp-content/uploads/2026/05/ogp2026.png';
 const legacyPageSlugs: Record<string, string[]> = {
-  'cardano/operation/create-a-lace-wallet': ['cardano', 'operation', 'create-a-lace-chrome'],
+  'cardano/operation/create-a-lace-wallet': ['cardano', 'operation', 'lace-wallet', 'create-a-lace-chrome'],
+  'cardano/operation/create-a-lace-chrome': ['cardano', 'operation', 'lace-wallet', 'create-a-lace-chrome'],
+  'cardano/operation/create-a-lace-mobile': ['cardano', 'operation', 'lace-wallet', 'create-a-lace-mobile'],
 };
 const staticNotFoundSlugs = [['favicon.ico']];
 

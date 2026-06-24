@@ -1,0 +1,5 @@
+{
+  "title": "Lace Wallet",
+  "defaultOpen": true,
+  "pages": ["create-a-lace-chrome", "create-a-lace-mobile"]
+}
