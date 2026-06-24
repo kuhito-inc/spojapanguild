@@ -221,6 +221,52 @@ mark {
   height: auto;
 }
 
+/* Lace 手順書: プレビューはコンパクトに、クリックで拡大 */
+#nd-docs-layout .sjg-lace-preview {
+  display: block;
+  width: min(var(--sjg-lace-preview-width, 720px), 100%);
+  max-width: 100%;
+  margin-block: 0.875rem 1.125rem;
+}
+
+#nd-docs-layout .sjg-lace-preview img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+#nd-docs-layout .sjg-lace-preview--wide {
+  --sjg-lace-preview-width: 560px;
+}
+
+#nd-docs-layout .sjg-lace-preview--phone {
+  --sjg-lace-preview-width: 240px;
+}
+
+#nd-docs-layout .sjg-lace-preview--panel {
+  --sjg-lace-preview-width: 300px;
+}
+
+#nd-docs-layout .sjg-lace-preview--compact {
+  width: fit-content;
+}
+
+@media (min-width: 768px) {
+  #nd-docs-layout .sjg-lace-preview--wide {
+    --sjg-lace-preview-width: 620px;
+  }
+
+  #nd-docs-layout .sjg-lace-preview--phone {
+    --sjg-lace-preview-width: 260px;
+  }
+
+  #nd-docs-layout .sjg-lace-preview--panel {
+    --sjg-lace-preview-width: 320px;
+  }
+}
+
 #nd-docs-layout .prose :where(pre) {
   max-width: 100%;
   overflow-x: auto;

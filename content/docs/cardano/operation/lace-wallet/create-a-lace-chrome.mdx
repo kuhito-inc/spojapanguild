@@ -13,6 +13,9 @@ https://www.lace.io/
 補足：Lace公式X  
 https://x.com/lace_io
 
+⚠️ Lace Walletは継続的にアップデートされています。  
+本手順作成時点の画面をもとに説明していますので、利用時期によっては画面構成や表示内容が一部異なる場合があります。  
+
 本手順では`Chrome`ブラウザを例に説明します。
 
 ## 1. インストール [#sec-1]
@@ -201,6 +204,135 @@ Laceウォレットを新規作成するので選択します。
 
 「**ウォレットをインポートしました**」の表示を確認し、「**ウォレットを表示**」を選択します。  
 ![Chrome拡張機能にLace Walletの導入-27](/images/lace-chrome/chrome-lace_27.png)
+
+
+## 5. ステーキング [#sec-11]
+
+ここではSPO JAPAN GUILDプール：ティッカー名「SJG」へ委任する手順で説明します。  
+
+画面中央下部のLaceアイコンの左側にあるステーキングセンターを選択します。  
+対象アカウントをスクロールなどして見つけ、ステーキングするアカウントの「**ステーク**」を選択します。  
+![Chrome拡張機能にLace Walletの導入-34](/images/lace-chrome/chrome-lace_34.png)
+
+「**プール検索欄**」に委任したいステークプールのティッカー名を入力し、表示されたプールを選択します。  
+![Chrome拡張機能にLace Walletの導入-35](/images/lace-chrome/chrome-lace_35.png)
+
+「**委任**」ボタンを選択します。  
+![Chrome拡張機能にLace Walletの導入-36](/images/lace-chrome/chrome-lace_36.png)
+
+再度「**委任**」ボタンを選択します。  
+> この際、合計の内訳やステーク鍵が発行されたことや、ステーキングするステークプールの詳細等表示されます。
+
+![Chrome拡張機能にLace Walletの導入-37](/images/lace-chrome/chrome-lace_37.png)
+
+「**パスワード**」を入力し、「**確認**」を選択します。  
+![Chrome拡張機能にLace Walletの導入-32](/images/lace-chrome/chrome-lace_32.png)
+
+ステーキングが完了しました🎉  
+「**ステーキングセンターへ**」を選択し、対象プールに委任されているか確認してください。  
+![Chrome拡張機能にLace Walletの導入-38](/images/lace-chrome/chrome-lace_38.png)
+
+### 補足 [#sec-12]
+
+> Error details : Insufficient ADA は、ウォレット内のADAが不足していることを示しています。
+> 「**Close**」を選択して閉じてください。
+>
+> ステーキングを開始する際は、ステーク鍵デポジットとして **2 ADA** が必要です。
+> また、別途トランザクション手数料（例：**0.176281 ADA**、変動あり）が発生します。
+>
+> そのため、3 ADA程度では不足する場合があります。
+> 余裕をもって 5 ADA以上の残高を準備してから再度お試しください。
+
+![Chrome拡張機能にLace Walletの導入-999](/images/lace-chrome/chrome-lace_999.png)
+
+
+## 6. ガバナンス - DRepへの委任 [#sec-13]
+
+ステーキングが完了したら、続いて投票権の委任設定を行うことでガバナンスへ参加できます。
+
+ガバナンスに関して詳しく学ぶには、Cardanoism（カルダノイズム）を参照していただき、ガバナンスについて学べます。
+
+https://cardanoism.com/governance/why
+
+画面中央下部のLaceアイコンの左側にあるステーキングセンターを選択します。  
+対象アカウントをスクロールなどして見つけ、「**Gov.toolsで委任**」を選択します。  
+![Chrome拡張機能にLace Walletの導入-39](/images/lace-chrome/chrome-lace_39.png)
+
+少しスクロールして「**Gov.toolsで投票を委任**」を選択します。  
+![Chrome拡張機能にLace Walletの導入-40](/images/lace-chrome/chrome-lace_40.png)
+
+IntersectMBOが開発したガバナンスツールである**gov.tools**へ遷移されますので右上の「**Connect**」を選択します。  
+https://gov.tools/
+
+![Chrome拡張機能にLace Walletの導入-41](/images/lace-chrome/chrome-lace_41.png)
+
+「**Connect your Wallet**」と表示されますので「**lace**」を選択します。  
+![Chrome拡張機能にLace Walletの導入-42](/images/lace-chrome/chrome-lace_42.png)
+
+Lace Wallet側で、「**アカウントを選択**」から対象アカウントを選択し、「**承認**」を選択してください。  
+その後、Gov.tools側では「**This tool is connected to Mainnet**」と表示されますので「**Ok**」を選択してください。  
+
+![Chrome拡張機能にLace Walletの導入-43](/images/lace-chrome/chrome-lace_43.png)  
+![Chrome拡張機能にLace Walletの導入-44](/images/lace-chrome/chrome-lace_44.png)
+
+これでガバナンスツールであるGov.toolsに対象アカウントが接続できました。
+
+次に対象DRepを選択するため、「**Delegate your Voting Power**」の「**View DRep Directory**」ボタンを選択します。  
+![Chrome拡張機能にLace Walletの導入-45](/images/lace-chrome/chrome-lace_45.png)
+
+
+### DRep Directory [#sec-14]
+
+#### 自動投票オプション [#sec-15]
+
+「**Delegation Options**」の「**Automated Voting Options**」の折り畳みアコーディオンを展開し、以下のどちらかに委任します。   
+
+- **Abstain from Every Vote**（Always Abstain：常時棄権）
+  - すべての投票で棄権します。
+- **Signal No Confidence on Every Vote**（Always No Confidence：憲法委員会に対する不信任）
+  - すべての投票で憲法委員会への不信任を表明します。
+
+それぞれの意味を理解した上で選択してください。  
+
+※参考までに、特定のDRepへ委任せず、自動投票オプションを利用する場合は「Always Abstain（常時棄権）」を選択するケースが一般的です。
+
+![Chrome拡張機能にLace Walletの導入-46](/images/lace-chrome/chrome-lace_46.png)
+
+「**Delegate**」ボタンを選択すると、Lace Wallet側で「**トランザクションを確認**」が表示されますので「**確認**」ボタンを選択します。  
+
+「**パスワード**」を入力し、「**確認**」を選択します。  
+![Chrome拡張機能にLace Walletの導入-32](/images/lace-chrome/chrome-lace_32.png)
+
+「**完了しました**」と表示されたら、「**閉じる**」を選択します。  
+
+ステーキングセンターに戻り、「**Gov.toolsで委任**」の表示がなくなっていれば、完了です。  
+
+ガバナンス作業が完了しました🎉  
+![Chrome拡張機能にLace Walletの導入-48](/images/lace-chrome/chrome-lace_48.png)
+
+#### DRepへの委任 [#sec-16]
+
+あなたの価値観に近いDRepを選択するため、委任するDRepを決める際、ぜひDRepマッチング診断を行ってみてください。  
+
+https://cardanoism.com/governance/drep/match
+
+既に委任したいと思っているDRepがいる場合は、以下を進めてください。
+
+「**Find a DRep**」の検索窓で委任する対象DRepのティッカー名もしくはDRep IDを入力してください。  
+![Chrome拡張機能にLace Walletの導入-47](/images/lace-chrome/chrome-lace_47.png)
+
+委任する対象のDRepが表示されたら「**Delegate**」ボタンを選択します。  
+「**Delegate**」ボタンを選択すると、Lace Wallet側で「**トランザクションを確認**」が表示されますので「**確認**」ボタンを選択します。  
+
+「**パスワード**」を入力し、「**確認**」を選択します。  
+![Chrome拡張機能にLace Walletの導入-32](/images/lace-chrome/chrome-lace_32.png)
+
+「**完了しました**」と表示されたら、「**閉じる**」を選択します。  
+
+ステーキングセンターに戻り、「**Gov.toolsで委任**」の表示がなくなっていれば、完了です。  
+
+ガバナンス作業が完了しました🎉  
+![Chrome拡張機能にLace Walletの導入-48](/images/lace-chrome/chrome-lace_48.png)
 
 
 

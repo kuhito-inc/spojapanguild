@@ -28,8 +28,7 @@
     "mithril-signer-node-setup-and-updates",
     "setting-up-a-dmq-node",
     "linux-commands",
-    "---ウォレット作成---",
-    "create-a-lace-chrome",
-    "create-a-lace-mobile"
+    "---ウォレット関連---",
+    "lace-wallet"
   ]
 }
