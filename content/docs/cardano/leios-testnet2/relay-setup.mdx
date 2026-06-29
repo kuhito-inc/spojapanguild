@@ -228,13 +228,43 @@ glive
 
 ![gLiveView](/images/glive-leios.png)
 
-<Callout type="info" title="同梱される監視スタック（Grafana）">
 
-`leios-testnet-relay` はノードに加えて Grafana / Prometheus / Loki / tip-watcher を起動します。  
-`http://<サーバーIP>:3000` で Grafana ダッシュボードにアクセスできます。  
-> リモートサーバーの場合は、SSHポートフォワード（`ssh -L 3000:localhost:3000 ...`）経由でのアクセスを推奨します。ポートを直接公開する場合はファイアウォールで接続元を制限してください。
+## 7. Grafana設定 [#sec-7]
+
+> ファイアウォールを設定している場合は3000ポートを解放してください
+
+<Callout type="info" title="ファイアウォールについて">
+
+VPS側でハードウェアファイアウォールを設定している場合はufwを使用しないでください
 
 </Callout>
+
+```
+sudo ufw allow 3000/tcp
+sudo ufw reload
+```
+
+nix側のGrafana設定ファイルパス検出
+```
+GRAFANA_INI=$(ps aux | grep '[g]rafana' | grep -oP '(?<=--config\s)[^ ]+')
+```
+
+外部アクセス許可
+```
+sudo sed -i 's/enforce_domain\s*=\s*true/enforce_domain=false/g' "$GRAFANA_INI"
+```
+
+
+nixシェル画面でGrafanaを再起動(Restart)する
+
+```
+tmux a -t relay
+```
+![nix shell](/images/grafana-restart.png)
+
+
+ローカルPCのブラウザから`http://<サーバーIP>:3000` で Grafana ダッシュボードにアクセスできます。  
+
 
 
 <Callout type="warn" title="サーバー再起動時の自動起動について">
