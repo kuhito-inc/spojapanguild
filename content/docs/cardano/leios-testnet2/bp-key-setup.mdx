@@ -1,0 +1,162 @@
+---
+title: "BP用キーの生成"
+---
+
+ステークプールの運用に必要な各種キーを **BP** 上で生成します。
+
+<Callout type="warn" title="事前確認">
+
+[BPノード構築](/cardano/leios-testnet2/bp-setup) が完了し、同期が `100.00` になってから以降の手順を実施してください。
+
+```bash
+cardano-cli query tip | jq -r '.syncProgress'
+```
+```yaml title="期待される表示例：" noCopy
+"100.00"
+```
+
+</Callout>
+
+
+<Callout type="info" title="生成するキー一覧">
+
+| ファイル | 用途 |
+| :---- | :---- |
+| `payment.vkey` / `payment.skey` | 支払いアドレス用キー |
+| `stake.vkey` / `stake.skey` | ステークアドレス用キー |
+| `cold.vkey` / `cold.skey` / `opcert.counter` | コールドキー（プールの根幹） |
+| `kes.vkey` / `kes.skey` | KESキー |
+| `vrf.vkey` / `vrf.skey` | VRFキー |
+| `opcert.cert` | 運用証明書 |
+
+</Callout>
+
+
+## 1. キー用ディレクトリの作成 [#sec-1]
+
+```bash
+mkdir -p "$WORKING_DIR/keys"
+cd "$WORKING_DIR/keys"
+```
+
+
+## 2. 支払い・ステークキーの作成 [#sec-2]
+
+```bash
+cardano-cli dijkstra address key-gen \
+  --verification-key-file payment.vkey \
+  --signing-key-file payment.skey
+cardano-cli dijkstra stake-address key-gen \
+  --verification-key-file stake.vkey \
+  --signing-key-file stake.skey
+```
+
+
+## 3. コールドキーの作成 [#sec-3]
+
+<Callout type="error" title="注意（コールドキー）">
+
+`cold.skey` は **プール運営の根幹となる鍵** です。<mark>流出するとプールの乗っ取りにつながる可能性があります。</mark>  
+本番運用ではエアギャップ（オフライン）環境での生成・保管を強く推奨します。  
+本テストネットでは BP 上で生成しますが、生成後は **USB など本体から切り離した媒体へ複数バックアップ** してください。
+
+</Callout>
+
+
+```bash
+cardano-cli dijkstra node key-gen \
+  --cold-verification-key-file cold.vkey \
+  --cold-signing-key-file cold.skey \
+  --operational-certificate-issue-counter-file opcert.counter
+chmod 400 cold.skey cold.vkey
+```
+
+
+## 4. KES・VRFキーの作成 [#sec-4]
+
+<Callout type="info" title="KESキーについて">
+
+KES（Key Evolving Signature）キーは、鍵を悪用する攻撃者からプールを保護するために使用され、定期的に再生成が必要です。
+
+</Callout>
+
+
+```bash
+cardano-cli dijkstra node key-gen-KES \
+  --verification-key-file kes.vkey \
+  --signing-key-file kes.skey
+cardano-cli dijkstra node key-gen-VRF \
+  --verification-key-file vrf.vkey \
+  --signing-key-file vrf.skey
+chmod 400 kes.skey vrf.skey
+```
+
+
+## 5. 支払いアドレスの作成 [#sec-5]
+
+```bash
+cardano-cli dijkstra address build \
+  --payment-verification-key-file payment.vkey \
+  --stake-verification-key-file stake.vkey \
+  --out-file payment.addr
+cat payment.addr;echo
+```
+
+
+## 6. Faucetからの入金 [#sec-6]
+
+<Callout type="info" title="tADAの請求">
+
+表示された支払いアドレスを Faucet に貼り付け、テスト用 tADA を請求します（約10,000 tADA）。
+
+[faucet.leios.play.dev.cardano.org/basic-faucet](https://faucet.leios.play.dev.cardano.org/basic-faucet)
+
+</Callout>
+
+
+入金後、残高を確認します。
+
+```bash
+cardano-cli dijkstra query utxo --address "$(cat payment.addr)"
+```
+```yaml title="期待される表示例：" noCopy
+                           TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+9e0c10b599606a5**********************************************     0    10000000000 lovelace + TxOutDatumNone
+```
+> UTxO が表示されれば入金完了です。
+
+
+## 7. 運用証明書の作成 [#sec-7]
+
+ジェネシスから `slotsPerKESPeriod` を取得し、現在のスロットから KES Period を算出します。
+
+```bash
+cd "$WORKING_DIR/keys"
+slotsPerKESPeriod=$(jq -r '.slotsPerKESPeriod' "$WORKING_DIR/shelley-genesis.json")
+echo slotsPerKESPeriod: ${slotsPerKESPeriod}
+slotNo=$(cardano-cli query tip | jq -r '.slot')
+echo slotNo: ${slotNo}
+kesPeriod=$(( slotNo / slotsPerKESPeriod ))
+echo kesPeriod: ${kesPeriod}
+```
+
+運用証明書（`opcert.cert`）を作成します。
+
+```bash
+cardano-cli dijkstra node issue-op-cert \
+  --kes-verification-key-file kes.vkey \
+  --cold-signing-key-file cold.skey \
+  --operational-certificate-issue-counter-file opcert.counter \
+  --kes-period "$kesPeriod" \
+  --out-file opcert.cert
+```
+
+
+<Callout type="warn" title="次のステップ">
+
+キーの生成と入金が完了したら、[ステークプール登録](/cardano/leios-testnet2/stake-pool-register) に進んでください。
+
+</Callout>
+
+---

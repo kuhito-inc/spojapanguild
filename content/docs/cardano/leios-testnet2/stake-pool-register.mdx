@@ -1,0 +1,209 @@
+---
+title: "ステークプール登録"
+---
+
+ステークアドレスとプールの登録、ステークの委任を **BP** 上で実施し、最後に BP をブロック生成モードへ切り替えます。
+
+<Callout type="info" title="事前確認">
+
+- [BP用キーの生成](/cardano/leios-testnet2/bp-key-setup) が完了していること
+- `payment.addr` に Faucet からの tADA が入金済みであること
+- ノードが同期済み（`syncProgress: 100.00`）であること
+
+すべてのコマンドは `$WORKING_DIR/keys` ディレクトリで実行します。
+
+```bash
+cd "$WORKING_DIR/keys"
+```
+
+</Callout>
+
+
+## 1. ステーク登録証明書の作成 [#sec-1]
+
+```bash
+cardano-cli dijkstra stake-address registration-certificate \
+  --stake-verification-key-file stake.vkey \
+  --key-reg-deposit-amt "$(cardano-cli dijkstra query gov-state | jq .currentPParams.stakeAddressDeposit)" \
+  --out-file stake-reg.cert
+```
+
+
+## 2. プール登録証明書の作成 [#sec-2]
+
+<Callout type="error" title="実行前に変更する値">
+
+- `--pool-pledge`：誓約額（lovelace 単位。例 `1000000000` = 1,000 tADA）
+- `--pool-cost`：固定手数料（lovelace 単位）
+- `--pool-margin`：変動手数料（0〜1 の小数。例 `0.05` = 5%）
+- `<YOUR_PUBLIC_IP>`：**リレーノードのパブリックIPアドレス**
+
+</Callout>
+
+
+```bash
+cardano-cli dijkstra stake-pool registration-certificate \
+  --cold-verification-key-file cold.vkey \
+  --vrf-verification-key-file vrf.vkey \
+  --pool-pledge 1000000000 \
+  --pool-cost 170000000 \
+  --pool-margin 0.05 \
+  --pool-reward-account-verification-key-file stake.vkey \
+  --pool-owner-stake-verification-key-file stake.vkey \
+  --pool-relay-ipv4 <YOUR_PUBLIC_IP> \
+  --pool-relay-port 3010 \
+  --out-file pool-reg.cert
+```
+
+<Callout type="info" title="誓約（Pledge）について">
+
+誓約額は `payment.addr` の残高で満たす必要があります。  
+残高が誓約額を下回るとプール報酬が得られなくなる場合があります。
+
+</Callout>
+
+
+## 3. 登録トランザクションの送信 [#sec-3]
+
+ステーク登録証明書とプール登録証明書を 1 つのトランザクションで送信します。  
+`transaction build` は手数料を自動計算します。
+
+```bash
+TXIN=$(cardano-cli dijkstra query utxo --address "$(cat payment.addr)" | jq -r 'keys[0]')
+echo TXIN: $TXIN
+```
+
+```bash
+cardano-cli dijkstra transaction build \
+  --tx-in "$TXIN" \
+  --change-address "$(cat payment.addr)" \
+  --certificate-file stake-reg.cert \
+  --certificate-file pool-reg.cert \
+  --out-file pool-reg-tx.raw
+```
+
+トランザクションに署名します。
+
+```bash
+cardano-cli dijkstra transaction sign \
+  --tx-body-file pool-reg-tx.raw \
+  --signing-key-file payment.skey \
+  --signing-key-file stake.skey \
+  --signing-key-file cold.skey \
+  --out-file pool-reg-tx.signed
+```
+
+トランザクションを送信します。
+
+```bash
+cardano-cli dijkstra transaction submit \
+  --tx-file pool-reg-tx.signed
+```
+> `Transaction successfully submitted` と表示されれば成功です。
+
+
+## 4. ステークの委任 [#sec-4]
+
+ご自身のステークをプールへ委任します（誓約を満たすために必要です）。
+
+```bash
+cardano-cli dijkstra stake-address stake-delegation-certificate \
+  --stake-verification-key-file stake.vkey \
+  --cold-verification-key-file cold.vkey \
+  --out-file delegation.cert
+```
+
+```bash
+TXIN=$(cardano-cli dijkstra query utxo --address "$(cat payment.addr)" | jq -r 'keys[0]')
+cardano-cli dijkstra transaction build \
+  --tx-in "$TXIN" \
+  --change-address "$(cat payment.addr)" \
+  --certificate-file delegation.cert \
+  --out-file delegation-tx.raw
+cardano-cli dijkstra transaction sign \
+  --tx-body-file delegation-tx.raw \
+  --signing-key-file payment.skey \
+  --signing-key-file stake.skey \
+  --out-file delegation-tx.signed
+cardano-cli dijkstra transaction submit \
+  --tx-file delegation-tx.signed
+```
+
+
+## 5. 登録確認 [#sec-5]
+
+プールIDとステークアドレスの状態を確認します。
+
+```bash
+POOL_ID=$(cardano-cli dijkstra stake-pool id --cold-verification-key-file cold.vkey --output-format hex)
+STAKE_ADDR=$(cardano-cli dijkstra stake-address build --stake-verification-key-file stake.vkey)
+cardano-cli dijkstra query pool-state --stake-pool-id "$POOL_ID"
+cardano-cli dijkstra query stake-address-info --address "$STAKE_ADDR"
+```
+
+bech32 形式のプールIDを表示します（Faucet からの委任やエクスプローラーでの検索に使用）。
+
+```bash
+cardano-cli dijkstra stake-pool id --output-bech32 --cold-verification-key-file cold.vkey
+```
+
+> 表示されたプールIDで [KleioScan](https://kleioscan.com/#/leios) からプールを確認できます。
+
+
+## 6. BPをブロック生成モードへ切替 [#sec-6]
+
+最後に、BP ノードを KES / VRF / 運用証明書を指定して起動するよう切り替えます。
+
+ノードを停止します。
+```bash
+sudo systemctl stop cardano-node
+```
+
+起動スクリプトにブロック生成キーを追記して更新します。
+
+```bash
+cat > $WORKING_DIR/startNode.sh << EOF
+#!/bin/bash
+DIRECTORY=${WORKING_DIR}
+PORT=3010
+HOSTADDR=0.0.0.0
+TOPOLOGY=\${DIRECTORY}/topology.json
+DB_PATH=\${DIRECTORY}/db
+SOCKET_PATH=\${DIRECTORY}/node.socket
+CONFIG=\${DIRECTORY}/config.json
+KES=\${DIRECTORY}/keys/kes.skey
+VRF=\${DIRECTORY}/keys/vrf.skey
+CERT=\${DIRECTORY}/keys/opcert.cert
+${HOME}/.nix-profile/bin/cardano-node run +RTS -N --disable-delayed-os-memory-return -I0.1 -Iw300 -A16m -F1.5 -H2500M -RTS --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG} --shelley-kes-key \${KES} --shelley-vrf-key \${VRF} --shelley-operational-certificate \${CERT}
+EOF
+chmod +x $WORKING_DIR/startNode.sh
+```
+
+ノードを起動します。
+```bash
+sudo systemctl start cardano-node
+```
+
+ログでブロック生成ノードとして起動しているか確認します。
+```bash
+journalctl -u cardano-node -f
+```
+
+<Callout type="error" title="ブロック生成に必要な3ファイル">
+
+BP でブロックを生成するには以下の3ファイルが必要です。起動時に指定されていない場合はブロックを生成できません。
+
+- `kes.skey`
+- `vrf.skey`
+- `opcert.cert`
+
+</Callout>
+
+
+<Callout type="warn" title="ブロック生成の開始タイミング">
+
+ブロック生成は、登録後にステークスナップショットが反映される **約2エポック後** から開始されます。
+
+</Callout>
+
+---

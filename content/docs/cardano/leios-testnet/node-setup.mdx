@@ -1,0 +1,800 @@
+---
+title: "ノードセットアップ"
+---
+
+nixについて
+
+
+curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --daemon
+. /etc/profile.d/nix.sh
+
+echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
+echo "trusted-users = $(whoami)" | sudo tee -a /etc/nix/nix.conf
+echo "accept-flake-config = true" | sudo tee -a /etc/nix/nix.conf
+sudo systemctl restart nix-daemon
+
+
+command not foundになる場合
+```
+echo 'export PATH="/nix/var/nix/profiles/default/bin:$PATH"' >> ~/.bashrc
+source ~/.bashrc
+```
+```
+nix-shell --version
+```
+
+do you want to allow configuration setting 'allow-import-from-derivation' to be set to 'true' (y/N)? 
+do you want to permanently mark this value as trusted (y/N)?
+do you want to allow configuration setting 'extra-substituters' to be set to 'https://cache.iog.io https://tweag-jupyter.cachix.org' (y/N)? 
+do you want to permanently mark this value as trusted (y/N)?
+do you want to allow configuration setting 'extra-trusted-public-keys' to be set to 'hydra.iohk.io:f/Ea+s+dFdN+3Y/G+FDgSq+a5NEWhJGzdjvKNGv0/EQ= tweag-jupyter.cachix.org-1:UtNH4Zs6hVUFpFBTLaA4ejYavPo5EFFqgd7G7FxGW9g=' (y/N)? 
+do you want to permanently mark this value as trusted (y/N)?
+
+
+
+Relay
+nix run github:input-output-hk/ouroboros-leios#leios-testnet-relay
+
+
+
+BP
+バイナリをダウンロードする
+nix develop github:input-output-hk/ouroboros-leios#dev-testnet
+
+DBを同期する
+nix run github:input-output-hk/ouroboros-leios#leios-testnet-relay
+
+
+
+
+
+
+
+<Callout type="info" title="インストールバージョン">
+
+| Node | CLI | GHC | Cabal | CNCLI |
+| :----------: | :----------: | :----------: | :----------: | :----------: |
+| 11.0.1 | 11.0.0.0 | 9.6.7 | 3.12.1.0 | 6.7.0 |
+
+</Callout>
+
+
+## 1. 依存関係インストール [#sec-1]
+
+パッケージを更新し、`Ubuntu`を最新の状態に保ちます。
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+依存関係をインストールします。
+```bash
+sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
+```
+
+新しい`TMUX`セッションを開きます。
+
+```bash
+tmux new -s build
+```
+
+### Libsodiumインストール [#sec-2]
+
+```bash
+mkdir -p $HOME/git
+cd $HOME/git
+git clone https://github.com/IntersectMBO/libsodium
+cd libsodium
+git checkout dbb48cc
+./autogen.sh
+sleep 1
+./configure
+make
+make check
+```
+> makeコマンド実行後半に出現する `warning` は無視して大丈夫です。
+
+<Callout type="info" title="戻り値確認">
+
+```yaml title="期待される表示例：" noCopy
+Testsuite summary for libsodium 1.0.18
+============================================================================
+# TOTAL: 82
+# PASS:  82
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+```
+
+</Callout>
+
+
+**インストールコマンドの実行**
+```bash
+sudo make install
+```
+
+
+### Secp256k1ライブラリインストール [#sec-3]
+
+```bash
+cd $HOME/git
+git clone https://github.com/bitcoin-core/secp256k1.git
+```
+
+```bash
+cd secp256k1/
+git checkout acf5c55
+./autogen.sh
+sleep 1
+./configure --prefix=/usr --enable-module-schnorrsig --enable-experimental
+make
+make check
+```
+<Callout type="info" title="戻り値確認">
+
+```yaml title="期待される表示例：" noCopy
+Testsuite summary for libsecp256k1 0.3.2
+============================================================================
+# TOTAL: 3
+# PASS:  3
+# SKIP:  0
+# XFAIL: 0
+# FAIL:  0
+# XPASS: 0
+# ERROR: 0
+============================================================================
+```
+> PASS:3であることを確認する
+
+</Callout>
+
+
+**インストールコマンドの実行**
+```bash
+sudo make install
+```
+
+### blstインストール [#sec-4]
+
+1.blstダウンロード
+```bash
+cd $HOME/git
+git clone https://github.com/supranational/blst
+cd blst
+git checkout v0.3.14
+./build.sh
+```
+
+2.設定ファイル作成
+
+```bash
+cat > libblst.pc << EOF
+prefix=/usr/local
+exec_prefix=\${prefix}
+libdir=\${exec_prefix}/lib
+includedir=\${prefix}/include
+
+Name: libblst
+Description: Multilingual BLS12-381 signature library
+URL: https://github.com/supranational/blst
+Version: 0.3.14
+Cflags: -I\${includedir}
+Libs: -L\${libdir} -lblst
+EOF
+```
+
+3.設定ファイルコピー
+
+```bash
+sudo cp libblst.pc /usr/local/lib/pkgconfig/
+```
+```bash
+sudo cp bindings/blst_aux.h bindings/blst.h bindings/blst.hpp /usr/local/include/
+```
+```bash
+sudo cp libblst.a /usr/local/lib
+```
+```bash
+sudo chmod u=rw,go=r /usr/local/{lib/{libblst.a,pkgconfig/libblst.pc},include/{blst.{h,hpp},blst_aux.h}}
+```
+
+バージョン確認
+```bash
+cat /usr/local/lib/pkgconfig/libblst.pc | grep Version
+```
+```yaml title="期待される表示例：" noCopy
+Version: 0.3.14
+```
+
+### GHCUPインストール [#sec-5]
+インストール変数設定
+```bash
+cd $HOME
+export BOOTSTRAP_HASKELL_NONINTERACTIVE=1
+export BOOTSTRAP_HASKELL_NO_UPGRADE=1
+export BOOTSTRAP_HASKELL_INSTALL_NO_STACK=yes
+export BOOTSTRAP_HASKELL_ADJUST_BASHRC=1
+unset BOOTSTRAP_HASKELL_INSTALL_HLS
+```
+
+インストール
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://get-ghcup.haskell.org | bash
+```
+
+
+
+<Callout type="warn" title="Cabal/GHCバージョンについて">
+
+最新バージョンはcardano-node/cliのビルドに失敗するため必ず以下で指定されたバージョンをインストールしてください。
+
+</Callout>
+
+
+cabalインストール
+```bash
+source ~/.bashrc
+ghcup upgrade
+ghcup install cabal 3.12.1.0
+ghcup set cabal 3.12.1.0
+```
+
+GHCインストール
+
+```bash
+ghcup install ghc 9.6.7
+ghcup set ghc 9.6.7
+```
+
+バージョン確認
+
+```bash
+cabal update
+```
+```bash
+cabal --version
+ghc --version
+```
+```yaml title="期待される表示例：" noCopy
+cabal-install version 3.12.1.0
+compiled using version 3.12.1.0 of the Cabal library 
+```
+```yaml title="期待される表示例：" noCopy
+The Glorious Glasgow Haskell Compilation System, version 9.6.7
+```
+
+<Callout type="warning" title="確認">
+
+Cabalバージョン：`3.12.1.0`  
+GHCバージョン：`9.6.7`  
+であることを確認してください。
+
+</Callout>
+
+
+## 2. ソースコードからビルド [#sec-6]
+
+
+Gitからソースコードをダウンロードし、最新のタグに切り替えます。
+
+```bash
+cd $HOME/git
+git clone https://github.com/IntersectMBO/cardano-node.git
+cd cardano-node
+git fetch --all --recurse-submodules --tags
+git checkout tags/11.0.1
+```
+
+Cabalのビルドオプションを構成します。
+
+```bash
+cabal clean
+cabal update
+cabal configure --with-compiler=ghc-9.6.7
+```
+
+Cardanoノードをビルドします。
+
+```sh
+cabal build all cardano-cli
+```
+> サーバスペックによって、ビルド完了までに数分から数時間かかる場合があります。
+
+
+**cardano-cli**ファイルと **cardano-node**ファイルをbinディレクトリにコピーします。
+
+```bash
+cd $HOME/git/cardano-node
+sudo cp $(./scripts/bin-path.sh cardano-cli) /usr/local/bin/cardano-cli
+```
+
+```bash
+sudo cp $(./scripts/bin-path.sh cardano-node) /usr/local/bin/cardano-node
+```
+
+**cardano-cli** と **cardano-node**のバージョンが最新Gitタグバージョンであることを確認してください。
+
+```bash
+cardano-node version
+cardano-cli version
+```
+
+```yaml title="期待される表示例：" noCopy
+cardano-node 11.0.1 - linux-x86_64 - ghc-9.6
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
+
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
+```
+
+`TMUX`セッションを閉じます。
+
+```bash
+exit
+```
+
+
+環境変数を設定し、パスを通します。  
+> ノード設定ファイルは `$NODE_HOME`(例：`/home/user/cnode`) に設定されます。
+
+```bash
+echo PATH="$HOME/.local/bin:$PATH" >> $HOME/.bashrc
+echo export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH" >> $HOME/.bashrc
+echo export PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH" >> $HOME/.bashrc
+echo export NODE_HOME=$HOME/cnode >> $HOME/.bashrc
+```
+
+環境変数に接続ネットワークを設定します。
+```bash
+echo export NODE_CONFIG=mainnet >> $HOME/.bashrc
+echo export NODE_NETWORK='"--mainnet"' >> $HOME/.bashrc
+echo export CARDANO_NODE_NETWORK_ID=mainnet >> $HOME/.bashrc
+```
+
+<AccordionsBlue type="single">
+  <Accordion id="node-setup-env-testnet" title="テストネットの場合はこちら">
+
+<Tabs items={["Preview(テストネット)", "PreProd(テストネット)"]}>
+<Tab value="Preview(テストネット)">
+
+```bash
+echo export NODE_CONFIG=preview >> $HOME/.bashrc
+echo export NODE_NETWORK='"--testnet-magic 2"' >> $HOME/.bashrc
+echo export CARDANO_NODE_NETWORK_ID=2 >> $HOME/.bashrc
+```
+
+</Tab>
+<Tab value="PreProd(テストネット)">
+
+```bash
+echo export NODE_CONFIG=preprod >> $HOME/.bashrc
+echo export NODE_NETWORK='"--testnet-magic 1"' >> $HOME/.bashrc
+echo export CARDANO_NODE_NETWORK_ID=1 >> $HOME/.bashrc
+```
+
+</Tab>
+</Tabs>
+
+  </Accordion>
+</AccordionsBlue>
+
+
+`bashrc`を再読み込みします。
+```bash
+source $HOME/.bashrc
+```
+
+
+## 3. ノード設定ファイルの修正 [#sec-7]
+
+ノード構成に必要な設定ファイルをダウンロードします。  
+```bash
+mkdir -p $NODE_HOME
+cd $NODE_HOME
+```
+
+ファイルをダウンロードします。
+```bash
+wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
+wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
+wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
+wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
+wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
+wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+```
+
+環境変数を設定します。
+```bash
+echo export CARDANO_NODE_SOCKET_PATH="$NODE_HOME/db/socket" >> $HOME/.bashrc
+source $HOME/.bashrc
+```
+
+## 4. ノード起動スクリプトの作成 [#sec-8]
+
+起動スクリプトには、ディレクトリ、ポート番号、DBパス、構成ファイルパス、トポロジーファイルパスなど、Cardanoノードを実行するために必要な変数が含まれています。
+
+<Tabs items={["リレー", "BP"]}>
+<Tab value="リレー">
+
+リレーで使用するポート番号を指定してターミナルで実行します。
+```bash
+PORT=6000
+```
+
+起動スクリプトファイルを作成する
+```bash
+cat > $NODE_HOME/startRelayNode1.sh << EOF 
+#!/bin/bash
+DIRECTORY=$NODE_HOME
+PORT=${PORT}
+HOSTADDR=0.0.0.0
+TOPOLOGY=\${DIRECTORY}/${NODE_CONFIG}-topology.json
+DB_PATH=\${DIRECTORY}/db
+SOCKET_PATH=\${DIRECTORY}/db/socket
+CONFIG=\${DIRECTORY}/${NODE_CONFIG}-config.json
+/usr/local/bin/cardano-node run +RTS -N --disable-delayed-os-memory-return -I0.1 -Iw300 -A16m -F1.5 -H2500M -RTS --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG}
+EOF
+```
+
+</Tab>
+<Tab value="BP">
+
+
+<Callout type="error" title="注意">
+
+* BPノードポートはセキュリティを高めるために、`49513`～`65535`までの任意番号を設定してください。  
+ここで設定する番号は、`SSH`ポート番号とは別の番号を設定してください。
+
+</Callout>
+
+
+BPノードで使用するポート番号を設定します。
+```bash
+PORT=xxxxx
+```
+> `xxxxx`には、`49513`～`65535`までの任意番号を設定してください。
+
+起動スクリプトファイルを作成します。
+```bash
+cat > $NODE_HOME/startBlockProducingNode.sh << EOF 
+#!/bin/bash
+DIRECTORY=$NODE_HOME
+PORT=${PORT}
+HOSTADDR=0.0.0.0
+TOPOLOGY=\${DIRECTORY}/${NODE_CONFIG}-topology.json
+DB_PATH=\${DIRECTORY}/db
+SOCKET_PATH=\${DIRECTORY}/db/socket
+CONFIG=\${DIRECTORY}/${NODE_CONFIG}-config.json
+/usr/local/bin/cardano-node run +RTS -N --disable-delayed-os-memory-return -I0.1 -Iw300 -A16m -F1.5 -H2500M -RTS --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG}
+EOF
+```
+
+</Tab>
+</Tabs>
+
+## 5. ノード起動 [#sec-9]
+
+起動スクリプトに実行権限を付与し、ブロックチェーンの同期を開始します。 
+> リレーから実施してください。
+
+<Tabs items={["リレー", "BP"]}>
+<Tab value="リレー">
+
+
+```bash
+cd $NODE_HOME
+chmod +x startRelayNode1.sh
+./startRelayNode1.sh
+```
+
+</Tab>
+<Tab value="BP">
+
+
+```bash
+cd $NODE_HOME
+chmod +x startBlockProducingNode.sh
+./startBlockProducingNode.sh
+```
+
+</Tab>
+</Tabs>
+
+> ログ内に`Chain extended, new tip: xxxx`のログが流れていれば、正常です。
+
+
+一旦ノードを停止します。
+```yaml title="期待される表示例：" noCopy
+Ctrl+C
+```
+
+## 6. 自動起動の設定(systemd) [#sec-10]
+
+先程のスクリプトだけでは、ターミナル画面を閉じるとノードが終了してしまうので、スクリプトをサービスとして登録し、自動起動するように設定します。
+
+<Callout type="info" title="ノード起動にsystemdを使う理由">
+
+- サーバー再起動後もノードが自動起動  
+- プロセスが異常終了したときに自動で再起動（ユニットの `Restart` 設定に従う）
+
+</Callout>
+
+
+ユニットファイルを作成します。
+
+<Tabs items={["リレー", "BP"]}>
+<Tab value="リレー">
+
+
+```bash
+cat > $NODE_HOME/cardano-node.service << EOF 
+# The Cardano Node Service (part of systemd)
+# file: /etc/systemd/system/cardano-node.service 
+
+[Unit]
+Description     = Cardano Node Service
+Wants           = network-online.target
+After           = network-online.target 
+
+[Service]
+User            = ${USER}
+Type            = simple
+WorkingDirectory= ${NODE_HOME}
+ExecStart       = /bin/bash -c '${NODE_HOME}/startRelayNode1.sh'
+KillSignal=SIGINT
+RestartKillSignal=SIGINT
+TimeoutStopSec=300
+LimitNOFILE=32768
+Restart=always
+RestartSec=5
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=cardano-node
+
+[Install]
+WantedBy	= multi-user.target
+EOF
+```
+
+</Tab>
+<Tab value="BP">
+
+
+```bash
+cat > $NODE_HOME/cardano-node.service << EOF 
+# The Cardano Node Service (part of systemd)
+# file: /etc/systemd/system/cardano-node.service 
+
+[Unit]
+Description     = Cardano Node Service
+Wants           = network-online.target
+After           = network-online.target 
+
+[Service]
+User            = ${USER}
+Type            = simple
+WorkingDirectory= ${NODE_HOME}
+ExecStart       = /bin/bash -c '${NODE_HOME}/startBlockProducingNode.sh'
+KillSignal=SIGINT
+RestartKillSignal=SIGINT
+TimeoutStopSec=300
+LimitNOFILE=32768
+Restart=always
+RestartSec=5
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=cardano-node
+
+[Install]
+WantedBy    = multi-user.target
+EOF
+```
+
+</Tab>
+</Tabs>
+
+`/etc/systemd/system`にユニットファイルをコピーし、権限を付与します。
+```bash
+sudo cp $NODE_HOME/cardano-node.service /etc/systemd/system/cardano-node.service
+```
+```bash
+sudo chmod 644 /etc/systemd/system/cardano-node.service
+```
+
+OS起動時にサービスの自動起動を有効にします。
+```bash
+sudo systemctl daemon-reload
+```
+```bash
+sudo systemctl enable --now cardano-node
+```
+
+システム起動後にログモニターを表示します。
+```bash
+journalctl -u cardano-node -f
+```
+> コマンド入力に戻る場合は「`Ctrl+C`」（この場合ノードは終了しません）
+
+### 便利なエイリアス設定 [#sec-11]
+<Callout type="info" title="エイリアス設定">
+
+スクリプトへのパスを通し、任意の単語で起動出来るようにします。
+```bash
+echo alias cnode='"journalctl -u cardano-node -f"' >> $HOME/.bashrc
+echo alias cnstart='"sudo systemctl start cardano-node"' >> $HOME/.bashrc
+echo alias cnrestart='"sudo systemctl reload-or-restart cardano-node"' >> $HOME/.bashrc
+echo alias cnstop='"sudo systemctl stop cardano-node"' >> $HOME/.bashrc
+echo alias cnreload='"pkill -HUP cardano-node"' >> $HOME/.bashrc
+source $HOME/.bashrc
+```
+
+単語を入力するだけで、ノードの起動状態(ログ)を確認できます。  
+```yaml title="期待される表示例：" noCopy
+cnode ・・・ログ表示
+cnstart ・・・ノード起動
+cnrestart ・・・ノード再起動
+cnreload ・・・設定再読み込み
+cnstop ・・・ノード停止
+```
+
+</Callout>
+
+
+
+## 7. gLiveViewのインストール [#sec-12]
+
+`cardano-node`はログが流れる画面だけでは何が表示されているのかよくわかりません。  
+それを視覚的に確認できるツールが`gLiveView`です。
+
+> `gLiveView`は重要なノードステータス情報を表示し、systemdサービスとうまく連携します。  
+> このツールを作成した [Guild Operators](https://cardano-community.github.io/guild-operators/#/Scripts/gliveview)の功績によるものです。
+
+
+`gLiveView`をインストールします。
+```bash
+mkdir -p $NODE_HOME/scripts
+cd $NODE_HOME/scripts
+sudo apt install bc tcptraceroute -y
+```
+
+`gLiveView`のバイナリファイルをダウンロードします。
+```bash
+curl -s -o gLiveView.sh https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/gLiveView.sh
+curl -s -o env https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/env
+chmod 755 gLiveView.sh
+```
+
+`env` ファイル内の定義を修正します。
+
+<Tabs items={["リレー", "BP"]}>
+<Tab value="リレー">
+
+```bash
+PORT=`grep "PORT=" $NODE_HOME/startRelayNode1.sh`
+b_PORT=${PORT#"PORT="}
+echo "リレーポートは${b_PORT}です"
+```
+
+</Tab>
+<Tab value="BP">
+
+```bash
+PORT=`grep "PORT=" $NODE_HOME/startBlockProducingNode.sh`
+b_PORT=${PORT#"PORT="}
+echo "BPポートは${b_PORT}です"
+```
+
+</Tab>
+</Tabs>
+
+```bash
+sed -i $NODE_HOME/scripts/env \
+    -e '1,73s!#CNODE_HOME="/opt/cardano/cnode"!CNODE_HOME="'${NODE_HOME}'"!' \
+    -e '1,73s!#CNODE_PORT=6000!CNODE_PORT='${b_PORT}'!' \
+    -e '1,73s!#UPDATE_CHECK="Y"!UPDATE_CHECK="N"!' \
+    -e '1,73s!#CONFIG="${CNODE_HOME}/files/config.json"!CONFIG="${CNODE_HOME}/'${NODE_CONFIG}'-config.json"!' \
+    -e '1,73s!#SOCKET="${CNODE_HOME}/sockets/node.socket"!SOCKET="${CNODE_HOME}/db/socket"!' \
+    -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
+    -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
+```
+
+`gLiveView`を起動します。
+```bash
+./gLiveView.sh
+```
+
+![gLiveView](/images/glive.png)
+
+
+<Callout type="info" title="GliveView起動ショートカットコード登録">
+
+スクリプトへのパスを通し、任意の単語で起動出来るようにします。
+```bash
+echo alias glive="'cd $NODE_HOME/scripts; ./gLiveView.sh'" >> $HOME/.bashrc
+source $HOME/.bashrc
+```
+
+</Callout>
+
+    
+
+<Callout type="info" title="gLiveViewの役割">
+
+- **ノードは起動しない** — 監視用です。`cardano-node` は systemd などで別途動かした状態で開いてください。
+- **リレー** — 基本情報に加え、トポロジー接続状況を確認できます。
+- **BP** — 基本情報に加え、KES 有効期限とブロック生成状況を確認できます。
+
+</Callout>
+
+<Callout type="warn" title="初回のチェーン同期">
+
+ジェネシスからフル同期するまで **目安で約1.5〜2日**かかります。**同期が完了するまで** エアギャップの手順等には進めません。
+
+**短縮する場合：** [Mithril による DB 同期](/cardano/operation/mithril-client) で、初回を **目安30分以内** にできます。
+
+</Callout>
+
+
+## 8. エアギャップのセットアップ [#sec-13]
+
+### cardano-cli バイナリをコピー [#sec-14]
+リレーサーバーで[バイナリファイルをコピー](/cardano/operation/node-update#sec-15)を実施します。
+
+### 環境変数を設定 [#sec-15]
+```bash
+echo 'export NODE_HOME="$HOME/cnode"' >> ~/.bashrc
+echo 'export NODE_NETWORK="--mainnet"' >> ~/.bashrc
+echo 'export CARDANO_NODE_NETWORK_ID=mainnet' >> ~/.bashrc
+echo alias airgap="'cd $HOME/cnode && [ -f airgap-set.tar.gz ] && tar -xOzf airgap-set.tar.gz airgap_script | bash -s verify || echo "airgap-set.tar.gz が見つかりません"'" >> $HOME/.bashrc
+
+source ~/.bashrc
+mkdir -p ${NODE_HOME}
+```
+
+<AccordionsBlue type="single">
+  <Accordion id="node-setup-section8-testnet" title="テストネットの場合はこちら">
+
+<Tabs items={["Preview", "PreProd"]}>
+<Tab value="Preview">
+
+```bash
+echo 'export NODE_HOME="$HOME/cnode"' >> $HOME/.bashrc
+echo 'export NODE_NETWORK="--testnet-magic 2"' >> $HOME/.bashrc
+echo 'export CARDANO_NODE_NETWORK_ID=2' >> $HOME/.bashrc
+
+source $HOME/.bashrc
+mkdir -p ${NODE_HOME}
+```
+
+</Tab>
+<Tab value="PreProd">
+
+```bash
+echo 'export NODE_HOME="$HOME/cnode"' >> $HOME/.bashrc
+echo 'export NODE_NETWORK="--testnet-magic 1"' >> $HOME/.bashrc
+echo 'export CARDANO_NODE_NETWORK_ID=1' >> $HOME/.bashrc
+
+source $HOME/.bashrc
+mkdir -p ${NODE_HOME}
+```
+
+</Tab>
+</Tabs>
+
+  </Accordion>
+</AccordionsBlue>
+
+
+### 環境変数の反映確認 [#sec-16]
+```bash
+echo "NODE_HOME=${NODE_HOME}"
+echo "NODE_NETWORK=${NODE_NETWORK}"
+echo "CARDANO_NODE_NETWORK_ID=${CARDANO_NODE_NETWORK_ID}"
+```
+
+---
