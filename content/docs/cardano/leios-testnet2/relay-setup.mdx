@@ -31,12 +31,10 @@ Nix パッケージマネージャをインストールします。
 curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --daemon
 ```
 
-<Callout type="warn" title="セッションの再起動">
-
-インストール後、`nix` コマンドを PATH に反映させるため、**一度ログアウト／ログインするか、新しいターミナルを開いてください。**
-
-</Callout>
-
+セッションの再起動
+```
+exec $SHELL
+```
 
 インストールを確認します。
 ```bash

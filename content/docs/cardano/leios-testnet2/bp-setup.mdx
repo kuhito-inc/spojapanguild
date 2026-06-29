@@ -40,11 +40,18 @@ sudo apt install curl jq git wget -y
 curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --daemon
 ```
 
-<Callout type="warn" title="セッションの再起動">
+セッションの再起動
+```
+exec $SHELL
+```
 
-インストール後、`nix` コマンドを PATH に反映させるため、**一度ログアウト／ログインするか、新しいターミナルを開いてください。**
-
-</Callout>
+インストールを確認します。
+```bash
+nix --version
+```
+```yaml title="期待される表示例：" noCopy
+nix (Nix) 2.x.x
+```
 
 
 ## 2. flakesの有効化 [#sec-2]
@@ -65,6 +72,11 @@ sudo systemctl restart nix-daemon
 
 ## 3. cardano-node / cardano-cliの固定インストール [#sec-3]
 
+Nixキャッシュダウンロード
+```
+nix develop github:input-output-hk/ouroboros-leios#dev-testnet
+```
+
 `dev-testnet` シェルが提供する `cardano-node` / `cardano-cli` の **Nix store 上の実体パス**を取得します。
 
 ```bash
@@ -79,14 +91,6 @@ echo "cardano-cli : $CLI_STORE"
 cardano-node: /nix/store/xxxx...-cardano-node-...
 cardano-cli : /nix/store/yyyy...-cardano-cli-...
 ```
-
-<Callout type="info" title="初回実行について">
-
-初回は dev shell の評価・ダウンロードに時間がかかる場合があります。  
-許可を求められた場合は `y` を入力してください。
-
-</Callout>
-
 
 取得した store パスを `nix profile install` でプロファイルに固定インストールします。
 
@@ -111,16 +115,13 @@ cardano-node --version
 cardano-cli --version
 ```
 ```yaml title="期待される表示例：" noCopy
-cardano-node 10.x.x ... (...164...)
-```
+cardano-node 11.0.1.164 - linux-x86_64 - ghc-9.6  
+git rev db5373ea6a6f79b398b468d2e04ce43eafcf90d0  
 > 末尾に `164` が含まれていれば Leios プロトタイプ用ビルドです。
 
-<Callout type="info" title="更新が必要になったら">
-
-テストネットの更新でバイナリを上げる場合は、再度 store パスを取得して入れ直すか、`nix profile upgrade` を実行します。  
-**更新タイミングは運用者が制御**できます（自動では変わりません）。
-
-</Callout>
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
+git rev db5373ea6a6f79b398b468d2e04ce43eafcf90d0  
+```
 
 
 ## 4. 作業ディレクトリと環境変数の設定 [#sec-4]
@@ -254,6 +255,87 @@ echo "alias cnstop='sudo systemctl stop cardano-node'" >> $HOME/.bashrc
 echo "alias cnrestart='sudo systemctl restart cardano-node'" >> $HOME/.bashrc
 source $HOME/.bashrc
 ```
+
+</Callout>
+
+
+## 9. gLiveViewのインストール [#sec-9]
+
+`cardano-node` はログが流れる画面だけでは状態が分かりにくいため、ノードの状態を視覚的に確認できる `gLiveView` を導入します。
+
+> `gLiveView` は [Guild Operators](https://cardano-community.github.io/guild-operators/#/Scripts/gliveview) によるツールで、systemd サービスと連携してノードのステータスを表示します。
+
+必要な依存パッケージをインストールし、スクリプト用ディレクトリを作成します。
+```bash
+mkdir -p $WORKING_DIR/scripts
+cd $WORKING_DIR/scripts
+sudo apt install bc tcptraceroute -y
+```
+
+`gLiveView` 本体と `env` ファイルをダウンロードします。
+```bash
+curl -s -o gLiveView.sh https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/gLiveView.sh
+curl -s -o env https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/env
+chmod 755 gLiveView.sh
+```
+
+`env` ファイルの定義を、本マニュアルの構成（ポート `3010`）に合わせて修正します。
+```bash
+sed -i $WORKING_DIR/scripts/env \
+    -e '1,73s!#CNODE_HOME="/opt/cardano/cnode"!CNODE_HOME="'${WORKING_DIR}'"!' \
+    -e '1,73s!#CNODE_PORT=6000!CNODE_PORT=3010!' \
+    -e '1,73s!#UPDATE_CHECK="Y"!UPDATE_CHECK="N"!' \
+    -e '1,73s!#CONFIG="${CNODE_HOME}/files/config.json"!CONFIG="${CNODE_HOME}/config.json"!' \
+    -e '1,73s!#SOCKET="${CNODE_HOME}/sockets/node.socket"!SOCKET="${CNODE_HOME}/node.socket"!' \
+    -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
+    -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
+```
+
+<Callout type="info" title="修正される定義">
+
+| 項目 | 値 |
+| :---- | :---- |
+| `CNODE_HOME` | `$WORKING_DIR`（`$HOME/leios-testnet`） |
+| `CNODE_PORT` | `3010` |
+| `CONFIG` | `${CNODE_HOME}/config.json` |
+| `SOCKET` | `${CNODE_HOME}/node.socket` |
+| `PROM_PORT` | `12798` |
+
+</Callout>
+
+
+`gLiveView` を起動します。
+```bash
+cd $WORKING_DIR/scripts
+./gLiveView.sh
+```
+
+![gLiveView](/images/glive.png)
+
+<Callout type="warn" title="メトリクスが表示されない場合">
+
+`gLiveView` はノードの Prometheus メトリクス（既定 `127.0.0.1:12798`）を参照します。  
+情報が表示されない場合は、`$WORKING_DIR/config.json` で Prometheus が有効か（`hasPrometheus` の設定値・ポート）を確認し、`env` の `PROM_PORT` を合わせてください。
+
+</Callout>
+
+
+<Callout type="info" title="gLiveView起動ショートカットの登録">
+
+任意の単語で起動できるようエイリアスを登録します。
+```bash
+echo "alias glive='cd $WORKING_DIR/scripts; ./gLiveView.sh'" >> $HOME/.bashrc
+source $HOME/.bashrc
+```
+
+</Callout>
+
+
+<Callout type="info" title="gLiveViewの役割">
+
+- **ノードは起動しない** — 監視用です。`cardano-node` は systemd で別途動かした状態で開いてください。
+- **リレー（同期中）** — 基本情報に加え、トポロジー接続状況を確認できます。
+- **BP（ブロック生成モード切替後）** — 基本情報に加え、KES 有効期限とブロック生成状況を確認できます。
 
 </Callout>
 
