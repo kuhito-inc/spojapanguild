@@ -72,16 +72,17 @@ sudo systemctl restart nix-daemon
 
 ## 3. cardano-node / cardano-cliの固定インストール [#sec-3]
 
-Nixキャッシュダウンロード
-```
-nix develop github:input-output-hk/ouroboros-leios#dev-testnet
-```
-
 `dev-testnet` シェルが提供する `cardano-node` / `cardano-cli` の **Nix store 上の実体パス**を取得します。
 
 ```bash
 NODE_STORE=$(nix develop github:input-output-hk/ouroboros-leios#dev-testnet \
   --command bash -c 'dirname "$(dirname "$(readlink -f "$(command -v cardano-node)")")"')
+```
+<Callout type="info" title="初回実行時">
+nixキャッシュダウンロードのため初回実行時は数分かかります
+</Callout>
+
+```bash
 CLI_STORE=$(nix develop github:input-output-hk/ouroboros-leios#dev-testnet \
   --command bash -c 'dirname "$(dirname "$(readlink -f "$(command -v cardano-cli)")")"')
 echo "cardano-node: $NODE_STORE"
@@ -211,12 +212,16 @@ EOF
 `/etc/systemd/system` にユニットファイルをコピーし、権限を付与します。
 ```bash
 sudo cp $WORKING_DIR/cardano-node.service /etc/systemd/system/cardano-node.service
+```
+```bash
 sudo chmod 644 /etc/systemd/system/cardano-node.service
 ```
 
 サービスを有効化して起動します。
 ```bash
 sudo systemctl daemon-reload
+```
+```bash
 sudo systemctl enable --now cardano-node
 ```
 
@@ -303,41 +308,19 @@ sed -i $WORKING_DIR/scripts/env \
 
 </Callout>
 
-
-`gLiveView` を起動します。
-```bash
-cd $WORKING_DIR/scripts
-./gLiveView.sh
-```
-
-![gLiveView](/images/glive.png)
-
-<Callout type="warn" title="メトリクスが表示されない場合">
-
-`gLiveView` はノードの Prometheus メトリクス（既定 `127.0.0.1:12798`）を参照します。  
-情報が表示されない場合は、`$WORKING_DIR/config.json` で Prometheus が有効か（`hasPrometheus` の設定値・ポート）を確認し、`env` の `PROM_PORT` を合わせてください。
-
-</Callout>
-
-
-<Callout type="info" title="gLiveView起動ショートカットの登録">
-
 任意の単語で起動できるようエイリアスを登録します。
 ```bash
 echo "alias glive='cd $WORKING_DIR/scripts; ./gLiveView.sh'" >> $HOME/.bashrc
 source $HOME/.bashrc
 ```
 
-</Callout>
 
+`gLiveView` を起動します。
+```bash
+glive
+```
 
-<Callout type="info" title="gLiveViewの役割">
-
-- **ノードは起動しない** — 監視用です。`cardano-node` は systemd で別途動かした状態で開いてください。
-- **リレー（同期中）** — 基本情報に加え、トポロジー接続状況を確認できます。
-- **BP（ブロック生成モード切替後）** — 基本情報に加え、KES 有効期限とブロック生成状況を確認できます。
-
-</Callout>
+![gLiveView](/images/glive.png)
 
 
 <Callout type="warn" title="次のステップ">
