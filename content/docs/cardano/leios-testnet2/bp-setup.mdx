@@ -33,6 +33,8 @@ BP は無人で自動再起動するノードのため、**起動のたびに `n
 
 ```bash
 sudo apt update && sudo apt upgrade -y
+```
+```bash
 sudo apt install curl jq git wget -y
 ```
 
@@ -85,6 +87,8 @@ nixキャッシュダウンロードのため初回実行時は数分かかり�
 ```bash
 CLI_STORE=$(nix develop github:input-output-hk/ouroboros-leios#dev-testnet \
   --command bash -c 'dirname "$(dirname "$(readlink -f "$(command -v cardano-cli)")")"')
+```
+```bash
 echo "cardano-node: $NODE_STORE"
 echo "cardano-cli : $CLI_STORE"
 ```
@@ -251,7 +255,7 @@ cardano-cli query tip
 > `syncProgress` が `100.00` になればフル同期完了です。
 
 
-<Callout type="info" title="便利なエイリアス設定">
+便利なエイリアス設定
 
 ```bash
 echo "alias cnode='journalctl -u cardano-node -f'" >> $HOME/.bashrc
@@ -260,8 +264,6 @@ echo "alias cnstop='sudo systemctl stop cardano-node'" >> $HOME/.bashrc
 echo "alias cnrestart='sudo systemctl restart cardano-node'" >> $HOME/.bashrc
 source $HOME/.bashrc
 ```
-
-</Callout>
 
 
 ## 9. gLiveViewのインストール [#sec-9]
@@ -320,7 +322,7 @@ source $HOME/.bashrc
 glive
 ```
 
-![gLiveView](/images/glive.png)
+![gLiveView](/images/glive-leios.png)
 
 
 <Callout type="warn" title="次のステップ">
