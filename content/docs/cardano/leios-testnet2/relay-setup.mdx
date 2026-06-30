@@ -28,6 +28,13 @@ title: "リレーノード構築(Nix)"
 Nix パッケージマネージャをインストールします。
 
 ```bash
+sudo apt update && sudo apt upgrade -y
+```
+```bash
+sudo apt install curl jq git wget -y
+```
+
+```bash
 curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --daemon
 ```
 
@@ -95,7 +102,7 @@ tmux new -s relay
 
 まずはワンコマンドでリレーを起動し、正常に動作するか確認します。
 ```bash
-cd $home
+cd $HOME
 nix run github:input-output-hk/ouroboros-leios#leios-testnet-relay
 ```
 

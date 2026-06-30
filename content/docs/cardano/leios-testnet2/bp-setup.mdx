@@ -5,15 +5,6 @@ title: "BPノード構築(Nix)"
 ブロック生成ノード（BP）は、**Nix で導入した cardano-node / cardano-cli を固定パスにインストール**し、**systemd** でバックグラウンド常駐させます。  
 まずはリレーとして起動してチェーンを同期させ、後の手順でブロック生成ノードへ切り替えます。
 
-<Callout type="info" title="BPでのNixの使い方（重要）">
-
-BP は無人で自動再起動するノードのため、**起動のたびに `nix develop` を評価する方式は使いません。**  
-代わりに `nix profile install` で **Nix store 上のバイナリを固定パス（`~/.nix-profile/bin`）にインストール**し、systemd からはその**絶対パス**を指します。  
-これにより、再起動時のネットワーク依存やバージョン変動がなく、Nix の再現性と systemd の堅牢さを両立できます。  
-更新は `nix profile upgrade` を**任意のタイミング**で実行します。
-
-</Callout>
-
 
 <Callout type="info" title="このページで行うこと">
 
@@ -160,7 +151,7 @@ cp ouroboros-leios/testnet/config/* "$NODE_HOME"/
 ```bash
 cat > $NODE_HOME/startNode.sh << EOF
 #!/bin/bash
-DIRECTORY=${$NODE_HOME}
+DIRECTORY=${NODE_HOME}
 PORT=3010
 HOSTADDR=0.0.0.0
 TOPOLOGY=\${DIRECTORY}/topology.json

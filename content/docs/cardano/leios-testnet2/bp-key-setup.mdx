@@ -35,7 +35,7 @@ cardano-cli query tip | jq -r '.syncProgress'
 ## 1. 支払い・ステークキーの作成 [#sec-2]
 
 ```bash
-cd $WORKING_DIR
+cd $NODE_HOME
 cardano-cli dijkstra address key-gen \
   --verification-key-file payment.vkey \
   --signing-key-file payment.skey
@@ -126,8 +126,8 @@ cardano-cli dijkstra query utxo --address "$(cat payment.addr)"
 ジェネシスから `slotsPerKESPeriod` を取得し、現在のスロットから KES Period を算出します。
 
 ```bash
-cd "$WORKING_DIR/keys"
-slotsPerKESPeriod=$(jq -r '.slotsPerKESPeriod' "$WORKING_DIR/shelley-genesis.json")
+cd "$NODE_HOME/keys"
+slotsPerKESPeriod=$(jq -r '.slotsPerKESPeriod' "$NODE_HOME/shelley-genesis.json")
 echo slotsPerKESPeriod: ${slotsPerKESPeriod}
 slotNo=$(cardano-cli query tip | jq -r '.slot')
 echo slotNo: ${slotNo}
