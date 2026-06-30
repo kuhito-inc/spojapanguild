@@ -6,8 +6,8 @@ title: "リレーノード構築(Nix)"
 
 <Callout type="info" title="リレーでNixを使う理由">
 
-- **テストネットのため、仕様やバージョンが都度変更される可能性がある** … Nix なら `nix run github:input-output-hk/ouroboros-leios#leios-testnet-relay` を再実行するだけで、最新の構成（ノード・設定・監視スタック）に追従できます。
-- **セットアップ作業工数の軽減** … 依存関係のインストールやソースからのビルドが不要で、ノードと監視スタックをワンコマンドで一括起動できます。
+- Musashi-Testnetは仕様やバージョンが都度変更される可能性があるため、1コマンドのみで最新の構成（ノード・設定・監視スタック）を自動セットアップでき作業工数の軽減を目的としています。
+- メインネットリリース時のセットアップ構成は大幅に変更される可能性があります。
 
 </Callout>
 
@@ -81,19 +81,19 @@ mkdir -p "$NODE_HOME"
 <Callout type="info" title="設定ファイルについて">
 
 リレーは `nix run github:input-output-hk/ouroboros-leios#leios-testnet-relay` を使用します。  
-このコマンドが **ノード・設定ファイル・監視スタック（Grafana / Prometheus / Loki）を一括で用意し、`$NODE_HOME` 配下に配置** するため、設定ファイルを手動で取得する必要はありません。
+このコマンドが **ノード・設定ファイル・監視スタック（Grafana / Prometheus / Loki）を一括で起動し、`$NODE_HOME` 配下に配置** するため、設定ファイルを手動で取得する必要はありません。
 
 </Callout>
 
 
 ## 4. リレーノードの起動（動作確認）[#sec-4]
 
-まずはワンコマンドでリレーを起動し、正常に動作するか確認します。
-
+バッググラウンド起動用TMUX準備
 ```bash
 tmux new -s relay
 ```
 
+まずはワンコマンドでリレーを起動し、正常に動作するか確認します。
 ```bash
 cd $home
 nix run github:input-output-hk/ouroboros-leios#leios-testnet-relay
@@ -101,16 +101,39 @@ nix run github:input-output-hk/ouroboros-leios#leios-testnet-relay
 
 <Callout type="info" title="初回起動について">
 
-- 初回はバイナリのダウンロード・ビルドに時間がかかる場合があります。
-- 起動時に `allow-import-from-derivation` や `extra-substituters` の許可を求められた場合は `y` を入力してください。
-- ノードに加えて監視用のダッシュボード（Grafana）が `http://localhost:3000` で起動します。
+- 初回はキャッシュダウンロードに時間がかかる場合があります。
+- ノードに加えて監視用のダッシュボード（Grafana）が `3000ポート` で起動します。
 
 </Callout>
 
-セッションから抜ける（デタッチ）には、`Ctrl + b` を押してから `d` を押します。  
+Nixキャッシュのダウンロードが完了するとNixシェルが起動します。
+
+![nixシェル](/images/nix-shell.png)
+
+<Callout type="info" title="Nixシェルの使い方">
+
+- Nixシェルでは起動中の各プロセステータスとログを監視できます。
+- 各プロセスは矢印キーまたはマウスで切り替えられます。
+- プロセスを個別に再起動する場合は、矢印キーでプロセスにカーソルを合わせるかマウスで選択し`Ctrl+R`または`Restart`をクリックすると再起動できます。
+- `F10`または`Quit`はNixシェルを終了します。これはすべてのプロセスを終了してしまうのでご注意ください
+- このNixシェルはTMUXで常駐化させるため、画面から抜ける場合はデタッチ(`Ctrl + b` を押してから `d` を押す)してください。
+
+| 項目 | 用途 |
+| :---- | :---- |
+| Alloy | `データの収集・転送（エージェント）` |
+| Grafana | `データの可視化（ダッシュボード）` |
+| Loki | `ログの集約と管理（ログ）` |
+| Node | `Cardano-node` |
+| ObserveTip | `cardano-cliによるチェーンTip`|
+| Prometheus | `時系列データの収集・保管（メトリクス）` |
+| SSHTTPExporter | `ネットワーク通信状態のメトリクス化` |
+
+</Callout>
+
+tmuxセッションから抜ける（デタッチ）には、`Ctrl + b` を押してから `d` を押します。  
 > デタッチしてもリレーは **バックグラウンドで動作し続けます。** SSH接続を切断しても停止しません。
 
-再度ダッシュボードを表示する（アタッチ）には次を実行します。
+再度Nixシェルを表示（アタッチ）するには次を実行します。
 ```bash
 tmux a -t relay
 ```
