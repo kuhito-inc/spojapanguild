@@ -24,10 +24,10 @@ cardano-cli query tip | jq -r '.syncProgress'
 | :---- | :---- |
 | `payment.vkey` / `payment.skey` | 支払いアドレス用キー |
 | `stake.vkey` / `stake.skey` | ステークアドレス用キー |
-| `cold.vkey` / `cold.skey` / `opcert.counter` | コールドキー（プールの根幹） |
+| `node.vkey` / `node.skey` / `node.counter` | コールドキー（プールの根幹） |
 | `kes.vkey` / `kes.skey` | KESキー |
 | `vrf.vkey` / `vrf.skey` | VRFキー |
-| `opcert.cert` | 運用証明書 |
+| `node.cert` | 運用証明書 |
 
 </Callout>
 
@@ -48,21 +48,21 @@ cardano-cli dijkstra stake-address key-gen \
 
 <Callout type="error" title="注意（コールドキー）">
 
-`cold.skey` は **プール運営の根幹となる鍵** です。<mark>流出するとプールの乗っ取りにつながる可能性があります。</mark>  
+`node.skey` は **プール運営の根幹となる鍵** です。<mark>流出するとプールの乗っ取りにつながる可能性があります。</mark>  
 本テストネットでは BP 上で生成しますが、本番運用ではエアギャップ（オフライン）環境での生成・保管を強く推奨します。 
 
 </Callout>
 
 ```bash
-mkdir -p "$HOME/code-keys"
+mkdir -p "$HOME/cold-keys"
 cd "$HOME/cold-keys"
 ```
 
 ```bash
 cardano-cli dijkstra node key-gen \
-  --cold-verification-key-file $HOME/cold-keys/cold.vkey \
-  --cold-signing-key-file  $HOME/cold-keys/cold.skey \
-  --operational-certificate-issue-counter-file opcert.counter
+  --cold-verification-key-file $HOME/cold-keys/node.vkey \
+  --cold-signing-key-file  $HOME/cold-keys/node.skey \
+  --operational-certificate-issue-counter-file node.counter
 ```
 
 
@@ -135,15 +135,15 @@ kesPeriod=$(( slotNo / slotsPerKESPeriod ))
 echo kesPeriod: ${kesPeriod}
 ```
 
-運用証明書（`opcert.cert`）を作成します。
+運用証明書（`node.cert`）を作成します。
 
 ```bash
 cardano-cli dijkstra node issue-op-cert \
   --kes-verification-key-file kes.vkey \
-  --cold-signing-key-file cold.skey \
-  --operational-certificate-issue-counter-file opcert.counter \
+  --cold-signing-key-file $HOME/cold-keys/node.skey \
+  --operational-certificate-issue-counter-file node.counter \
   --kes-period "$kesPeriod" \
-  --out-file opcert.cert
+  --out-file node.cert
 ```
 
 

@@ -70,17 +70,18 @@ sudo systemctl restart nix-daemon
 `WORKING_DIR` には、ノードのDBや設定ファイル、ソケットが配置されます。
 
 ```bash
-echo 'export WORKING_DIR=$HOME/leios-relay' >> $HOME/.bashrc
+echo 'export WORKING_DIR=$HOME/cnode' >> $HOME/.bashrc
+echo 'export NODE_HOME=$HOME/cnode' >> $HOME/.bashrc
 echo 'export CARDANO_NODE_NETWORK_ID=164' >> $HOME/.bashrc
-echo 'export CARDANO_NODE_SOCKET_PATH=$HOME/leios-relay/node.socket' >> $HOME/.bashrc
+echo 'export CARDANO_NODE_SOCKET_PATH=$HOME/cnode/db/socket' >> $HOME/.bashrc
 source $HOME/.bashrc
-mkdir -p "$WORKING_DIR"
+mkdir -p "$NODE_HOME"
 ```
 
 <Callout type="info" title="設定ファイルについて">
 
 リレーは `nix run github:input-output-hk/ouroboros-leios#leios-testnet-relay` を使用します。  
-このコマンドが **ノード・設定ファイル・監視スタック（Grafana / Prometheus / Loki）を一括で用意し、`$WORKING_DIR` 配下に配置** するため、設定ファイルを手動で取得する必要はありません。
+このコマンドが **ノード・設定ファイル・監視スタック（Grafana / Prometheus / Loki）を一括で用意し、`$NODE_HOME` 配下に配置** するため、設定ファイルを手動で取得する必要はありません。
 
 </Callout>
 
@@ -178,8 +179,8 @@ git rev db5373ea6a6f79b398b468d2e04ce43eafcf90d0
 
 必要な依存パッケージをインストールし、スクリプト用ディレクトリを作成します。
 ```bash
-mkdir -p $WORKING_DIR/scripts
-cd $WORKING_DIR/scripts
+mkdir -p $NODE_HOME/scripts
+cd $NODE_HOME/scripts
 sudo apt install bc tcptraceroute -y
 ```
 
@@ -192,12 +193,12 @@ chmod 755 gLiveView.sh
 
 `env` ファイルの定義を、本マニュアルの構成（ポート `3010`）に合わせて修正します。
 ```bash
-sed -i $WORKING_DIR/scripts/env \
-    -e '1,73s!#CNODE_HOME="/opt/cardano/cnode"!CNODE_HOME="'${WORKING_DIR}'"!' \
+sed -i $NODE_HOME/scripts/env \
+    -e '1,73s!#CNODE_HOME="/opt/cardano/cnode"!CNODE_HOME="'${NODE_HOME}'"!' \
     -e '1,73s!#CNODE_PORT=6000!CNODE_PORT=3010!' \
     -e '1,73s!#UPDATE_CHECK="Y"!UPDATE_CHECK="N"!' \
     -e '1,73s!#CONFIG="${CNODE_HOME}/files/config.json"!CONFIG="${CNODE_HOME}/config.json"!' \
-    -e '1,73s!#SOCKET="${CNODE_HOME}/sockets/node.socket"!SOCKET="${CNODE_HOME}/node.socket"!' \
+    -e '1,73s!#SOCKET="${CNODE_HOME}/sockets/socket"!SOCKET="${CNODE_HOME}/db/socket"!' \
     -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
     -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
 ```
@@ -206,17 +207,17 @@ sed -i $WORKING_DIR/scripts/env \
 
 | 項目 | 値 |
 | :---- | :---- |
-| `CNODE_HOME` | `$WORKING_DIR`（`$HOME/leios-testnet`） |
+| `CNODE_HOME` | `$NODE_HOME`（`$HOME/cnode`） |
 | `CNODE_PORT` | `3010` |
 | `CONFIG` | `${CNODE_HOME}/config.json` |
-| `SOCKET` | `${CNODE_HOME}/node.socket` |
+| `SOCKET` | `${CNODE_HOME}/db/socket` |
 | `PROM_PORT` | `12798` |
 
 </Callout>
 
 任意の単語で起動できるようエイリアスを登録します。
 ```bash
-echo "alias glive='cd $WORKING_DIR/scripts; ./gLiveView.sh'" >> $HOME/.bashrc
+echo "alias glive='cd $NODE_HOME/scripts; ./gLiveView.sh'" >> $HOME/.bashrc
 source $HOME/.bashrc
 ```
 

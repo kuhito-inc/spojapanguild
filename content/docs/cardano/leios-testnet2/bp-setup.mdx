@@ -132,11 +132,12 @@ git rev db5373ea6a6f79b398b468d2e04ce43eafcf90d0
 ## 4. 作業ディレクトリと環境変数の設定 [#sec-4]
 
 ```bash
-echo 'export WORKING_DIR=$HOME/leios-testnet' >> $HOME/.bashrc
+echo 'export WORKING_DIR=$HOME/cnode' >> $HOME/.bashrc
+echo 'export NODE_HOME=$HOME/cnode' >> $HOME/.bashrc
 echo 'export CARDANO_NODE_NETWORK_ID=164' >> $HOME/.bashrc
-echo 'export CARDANO_NODE_SOCKET_PATH=$HOME/leios-testnet/node.socket' >> $HOME/.bashrc
+echo 'export CARDANO_NODE_SOCKET_PATH=$HOME/cnode/db/socket' >> $HOME/.bashrc
 source $HOME/.bashrc
-mkdir -p "$WORKING_DIR"
+mkdir -p "$NODE_HOME"
 ```
 
 
@@ -145,30 +146,30 @@ mkdir -p "$WORKING_DIR"
 設定ファイル（`config.json` / `topology.json` / 各ジェネシスファイル）を取得します。
 
 ```bash
-cd "$WORKING_DIR"
+cd "$NODE_HOME"
 git clone --depth 1 https://github.com/input-output-hk/ouroboros-leios
-cp ouroboros-leios/testnet/config/* "$WORKING_DIR"/
+cp ouroboros-leios/testnet/config/* "$NODE_HOME"/
 ```
 
 
 ## 6. 起動スクリプトの作成 [#sec-6]
 
 まずは **リレーとして** 起動し、チェーンを同期させます。  
-（ブロック生成キーは [BP用キーの生成](/cardano/leios-testnet2/bp-key-setup) で作成後に追記します）
+（ブロック生成キーは [BP用キーの生成](/cardano/cnode2/bp-key-setup) で作成後に追記します）
 
 ```bash
-cat > $WORKING_DIR/startNode.sh << EOF
+cat > $$NODE_HOME/startNode.sh << EOF
 #!/bin/bash
-DIRECTORY=${WORKING_DIR}
+DIRECTORY=${$NODE_HOME}
 PORT=3010
 HOSTADDR=0.0.0.0
 TOPOLOGY=\${DIRECTORY}/topology.json
 DB_PATH=\${DIRECTORY}/db
-SOCKET_PATH=\${DIRECTORY}/node.socket
+SOCKET_PATH=\${DIRECTORY}/socket
 CONFIG=\${DIRECTORY}/config.json
 ${HOME}/.nix-profile/bin/cardano-node run --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG}
 EOF
-chmod +x $WORKING_DIR/startNode.sh
+chmod +x $NODE_HOME/startNode.sh
 ```
 
 
@@ -177,7 +178,7 @@ chmod +x $WORKING_DIR/startNode.sh
 ユニットファイルを作成します。
 
 ```bash
-cat > $WORKING_DIR/cardano-node.service << EOF
+cat > $NODE_HOME/cardano-node.service << EOF
 # The Cardano Leios BP Node Service (part of systemd)
 # file: /etc/systemd/system/cardano-node.service
 
@@ -189,8 +190,8 @@ After           = network-online.target
 [Service]
 User            = ${USER}
 Type            = simple
-WorkingDirectory= ${WORKING_DIR}
-ExecStart       = /bin/bash -c '${WORKING_DIR}/startNode.sh'
+WorkingDirectory= ${NODE_HOME}
+ExecStart       = /bin/bash -c '${NODE_HOME}/startNode.sh'
 KillSignal      = SIGINT
 RestartKillSignal= SIGINT
 TimeoutStopSec  = 300
@@ -215,7 +216,7 @@ EOF
 
 `/etc/systemd/system` にユニットファイルをコピーし、権限を付与します。
 ```bash
-sudo cp $WORKING_DIR/cardano-node.service /etc/systemd/system/cardano-node.service
+sudo cp $NODE_HOME/cardano-node.service /etc/systemd/system/cardano-node.service
 ```
 ```bash
 sudo chmod 644 /etc/systemd/system/cardano-node.service
@@ -274,8 +275,8 @@ source $HOME/.bashrc
 
 必要な依存パッケージをインストールし、スクリプト用ディレクトリを作成します。
 ```bash
-mkdir -p $WORKING_DIR/scripts
-cd $WORKING_DIR/scripts
+mkdir -p $NODE_HOME/scripts
+cd $NODE_HOME/scripts
 sudo apt install bc tcptraceroute -y
 ```
 
@@ -288,12 +289,12 @@ chmod 755 gLiveView.sh
 
 `env` ファイルの定義を、本マニュアルの構成（ポート `3010`）に合わせて修正します。
 ```bash
-sed -i $WORKING_DIR/scripts/env \
-    -e '1,73s!#CNODE_HOME="/opt/cardano/cnode"!CNODE_HOME="'${WORKING_DIR}'"!' \
+sed -i $NODE_HOME/scripts/env \
+    -e '1,73s!#CNODE_HOME="/opt/cardano/cnode"!CNODE_HOME="'${NODE_HOME}'"!' \
     -e '1,73s!#CNODE_PORT=6000!CNODE_PORT=3010!' \
     -e '1,73s!#UPDATE_CHECK="Y"!UPDATE_CHECK="N"!' \
     -e '1,73s!#CONFIG="${CNODE_HOME}/files/config.json"!CONFIG="${CNODE_HOME}/config.json"!' \
-    -e '1,73s!#SOCKET="${CNODE_HOME}/sockets/node.socket"!SOCKET="${CNODE_HOME}/node.socket"!' \
+    -e '1,73s!#SOCKET="${CNODE_HOME}/sockets/socket"!SOCKET="${CNODE_HOME}/db/socket"!' \
     -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
     -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
 ```
@@ -302,17 +303,17 @@ sed -i $WORKING_DIR/scripts/env \
 
 | 項目 | 値 |
 | :---- | :---- |
-| `CNODE_HOME` | `$WORKING_DIR`（`$HOME/leios-testnet`） |
+| `CNODE_HOME` | `$NODE_HOME`（`$HOME/cnode`） |
 | `CNODE_PORT` | `3010` |
 | `CONFIG` | `${CNODE_HOME}/config.json` |
-| `SOCKET` | `${CNODE_HOME}/node.socket` |
+| `SOCKET` | `${CNODE_HOME}/socket` |
 | `PROM_PORT` | `12798` |
 
 </Callout>
 
 任意の単語で起動できるようエイリアスを登録します。
 ```bash
-echo "alias glive='cd $WORKING_DIR/scripts; ./gLiveView.sh'" >> $HOME/.bashrc
+echo "alias glive='cd $NODE_HOME/scripts; ./gLiveView.sh'" >> $HOME/.bashrc
 source $HOME/.bashrc
 ```
 
