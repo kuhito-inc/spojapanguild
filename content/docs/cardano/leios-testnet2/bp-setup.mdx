@@ -158,14 +158,14 @@ cp ouroboros-leios/testnet/config/* "$NODE_HOME"/
 （ブロック生成キーは [BP用キーの生成](/cardano/cnode2/bp-key-setup) で作成後に追記します）
 
 ```bash
-cat > $$NODE_HOME/startNode.sh << EOF
+cat > $NODE_HOME/startNode.sh << EOF
 #!/bin/bash
 DIRECTORY=${$NODE_HOME}
 PORT=3010
 HOSTADDR=0.0.0.0
 TOPOLOGY=\${DIRECTORY}/topology.json
 DB_PATH=\${DIRECTORY}/db
-SOCKET_PATH=\${DIRECTORY}/socket
+SOCKET_PATH=\${DIRECTORY}/db/socket
 CONFIG=\${DIRECTORY}/config.json
 ${HOME}/.nix-profile/bin/cardano-node run --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG}
 EOF
@@ -306,7 +306,7 @@ sed -i $NODE_HOME/scripts/env \
 | `CNODE_HOME` | `$NODE_HOME`（`$HOME/cnode`） |
 | `CNODE_PORT` | `3010` |
 | `CONFIG` | `${CNODE_HOME}/config.json` |
-| `SOCKET` | `${CNODE_HOME}/socket` |
+| `SOCKET` | `${CNODE_HOME}/db/socket` |
 | `PROM_PORT` | `12798` |
 
 </Callout>

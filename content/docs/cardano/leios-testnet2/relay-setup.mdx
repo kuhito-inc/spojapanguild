@@ -174,7 +174,7 @@ nix profile install "$NODE_STORE"
 
 - `~/.nix-profile/bin/cardano-node` / `~/.nix-profile/bin/cardano-cli` という**安定したパス**が作成されます。
 - プロファイルには **gc-root** が張られるため、`nix-collect-garbage` でバイナリが削除されません。
-- systemd からはこの固定パスを参照します（`nix develop` を実行時に評価しません）。
+- systemd からはこの固定パスを参照します。
 
 </Callout>
 
