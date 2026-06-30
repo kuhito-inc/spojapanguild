@@ -32,17 +32,10 @@ cardano-cli query tip | jq -r '.syncProgress'
 </Callout>
 
 
-## 1. キー用ディレクトリの作成 [#sec-1]
+## 1. 支払い・ステークキーの作成 [#sec-2]
 
 ```bash
-mkdir -p "$WORKING_DIR/keys"
-cd "$WORKING_DIR/keys"
-```
-
-
-## 2. 支払い・ステークキーの作成 [#sec-2]
-
-```bash
+cd $WORKING_DIR
 cardano-cli dijkstra address key-gen \
   --verification-key-file payment.vkey \
   --signing-key-file payment.skey
@@ -51,24 +44,25 @@ cardano-cli dijkstra stake-address key-gen \
   --signing-key-file stake.skey
 ```
 
-
-## 3. コールドキーの作成 [#sec-3]
+## 2. コールドキーの作成 [#sec-3]
 
 <Callout type="error" title="注意（コールドキー）">
 
 `cold.skey` は **プール運営の根幹となる鍵** です。<mark>流出するとプールの乗っ取りにつながる可能性があります。</mark>  
-本番運用ではエアギャップ（オフライン）環境での生成・保管を強く推奨します。  
-本テストネットでは BP 上で生成しますが、生成後は **USB など本体から切り離した媒体へ複数バックアップ** してください。
+本テストネットでは BP 上で生成しますが、本番運用ではエアギャップ（オフライン）環境での生成・保管を強く推奨します。 
 
 </Callout>
 
+```bash
+mkdir -p "$HOME/code-keys"
+cd "$HOME/cold-keys"
+```
 
 ```bash
 cardano-cli dijkstra node key-gen \
-  --cold-verification-key-file cold.vkey \
-  --cold-signing-key-file cold.skey \
+  --cold-verification-key-file $HOME/cold-keys/cold.vkey \
+  --cold-signing-key-file  $HOME/cold-keys/cold.skey \
   --operational-certificate-issue-counter-file opcert.counter
-chmod 400 cold.skey cold.vkey
 ```
 
 
@@ -99,7 +93,7 @@ cardano-cli dijkstra address build \
   --payment-verification-key-file payment.vkey \
   --stake-verification-key-file stake.vkey \
   --out-file payment.addr
-cat payment.addr;echo
+cat payment.addr
 ```
 
 
