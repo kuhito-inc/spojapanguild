@@ -248,6 +248,7 @@ sed -i $NODE_HOME/scripts/env \
 任意の単語で起動できるようエイリアスを登録します。
 ```bash
 echo "alias glive='cd $NODE_HOME/scripts; ./gLiveView.sh'" >> $HOME/.bashrc
+echo alias cnreload='"pkill -HUP cardano-node"' >> $HOME/.bashrc
 source $HOME/.bashrc
 ```
 

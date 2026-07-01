@@ -1,134 +1,88 @@
 ---
-title: "プール構築マニュアル"
+title: "概要"
 ---
 
-## 事前準備 [#sec-1]
+このマニュアルは、**Ouroboros Leios テストネット**上でステークプール（リレー＋ブロック生成ノード）を構築するための手順書です。  
+公式ドキュメント [Leios Testnet - Getting Started](https://leios.cardano-scaling.org/docs/testnet/getting-started) をベースに構成しています。
 
-### ターミナルソフトのインストール [#sec-2]
+<Callout type="warn" title="プロトタイプネットワークについて">
 
-ステークプールの構築・運用では、各サーバーへSSH接続するためのターミナルソフトが必要です。  
-ターミナルソフトにはさまざまな種類がありますが、このマニュアルでは代表的なものを紹介します。  
-ご使用のOSに合わせてインストールしてください。  
-
-<Callout type="info" title="各種ターミナルソフト一覧">
-
-<Callout type="info" title="R-Login（Windows）">
-
-Windows向けの軽量SSHクライアントです。  
-タブ管理やカラー設定が容易で、SPOの利用実績も多い安定したソフトです。
-
-ダウンロード：[https://kmiya-culti.github.io/RLogin/](https://kmiya-culti.github.io/RLogin/)
-
-<AccordionsBlue type="single">
-  <Accordion id="r-login-recommended-settings" title="R-Login 推奨設定">
-
-**カラー設定**  
-<img src="/images/r-login-setting2.png" width="500px" />
-
-**接続状態維持設定**  
-<img src="/images/r-login-setting.png" width="500px" />
-
-  </Accordion>
-</AccordionsBlue>
-
+Leios テストネットは **研究・検証用のプロトタイプネットワーク** です。  
+本番（メインネット）とは仕様・パラメータが異なり、予告なくリセットされる場合があります。  
+ここで生成するキーや tADA は **テスト専用** であり、メインネットでは使用できません。
 
 </Callout>
 
 
-<Callout type="info" title="Terminal（macOS 標準ターミナル）">
+## 1. ネットワーク情報 [#sec-1]
 
-macOSに標準搭載されているターミナルアプリです。  
-追加インストール不要で、そのままSSH接続に利用できます。
+<Callout type="info" title="接続情報">
 
-参考：[https://www.webdesignleaves.com/pr/plugins/mac_terminal_basics_01.html](https://www.webdesignleaves.com/pr/plugins/mac_terminal_basics_01.html)
-
-</Callout>
-
-
-<Callout type="info" title="Termius（Windows / macOS / Linux / iOS / Android）">
-
-複数OSに対応した高機能SSHクライアントです。  
-クラウド同期により、PCとスマホ間で設定を共有できます。
-
-公式サイト：[https://termius.com/](https://termius.com/)
+| 項目 | 値 |
+| :---- | :---- |
+| ネットワークマジック | `164` |
+| ブートストラップリレー | `leios-node.play.dev.cardano.org:3001` |
+| ノードリリース | `prototype-2026w26` |
+| Faucet | [faucet.leios.play.dev.cardano.org/basic-faucet](https://faucet.leios.play.dev.cardano.org/basic-faucet) |
+| エクスプローラー | [KleioScan](https://kleioscan.com/#/leios) |
+| エラ（Era） | `Dijkstra` |
+| ノード待受ポート | `3010` |
 
 </Callout>
 
 
+## 2. システム要件 [#sec-2]
+
+<Callout type="info" title="推奨スペック">
+
+| 項目 | 要件 |
+| :---- | :---- |
+| OS / アーキテクチャ | Linux x86-64 または macOS aarch64 |
+| CPU | 2コア以上 |
+| メモリ | 4GB 以上（ノードは約2〜2.5GB使用） |
+| ディスク | SSD 空き 25GB 程度 |
+
 </Callout>
 
 
+## 3. 構成 [#sec-3]
 
-### SSH鍵作成 [#sec-3]
+本マニュアルでは、以下の構成でステークプールを構築します。
 
-<Tabs items={["Windowsの場合", "Macの場合"]}>
-<Tab value="Windowsの場合">
+<Callout type="info" title="本マニュアルの構成">
 
-**1. OpenSSH Client の確認**  
+- **リレーノード**：**Nix**（`nix run` + tmux）で構築し、監視ダッシュボード（Grafana）も同時に起動します。
+- **ブロック生成ノード（BP）**：**Nix**（`nix profile install` で固定パス導入）した cardano-node を **systemd** でバックグラウンド常駐させます。
+- **プール登録**：**BP** 上で実施します（キー生成・証明書作成・トランザクション送信）。
 
-SSHクライアントの有無を確認します。  
-`Win + R` を押下し、`cmd`と入力し、`Enter`
-```cmd
-where ssh
-```
-> PATHが表示されていること
-
-<AccordionsBlue type="single">
-  <Accordion id="setup-index-win-openssh-not-found" title="表示されない場合">
-
-1. `Win + R` を押下し、`cmd`と入力後、`Ctrl + Shift + Enter`→「`はい`」を選択
-```cmd
-powershell -Command "Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0"
-```
-2. 追加後、`where ssh`を実行し、PATHが表示されていることを確認。  
-> OpenSSH の追加のみ管理者権限が必要です。  
-> 以降は通常モードの `cmd` で実行してください。
-
-  </Accordion>
-</AccordionsBlue>
+</Callout>
 
 
-**2. SSH鍵生成**  
-```cmd
-mkdir "%USERPROFILE%\.ssh"
-ssh-keygen -t ed25519 -N "" -C "ssh_connect" -f "%USERPROFILE%\.ssh\ssh_ed25519"
+```mermaid
+graph LR
+    Internet[Leiosテストネット] <--> Relay[リレーノード<br/>Nix + tmux];
+    Relay <--> BP[ブロック生成ノード BP<br/>Nix profile + systemd];
+    BP -.プール登録.-> Internet;
 ```
 
-**3. 公開鍵ファイル名の変更**
-```cmd
-cd "%USERPROFILE%\.ssh"
-move ssh_ed25519.pub authorized_keys
-```
+<Callout type="warn" title="リレーとBPの役割">
 
-</Tab>
-<Tab value="Macの場合">
+- **リレーノード** … 外部ネットワークと接続し、ブロックを中継します。パブリックIP・ポート開放が必要です。
+- **ブロック生成ノード（BP）** … KES / VRF / 運用証明書を用いてブロックを生成します。リレー経由で外部と接続します。
 
-**1. ターミナルを起動します。**  
+</Callout>
 
-`⌘ + Space（Command + Space）`を押下し、「`terminal`」と入力し、Enterを押下します。
 
-**2. SSH鍵生成**
-```bash
-mkdir -p ~/.ssh
-ssh-keygen -t ed25519 -N "" -C "ssh_connect" -f ~/.ssh/ssh_ed25519
-```
+## 4. 構築の流れ [#sec-4]
 
-**3. 公開鍵ファイル名の変更**
-```bash
-cd ~/.ssh
-mv ssh_ed25519.pub authorized_keys
-```
+1. [リレーノードの構築（Nix）](/cardano/leios-testnet2/relay-setup)
+2. [BPノードの構築（Nix + systemd）](/cardano/leios-testnet2/bp-setup)
+3. [BP用キーの生成](/cardano/leios-testnet2/bp-key-setup)
+4. [ステークプール登録](/cardano/leios-testnet2/stake-pool-register)
 
-</Tab>
-</Tabs>
+<Callout type="info" title="サポート">
 
-<Callout type="error" title="注意">
-
-以下の鍵は絶対に紛失しないでください。  
-紛失するとサーバーへ接続できなくなります。  
-
-`ssh_ed25519` （秘密鍵）  
-`authorized_keys` （公開鍵）
+不明点や不具合の報告は [Musashi Dōjō Discord](https://discord.gg/Bx2qvsjCte) で受け付けています。
 
 </Callout>
 

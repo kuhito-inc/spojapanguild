@@ -254,6 +254,7 @@ echo "alias cnode='journalctl -u cardano-node -f'" >> $HOME/.bashrc
 echo "alias cnstart='sudo systemctl start cardano-node'" >> $HOME/.bashrc
 echo "alias cnstop='sudo systemctl stop cardano-node'" >> $HOME/.bashrc
 echo "alias cnrestart='sudo systemctl restart cardano-node'" >> $HOME/.bashrc
+echo alias cnreload='"pkill -HUP cardano-node"' >> $HOME/.bashrc
 source $HOME/.bashrc
 ```
 

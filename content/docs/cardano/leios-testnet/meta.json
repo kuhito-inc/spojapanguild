@@ -1,16 +1,11 @@
 {
-  "title": "Leiosテストネット",
+  "title": "Leiosテストネット(SPO)",
   "pages": [
     "index",
-    "node-setup",
-    "relay-bp-setup",
+    "relay-setup",
+    "bp-setup",
     "bp-key-setup",
-    "address-generate",
-    "stake-address-register",
     "stake-pool-register",
-    "final-checks",
-    "monitoring-setup",
-    "blocklog-setup",
-    "blocknotify-setup"
+    "relay-bp-setup"
   ]
 }

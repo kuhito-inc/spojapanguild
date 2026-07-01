@@ -1,336 +1,156 @@
 ---
-title: "BP用キー生成"
+title: "BP用キーの生成"
 ---
 
+ステークプールの運用に必要な各種キーを **BP** 上で生成します。
 
-# 事前確認
+<Callout type="error" title="注意（コールドキー）">
 
-同期が 100% になってから以降の手順を実施してください。
+各キーファイル は **プール運営の根幹となる鍵** です。<mark>流出するとプールの乗っ取りにつながる可能性があります。</mark>  
+本テストネットでは BP 上で生成しますが、本番運用ではエアギャップ（オフライン）環境での生成・保管を強く推奨します。 
+
+</Callout>
+
+<Callout type="warn" title="事前確認">
+
+[BPノード構築](/cardano/leios-testnet2/bp-setup) が完了し、同期が `100.00` になってから以降の手順を実施してください。
 
 ```bash
-cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
+cardano-cli query tip | jq -r '.syncProgress'
 ```
 ```yaml title="期待される表示例：" noCopy
-"syncProgress": "100.00"
+"100.00"
 ```
-
-
-<Callout type="warn" title="BP起動に必要なファイルとは？">
-
-BPでは３つのキーを生成する必要があります。
-
-* ステークプールの運用証明書 \(node.cert\)
-* ステークプールのセキュリティキー \(kes.skey\)
-* ステークプールのVRFキー \(vrf.skey\)
 
 </Callout>
 
 
-## 1. KESキーの作成 [#sec-1]
+<Callout type="info" title="生成するキー一覧">
 
+| ファイル | 用途 |
+| :---- | :---- |
+| `payment.vkey` / `payment.skey` | 支払いアドレス用キー |
+| `stake.vkey` / `stake.skey` | ステークアドレス用キー |
+| `node.vkey` / `node.skey` / `node.counter` | コールドキー（プールの根幹） |
+| `kes.vkey` / `kes.skey` | KESキー |
+| `vrf.vkey` / `vrf.skey` | VRFキー |
+| `node.cert` | 運用証明書 |
+
+</Callout>
+
+
+## 1. 支払い・ステークキーの作成 [#sec-2]
+
+```bash
+cd $NODE_HOME
+cardano-cli dijkstra address key-gen \
+  --verification-key-file payment.vkey \
+  --signing-key-file payment.skey
+cardano-cli dijkstra stake-address key-gen \
+  --verification-key-file stake.vkey \
+  --signing-key-file stake.skey
+```
+
+## 2. コールドキーの作成 [#sec-3]
+
+```bash
+mkdir -p "$HOME/cold-keys"
+cd "$HOME/cold-keys"
+```
+
+```bash
+cardano-cli dijkstra node key-gen \
+  --cold-verification-key-file $HOME/cold-keys/node.vkey \
+  --cold-signing-key-file  $HOME/cold-keys/node.skey \
+  --operational-certificate-issue-counter-file $HOME/cold-keys/node.counter
+```
+
+
+## 4. KES・VRFキーの作成 [#sec-4]
 
 <Callout type="info" title="KESキーについて">
 
-\(KES=Key Evolving Signature\)の略  
-キーを悪用するハッカーからステークプールを保護するために作成され、90日ごとに再生成する必要があります。  
-詳細は運用マニュアルを参照してください。
+KES（Key Evolving Signature）キーは、鍵を悪用する攻撃者からプールを保護するために使用され、定期的に再生成が必要です。
 
 </Callout>
 
 
-<Tabs items={["BP"]}>
-<Tab value="BP">
-
 ```bash
 cd $NODE_HOME
-cardano-cli latest node key-gen-KES \
+cardano-cli dijkstra node key-gen-KES \
   --verification-key-file kes.vkey \
   --signing-key-file kes.skey
-```
-
-</Tab>
-</Tabs>
-
-## 2. コールドキーの作成 [#sec-2]
-<Callout type="error" title="注意（コールドキー）">
-
-**エアギャップ（オフライン）で生成・保管してください。** オンライン環境に置かないでください。
-
-- **重要性**: プール運営の根幹となる鍵です。<mark>流出するとプールの乗っ取りにつながる可能性があります。</mark>
-- **保管**: 複数の USB などに複製し、**上書き・削除しない**よう注意してください。
-- **保存場所の例**: `$HOME/cold-keys`
-
-</Callout>
-
-
-<Tabs items={["エアギャップ"]}>
-<Tab value="エアギャップ">
-
-
-```text
-mkdir $HOME/cold-keys
-```
-
-コールドキーのペアキーとカウンターファイルを作成します。
-
-```bash
-cd $HOME/cold-keys
-cardano-cli latest node key-gen \
-  --cold-verification-key-file node.vkey \
-  --cold-signing-key-file node.skey \
-  --operational-certificate-issue-counter node.counter
-```
-アクセス権を読み取り専用に更新します。
-```bash
-chmod 400 node.vkey
-chmod 400 node.skey
-```
-
-</Tab>
-</Tabs>
-
-<Callout type="warn" title="重要">
-
-すべてのキーを、USB などの**専用かつ本体から切り離した安全な媒体**へバックアップし、**複数のコピー**を作成してください。
-
-</Callout>
-
-
-## 3. プール運用証明書の作成 [#sec-3]
-
-<Tabs items={["BP"]}>
-<Tab value="BP">
-
-
-ジェネシスファイルからslotsPerKESPeriodを出力します。
-```bash
-cd $NODE_HOME
-slotsPerKESPeriod=$(cat $NODE_HOME/${NODE_CONFIG}-shelley-genesis.json | jq -r '.slotsPerKESPeriod')
-echo slotsPerKESPeriod: ${slotsPerKESPeriod}
-```
-同期済みslotNoを算出します。
-```bash
-slotNo=$(cardano-cli latest query tip $NODE_NETWORK | jq -r '.slot')
-echo slotNo: ${slotNo}
-```
-
-startKesPeriodを算出します。
-
-```bash
-kesPeriod=$((${slotNo} / ${slotsPerKESPeriod}))
-echo kesPeriod: ${kesPeriod}
-startKesPeriod=${kesPeriod}
-echo startKesPeriod: ${startKesPeriod}
-```
-
-</Tab>
-</Tabs>
-
-<Callout type="info" title="ファイル転送">
-
-BPの`kes.skey`と`kes.vkey` をエアギャップのcnodeディレクトリにコピーします。
-```mermaid
-graph LR
-    A[BP] -->|kes.skey / kes.vkey| B[エアギャップ];
-```
-
-</Callout>
-
-
-BPとエアギャップで`kes.vkey`ファイルハッシュを比較します。
-
-<Tabs items={["BP"]}>
-<Tab value="BP">
-
-```bash
-cd $NODE_HOME
-sha256sum kes.vkey
-```
-
-</Tab>
-</Tabs>
-
-> BPとエアギャップで表示されたハッシュ値を比較し、一致していれば問題ありません。
-
-
-<Tabs items={["エアギャップ"]}>
-<Tab value="エアギャップ">
-
-```bash
-cd $NODE_HOME
-sha256sum kes.vkey
-```
-
-</Tab>
-</Tabs>
-
-<Callout type="info" title="確認">
-
-ステークプールオペレータは、プールを実行する権限があることを確認するための運用証明書を発行する必要があります。  
-証明書には、オペレータの署名が含まれプールに関する情報（アドレス、キーなど）が含まれます。
-
-</Callout>
-
-
-
-
-
-<Tabs items={["エアギャップ"]}>
-<Tab value="エアギャップ">
-
-
-```bash
-cd $NODE_HOME
-read -p "BPで算出したstartKesPeriodを入力してください:" kes
-```
-> このままコマンドに入力してください。    
-> コマンド実行後に、数字入力モードになりますので、BPで算出した`startKesPeriod`の数字を入力します。
-
-入力した数字が戻り値に表示されているか確認したら証明書を作成します。
-```bash
-echo "入力した数字は $kes です"
-```
-
-```bash
-cardano-cli latest node issue-op-cert \
-  --kes-verification-key-file kes.vkey \
-  --cold-signing-key-file $HOME/cold-keys/node.skey \
-  --operational-certificate-issue-counter $HOME/cold-keys/node.counter \
-  --kes-period $kes \
-  --out-file node.cert
-```
-
-</Tab>
-</Tabs>
-
-<Callout type="info" title="ファイル転送">
-
-エアギャップの`node.cert` をBPのcnodeディレクトリにコピーします。
-
-```mermaid
-graph LR
-    A[エアギャップ] -->|node.cert| B[BP];
-```
-
-</Callout>
-
-
-**BPとエアギャップで`node.cert`ファイルハッシュを比較します。**
-
-<Tabs items={["BP"]}>
-<Tab value="BP">
-
-
-```bash
-cd $NODE_HOME
-sha256sum node.cert
-```
-
-</Tab>
-</Tabs>
-
-
-> BPとエアギャップで表示されたハッシュ値を比較し、一致していれば問題ありません。
-
-<Tabs items={["エアギャップ"]}>
-<Tab value="エアギャップ">
-
-
-```bash
-cd $NODE_HOME
-sha256sum node.cert
-```
-
-</Tab>
-</Tabs>
-
-## 4. VRFキーの作成 [#sec-4]
-
-<Tabs items={["BP"]}>
-<Tab value="BP">
-
-
-```bash
-cd $NODE_HOME
-cardano-cli latest node key-gen-VRF \
+cardano-cli dijkstra node key-gen-VRF \
   --verification-key-file vrf.vkey \
   --signing-key-file vrf.skey
 ```
 
-vrfキーのアクセス権を読み取り専用に更新します。
-```bash
-chmod 400 vrf.skey
-chmod 400 vrf.vkey
-```
 
-> vrfキーを誤って削除しないようにしてください。
-
-</Tab>
-</Tabs>
-
-## 5. BPノードとして再起動 [#sec-5]
-
-
-BPノードを停止します。
-
-<Tabs items={["BP"]}>
-<Tab value="BP">
+## 5. 支払いアドレスの作成 [#sec-5]
 
 ```bash
-sudo systemctl stop cardano-node
+cardano-cli dijkstra address build \
+  --payment-verification-key-file payment.vkey \
+  --stake-verification-key-file stake.vkey \
+  --out-file payment.addr
+echo $(cat payment.addr)
 ```
 
-ノードポート番号を確認します。
-```bash
-PORT=`grep "PORT=" $NODE_HOME/startBlockProducingNode.sh`
-b_PORT=${PORT#"PORT="}
-echo "BPポートは ${b_PORT} です"
-```
-> BPのポート番号が表示されることを確認します。
 
-起動スクリプトにKES、VRF、運用証明書のパスを追記し、更新します。
+## 6. Faucetからの入金 [#sec-6]
 
-```bash
-cat > $NODE_HOME/startBlockProducingNode.sh << EOF 
-#!/bin/bash
-DIRECTORY=$NODE_HOME
-PORT=${b_PORT}
-HOSTADDR=0.0.0.0
-TOPOLOGY=\${DIRECTORY}/${NODE_CONFIG}-topology.json
-DB_PATH=\${DIRECTORY}/db
-SOCKET_PATH=\${DIRECTORY}/db/socket
-CONFIG=\${DIRECTORY}/${NODE_CONFIG}-config.json
-KES=\${DIRECTORY}/kes.skey
-VRF=\${DIRECTORY}/vrf.skey
-CERT=\${DIRECTORY}/node.cert
-/usr/local/bin/cardano-node run +RTS -N --disable-delayed-os-memory-return -I0.1 -Iw300 -A32m -n4m -F1.5 -H2500M -RTS --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG} --shelley-kes-key \${KES} --shelley-vrf-key \${VRF} --shelley-operational-certificate \${CERT}
-EOF
-```
+<Callout type="info" title="tADAの請求">
 
-BPを起動します。
+表示された支払いアドレスを Faucet に貼り付け、テスト用 tADA を請求します（約10,000 tADA）。
+
+[faucet.leios.play.dev.cardano.org/basic-faucet](https://faucet.leios.play.dev.cardano.org/basic-faucet)
+
+</Callout>
+
+
+入金後、残高を確認します。
 
 ```bash
-sudo systemctl start cardano-node
+cardano-cli dijkstra query utxo --address "$(cat payment.addr)" --output-text
 ```
+```yaml title="期待される表示例：" noCopy
+                           TxHash                                 TxIx        Amount
+--------------------------------------------------------------------------------------
+9e0c10b599606a5**********************************************     0    10000000000 lovelace + TxOutDatumNone
+```
+> UTxO が表示されれば入金完了です。
 
-BPとして起動しているか確認します。
+
+## 7. 運用証明書の作成 [#sec-7]
+
+ジェネシスから `slotsPerKESPeriod` を取得し、現在のスロットから KES Period を算出します。
+
 ```bash
-cd $NODE_HOME/scripts
-./gLiveView.sh
+cd $NODE_HOME
+slotsPerKESPeriod=$(jq -r '.slotsPerKESPeriod' "$NODE_HOME/shelley-genesis.json")
+echo slotsPerKESPeriod: ${slotsPerKESPeriod}
+slotNo=$(cardano-cli query tip | jq -r '.slot')
+echo slotNo: ${slotNo}
+kesPeriod=$(( slotNo / slotsPerKESPeriod ))
+echo kesPeriod: ${kesPeriod}
 ```
-> チェーン同期後に`Core`の表示があれば問題ありません。
 
-</Tab>
-</Tabs>
+運用証明書（`node.cert`）を作成します。
 
-<Callout type="error" title="注意事項">
+```bash
+cd $NODE_HOME
+cardano-cli dijkstra node issue-op-cert \
+  --kes-verification-key-file kes.vkey \
+  --cold-signing-key-file $HOME/cold-keys/node.skey \
+  --operational-certificate-issue-counter-file $HOME/cold-keys/node.counter \
+  --kes-period "$kesPeriod" \
+  --out-file node.cert
+```
 
-BPを実行するためには、以下の３つのファイルが必要ですので、揃っているか確認してください。  
-> このファイルが揃っていない場合や起動時に指定されていない場合はブロック生成できませんので注意してください。
 
-- `kes.skey`
-- `vrf.skey`
-- `node.cert`
+<Callout type="warn" title="次のステップ">
+
+キーの生成と入金が完了したら、[ステークプール登録](/cardano/leios-testnet2/stake-pool-register) に進んでください。
 
 </Callout>
 
