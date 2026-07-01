@@ -2,8 +2,7 @@
   "title": "Leiosテストネット(SPO)",
   "pages": [
     "index",
-    "relay-setup",
-    "bp-setup",
+    "node-setup",
     "bp-key-setup",
     "stake-pool-register",
     "relay-bp-setup"

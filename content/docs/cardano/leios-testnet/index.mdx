@@ -51,8 +51,8 @@ Leios テストネットは **研究・検証用のプロトタイプネット�
 
 <Callout type="info" title="本マニュアルの構成">
 
-- **リレーノード**：**Nix**（`nix run` + tmux）で構築し、監視ダッシュボード（Grafana）も同時に起動します。
-- **ブロック生成ノード（BP）**：**Nix**（`nix profile install` で固定パス導入）した cardano-node を **systemd** でバックグラウンド常駐させます。
+- **ノード構築（リレー・BP共通）**：**Nix**（`nix profile install` で固定パス導入）した cardano-node を **systemd** でバックグラウンド常駐させます。手順は [ノード構築](/cardano/leios-testnet/node-setup) に共通化されており、リレー・BP の両サーバーで実施します。
+- **ブロック生成モードへの切替**：BP は [BP用キーの生成](/cardano/leios-testnet/bp-key-setup) で KES / VRF / 運用証明書を追加して切り替えます。
 - **プール登録**：**BP** 上で実施します（キー生成・証明書作成・トランザクション送信）。
 
 </Callout>
@@ -60,8 +60,8 @@ Leios テストネットは **研究・検証用のプロトタイプネット�
 
 ```mermaid
 graph LR
-    Internet[Leiosテストネット] <--> Relay[リレーノード<br/>Nix + tmux];
-    Relay <--> BP[ブロック生成ノード BP<br/>Nix profile + systemd];
+    Internet[Leiosテストネット] <--> Relay[リレーノード<br/>Nix + systemd];
+    Relay <--> BP[ブロック生成ノード BP<br/>Nix + systemd];
     BP -.プール登録.-> Internet;
 ```
 
@@ -75,10 +75,10 @@ graph LR
 
 ## 4. 構築の流れ [#sec-4]
 
-1. [リレーノードの構築（Nix）](/cardano/leios-testnet2/relay-setup)
-2. [BPノードの構築（Nix + systemd）](/cardano/leios-testnet2/bp-setup)
-3. [BP用キーの生成](/cardano/leios-testnet2/bp-key-setup)
-4. [ステークプール登録](/cardano/leios-testnet2/stake-pool-register)
+1. [ノード構築（リレー・BP共通）](/cardano/leios-testnet/node-setup)
+2. [BP用キーの生成](/cardano/leios-testnet/bp-key-setup)
+3. [ステークプール登録](/cardano/leios-testnet/stake-pool-register)
+4. [リレー/BP接続設定](/cardano/leios-testnet/relay-bp-setup)
 
 <Callout type="info" title="サポート">
 

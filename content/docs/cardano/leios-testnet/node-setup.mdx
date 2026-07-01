@@ -1,9 +1,18 @@
 ---
-title: "BPノード構築(Nix)"
+title: "ノード構築(Nix)"
 ---
 
-ブロック生成ノード（BP）は、**Nix で導入した cardano-node / cardano-cli を固定パスにインストール**し、**systemd** でバックグラウンド常駐させます。  
-まずはリレーとして起動してチェーンを同期させ、後の手順でブロック生成ノードへ切り替えます。
+リレー・BP とも、ノードの基本構築手順は共通です。  
+**リレーサーバー・BPサーバーの両方**で本ページの手順を実施してください。  
+まずは両ノードともリレーとして起動してチェーンを同期させ、BP は後の手順（[BP用キーの生成](/cardano/leios-testnet/bp-key-setup)）でブロック生成モードへ切り替えます。
+
+<Callout type="info" title="Nixを使う理由">
+
+- Musashi-Testnet は仕様やバージョンが都度変更される可能性があるため、依存関係をソースからビルドせずに `cardano-node` / `cardano-cli` を導入でき、作業工数を軽減できます。
+- `nix profile install` で **固定パスにインストール**するため、再現性を保ちつつ systemd で安定稼働させられます。
+- 設定ファイル（`topology.json` など）は**一度だけ取得**し、以降は上書きされません。
+
+</Callout>
 
 
 <Callout type="info" title="このページで行うこと">
@@ -12,8 +21,9 @@ title: "BPノード構築(Nix)"
 2. cardano-node / cardano-cli の固定インストール
 3. 作業ディレクトリと環境変数の設定
 4. 設定ファイルの取得
-5. 起動スクリプトと systemd サービスの作成
-6. ノードの起動と同期確認
+5. DBスナップショットの復元（同期時間の短縮）
+6. 起動スクリプトと systemd サービスの作成
+7. ノードの起動と同期確認
 
 </Callout>
 
@@ -111,13 +121,13 @@ cardano-node --version
 cardano-cli --version
 ```
 ```yaml title="期待される表示例：" noCopy
-cardano-node 11.0.1.164 - linux-x86_64 - ghc-9.6  
-git rev db5373ea6a6f79b398b468d2e04ce43eafcf90d0  
-> 末尾に `164` が含まれていれば Leios プロトタイプ用ビルドです。
+cardano-node 11.0.1.164 - linux-x86_64 - ghc-9.6
+git rev db5373ea6a6f79b398b468d2e04ce43eafcf90d0
 
-cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
-git rev db5373ea6a6f79b398b468d2e04ce43eafcf90d0  
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6
+git rev db5373ea6a6f79b398b468d2e04ce43eafcf90d0
 ```
+> 末尾に `164` が含まれていれば Leios プロトタイプ用ビルドです。
 
 
 ## 4. 作業ディレクトリと環境変数の設定 [#sec-4]
@@ -143,10 +153,52 @@ cp ouroboros-leios/testnet/config/* "$NODE_HOME"/
 ```
 
 
-## 6. 起動スクリプトの作成 [#sec-6]
+## 6. DBスナップショットの復元 [#sec-6]
 
-まずは **リレーとして** 起動し、チェーンを同期させます。  
-（ブロック生成キーは [BP用キーの生成](/cardano/cnode2/bp-key-setup) で作成後に追記します）
+ジェネシスからのフル同期には長い時間がかかります。  
+公開されている **DBスナップショット** を `$NODE_HOME/db` に復元することで、同期時間を大幅に短縮できます。
+
+<Callout type="warn" title="復元はノード起動前に実施してください">
+
+DBスナップショットの復元は、**ノードを一度も起動していない状態**（`$NODE_HOME/db` が空の状態）で行ってください。  
+既にノードを起動して DB が作成されている場合は、先に停止し `db` を空にしてから復元します。
+
+</Callout>
+
+
+`zstd`（伸長ツール）を導入します。
+```bash
+sudo apt install zstd -y
+```
+
+スナップショットをダウンロードします。
+```bash
+cd "$NODE_HOME"
+curl -L -o leios.chain.tar.zst https://leios1-rel-a-1.play.dev.cardano.org/leios.chain.tar.zst
+curl -L -o leios.leiosdb.tar.zst https://leios3-rel-c-1.play.dev.cardano.org/leios.leiosdb.tar.zst
+```
+
+$NODE_HOMEに展開します。
+```bash
+tar -I zstd -xvf leios.chain.tar.zst -C "$NODE_HOME"
+tar -I zstd -xvf leios.leiosdb.tar.zst -C "$NODE_HOME"
+```
+
+```bash
+cd "$NODE_HOME"
+mv db-leios db
+```
+
+展開後、不要になったアーカイブを削除します。
+```bash
+rm -f "$NODE_HOME"/leios.chain.tar.zst "$NODE_HOME"/leios.leiosdb.tar.zst
+```
+
+
+## 7. 起動スクリプトの作成 [#sec-7]
+
+ノードの起動スクリプトを作成します。  
+（BP の場合、ブロック生成キーは [BP用キーの生成](/cardano/leios-testnet/bp-key-setup) で作成後に追記します）
 
 ```bash
 cat > $NODE_HOME/startNode.sh << EOF
@@ -164,17 +216,17 @@ chmod +x $NODE_HOME/startNode.sh
 ```
 
 
-## 7. systemdサービスの作成 [#sec-7]
+## 8. systemdサービスの作成 [#sec-8]
 
 ユニットファイルを作成します。
 
 ```bash
 cat > $NODE_HOME/cardano-node.service << EOF
-# The Cardano Leios BP Node Service (part of systemd)
+# The Cardano Leios Node Service (part of systemd)
 # file: /etc/systemd/system/cardano-node.service
 
 [Unit]
-Description     = Cardano Leios BP Node
+Description     = Cardano Leios Node
 Wants           = network-online.target
 After           = network-online.target
 
@@ -222,7 +274,7 @@ sudo systemctl enable --now cardano-node
 ```
 
 
-## 8. 同期確認 [#sec-8]
+## 9. 同期確認 [#sec-9]
 
 ログを確認します。
 ```bash
@@ -259,7 +311,7 @@ source $HOME/.bashrc
 ```
 
 
-## 9. gLiveViewのインストール [#sec-9]
+## 10. gLiveViewのインストール [#sec-10]
 
 `cardano-node` はログが流れる画面だけでは状態が分かりにくいため、ノードの状態を視覚的に確認できる `gLiveView` を導入します。
 
@@ -320,7 +372,10 @@ glive
 
 <Callout type="warn" title="次のステップ">
 
-同期が `100.00` に達したら、[BP用キーの生成](/cardano/leios-testnet2/bp-key-setup) に進んでください。
+同期が `100.00` に達したら、
+
+- **BP サーバー** … [BP用キーの生成](/cardano/leios-testnet/bp-key-setup) に進んでください。
+- **リレーサーバー** … ノード構築は完了です。リレーとBPの接続設定は [リレー/BP接続設定](/cardano/leios-testnet/relay-bp-setup) で行います。
 
 </Callout>
 
