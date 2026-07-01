@@ -2,18 +2,7 @@
 title: "リレー/BP接続設定"
 ---
 
-![リレーとBPの関係図](/images/producer-relay-diagram.png)
 
-<Callout type="info" title="リレーとBPの役割">
-
-
-- **リレー** … BP とネットワークの橋渡し。ブロック同期・伝播を行う。
-- **BP** … ブロック生成専用。`node.cert` / `kes.skey` / `vrf.skey` で起動し、**自リレーのみ**に接続する。
-
-</Callout>
-
-
----
 
 ## 1. P2P接続とトポロジーの理解 [#sec-1]
 
@@ -38,26 +27,6 @@ P2P では接続先の多くはノードが自動で選びます。
 ---
 
 ## 2. トポロジーファイルの変更 [#sec-2]
-
-<Callout type="info" title="topology.json">
-
-
-- **リレー** … 自BP・他リレーなど、固定したい相手を `localRoots` に記載。
-- **BP** … **自リレーだけ**。`useLedgerAfterSlot` は **`-1`**（台帳ピアを使わない）。
-- **IP** … サーバーの**パブリック（固定）アドレス**。ポートはノード用（SSH と混同しない）。
-
-</Callout>
-
-
-同期が 100% になってから以降の手順を実施してください。
-
-```bash
-cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
-```
-```yaml title="期待される表示例：" noCopy
-"syncProgress": "100.00"
-```
-
 
 <Callout type="error" title="リレー">
 
@@ -149,7 +118,7 @@ JSON がそのまま表示されれば問題ありません。
 
 設定ファイル再読み込み
 ```bash
-cnreload
+cnrestart
 ```
 
 ## 3. BPをブロック生成モードへ切替 [#sec-3]
@@ -173,9 +142,9 @@ TOPOLOGY=\${DIRECTORY}/topology.json
 DB_PATH=\${DIRECTORY}/db
 SOCKET_PATH=\${DIRECTORY}/db/socket
 CONFIG=\${DIRECTORY}/config.json
-KES=\${DIRECTORY}/keys/kes.skey
-VRF=\${DIRECTORY}/keys/vrf.skey
-CERT=\${DIRECTORY}/keys/opcert.cert
+KES=\${DIRECTORY}/kes.skey
+VRF=\${DIRECTORY}/vrf.skey
+CERT=\${DIRECTORY}/node.cert
 ${HOME}/.nix-profile/bin/cardano-node run --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG} --shelley-kes-key \${KES} --shelley-vrf-key \${VRF} --shelley-operational-certificate \${CERT}
 EOF
 chmod +x $NODE_HOME/startNode.sh
@@ -186,19 +155,9 @@ chmod +x $NODE_HOME/startNode.sh
 sudo systemctl start cardano-node
 ```
 
-ログでブロック生成ノードとして起動しているか確認します。
+gLiveViewでブロック生成ノードとして起動しているか確認します。
 ```bash
-journalctl -u cardano-node -f
+glive
 ```
-
-<Callout type="error" title="ブロック生成に必要な3ファイル">
-
-BP でブロックを生成するには以下の3ファイルが必要です。起動時に指定されていない場合はブロックを生成できません。
-
-- `kes.skey`
-- `vrf.skey`
-- `opcert.cert`
-
-</Callout>
 
 ---

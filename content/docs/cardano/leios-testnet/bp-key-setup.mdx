@@ -4,10 +4,10 @@ title: "BP用キーの生成"
 
 ステークプールの運用に必要な各種キーを **BP** 上で生成します。
 
-<Callout type="error" title="注意（コールドキー）">
+<Callout type="error" title="鍵ファイルの取り扱いについて">
 
 各キーファイル は **プール運営の根幹となる鍵** です。<mark>流出するとプールの乗っ取りにつながる可能性があります。</mark>  
-本テストネットでは BP 上で生成しますが、本番運用ではエアギャップ（オフライン）環境での生成・保管を強く推奨します。 
+本マニュアルはテストネットのため BP 上で生成しますが、本番運用ではエアギャップ（オフライン）環境での生成・保管を推奨します。 
 
 </Callout>
 
@@ -68,13 +68,6 @@ cardano-cli dijkstra node key-gen \
 
 ## 4. KES・VRFキーの作成 [#sec-4]
 
-<Callout type="info" title="KESキーについて">
-
-KES（Key Evolving Signature）キーは、鍵を悪用する攻撃者からプールを保護するために使用され、定期的に再生成が必要です。
-
-</Callout>
-
-
 ```bash
 cd $NODE_HOME
 cardano-cli dijkstra node key-gen-KES \
@@ -101,7 +94,7 @@ echo $(cat payment.addr)
 
 <Callout type="info" title="tADAの請求">
 
-表示された支払いアドレスを Faucet に貼り付け、テスト用 tADA を請求します（約10,000 tADA）。
+表示された支払いアドレスを `address(required):` に貼り付け、テスト用 tADA を請求します。
 
 [faucet.leios.play.dev.cardano.org/basic-faucet](https://faucet.leios.play.dev.cardano.org/basic-faucet)
 

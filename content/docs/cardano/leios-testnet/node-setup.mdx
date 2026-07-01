@@ -8,22 +8,9 @@ title: "ノード構築(Nix)"
 
 <Callout type="info" title="Nixを使う理由">
 
-- Musashi-Testnet は仕様やバージョンが都度変更される可能性があるため、依存関係をソースからビルドせずに `cardano-node` / `cardano-cli` を導入でき、作業工数を軽減できます。
+- Musashi-Testnet は仕様やバージョンが都度変更される可能性があるため、依存関係を含む `cardano-node` / `cardano-cli` をIOGキャッシュから一括導入でき、作業工数を軽減できます。
 - `nix profile install` で **固定パスにインストール**するため、再現性を保ちつつ systemd で安定稼働させられます。
-- 設定ファイル（`topology.json` など）は**一度だけ取得**し、以降は上書きされません。
-
-</Callout>
-
-
-<Callout type="info" title="このページで行うこと">
-
-1. Nix のインストールと flakes の有効化
-2. cardano-node / cardano-cli の固定インストール
-3. 作業ディレクトリと環境変数の設定
-4. 設定ファイルの取得
-5. DBスナップショットの復元（同期時間の短縮）
-6. 起動スクリプトと systemd サービスの作成
-7. ノードの起動と同期確認
+- 当構成はメインネット稼働時に大幅に変更される可能性があります。
 
 </Callout>
 
@@ -65,13 +52,6 @@ echo "accept-flake-config = true" | sudo tee -a /etc/nix/nix.conf
 echo "trusted-users = $(whoami)" | sudo tee -a /etc/nix/nix.conf
 sudo systemctl restart nix-daemon
 ```
-
-<Callout type="info" title="trusted-users の設定について">
-
-`trusted-users` を設定しないと、IOG のバイナリキャッシュ（`cache.iog.io`）が利用されず、すべてをソースからビルドすることになり非常に時間がかかります。必ず設定してください。
-
-</Callout>
-
 
 ## 3. cardano-node / cardano-cliの固定インストール [#sec-3]
 
@@ -165,7 +145,7 @@ DBスナップショットの復元は、**ノードを一度も起動してい�
 </Callout>
 
 
-`zstd`（伸長ツール）を導入します。
+`zstd`を導入します。
 ```bash
 sudo apt install zstd -y
 ```
@@ -327,6 +307,7 @@ sudo apt install bc tcptraceroute -y
 
 `gLiveView` 本体と `env` ファイルをダウンロードします。
 ```bash
+
 curl -s -o gLiveView.sh https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/gLiveView.sh
 curl -s -o env https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/env
 chmod 755 gLiveView.sh
