@@ -175,6 +175,8 @@ sudo apt install zstd -y
 ```bash
 cd "$NODE_HOME"
 curl -L -o leios.chain.tar.zst https://leios1-rel-a-1.play.dev.cardano.org/leios.chain.tar.zst
+```
+```bash
 curl -L -o leios.leiosdb.tar.zst https://leios3-rel-c-1.play.dev.cardano.org/leios.leiosdb.tar.zst
 ```
 
@@ -280,13 +282,13 @@ sudo systemctl enable --now cardano-node
 ```bash
 journalctl -u cardano-node -f
 ```
-> `Chain extended, new tip: xxxx` のログが流れていれば正常です。  
-> コマンド入力に戻る場合は `Ctrl+C`（ノードは停止しません）。
 
 同期状況を確認します。
 ```bash
 cardano-cli query tip
 ```
+> 初回起動時はDB検証が入るため表示されるまで少し時間かかります
+
 ```yaml title="期待される表示例：" noCopy
 {
   "block": 12345,
@@ -374,8 +376,8 @@ glive
 
 同期が `100.00` に達したら、
 
-- **BP サーバー** … [BP用キーの生成](/cardano/leios-testnet/bp-key-setup) に進んでください。
-- **リレーサーバー** … ノード構築は完了です。リレーとBPの接続設定は [リレー/BP接続設定](/cardano/leios-testnet/relay-bp-setup) で行います。
+- このマニュアルでBPサーバーをセットアップする
+- **BP サーバーが完了したら** … [BP用キーの生成](/cardano/leios-testnet/bp-key-setup) に進んでください。
 
 </Callout>
 
