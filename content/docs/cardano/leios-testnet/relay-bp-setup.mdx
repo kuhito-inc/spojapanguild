@@ -36,13 +36,12 @@ title: "リレー/BP接続設定"
     '  ],',
     '  "peerSnapshotFile": "peer-snapshot.json",',
     '  "publicRoots": [],',
-    '  "useLedgerAfterSlot": 100',
+    '  "useLedgerAfterSlot": 1000',
     '}',
     'EOF',
   ].join('\n')}
   annotations={{
-    21: 'BP の IP。',
-    25: 'BP 宛の localRoot は必ず `advertise: false` とします。',
+    12: 'BP の IP',
   }}
 />
 
@@ -76,8 +75,8 @@ title: "リレー/BP接続設定"
     'EOF',
   ].join('\n')}
   annotations={{
-    8: 'リレー1 の IP アドレス',
-    22: '`-1` で台帳ピアを使わない BP 向けモードになります。',
+    6: 'リレー1 の IP アドレス',
+    16chan: '`-1` で台帳ピアを使わない BP 向けモードになります。',
   }}
 />
 
