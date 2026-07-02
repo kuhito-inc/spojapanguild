@@ -15,7 +15,7 @@ title: "ステークプール登録"
 ## 1. メタデータの作成
 <Callout type="info" title="メタデータ事前作成">
 
-- [こちらのページ](/cardano/setup/stake-pool/register)を参考にメタデータを作成しホスト先へアップロードしてください。
+- [こちらのページ](/cardano/setup/stake-pool-register)を参考にメタデータを作成しホスト先へアップロードしてください。
 - メタデータファイル名は `musashiMetaData.json`としてください
 
 </Callout>
@@ -124,7 +124,36 @@ cardano-cli dijkstra transaction submit \
 > `Transaction successfully submitted` と表示されれば成功です。
 
 
-## 4. ステークの委任 [#sec-4]
+## 4. 登録確認 [#sec-4]
+
+bech32 形式のプールIDを作成します（エクスプローラーでの検索に使用）。
+
+```bash
+cardano-cli dijkstra stake-pool id --output-bech32 --cold-verification-key-file $HOME/cold-keys/node.vkey --out-file pool.id-bech32
+echo $(cat pool.id-bech32)
+```
+
+プール登録確認
+```
+cardano-cli dijkstra query pool-state --stake-pool-id $(cat $NODE_HOME/pool.id-bech32)
+```
+> `"poolParams":`に値があればプール登録完了です。
+> [KleioScan](https://kleioscan.com/#/leios) からも確認できます。
+
+
+faucetからプールへ委任する
+
+<Callout type="info" title="tADA委任の要求">
+
+表示されたプールIDを `pool(required):` に貼り付け、プールへまとまったtADAを委任してもらうことでブロック生成を促します。
+
+[faucet.leios.play.dev.cardano.org/basic-faucet](https://faucet.leios.play.dev.cardano.org/basic-faucet)
+
+</Callout>
+
+
+
+## 5. ステークの委任 [#sec-5]
 
 ご自身のステークをプールへ委任します（誓約を満たすために必要です）。
 
@@ -156,33 +185,9 @@ cardano-cli dijkstra transaction submit \
 ```
 
 
-## 5. 登録確認 [#sec-5]
-
-bech32 形式のプールIDを作成します（エクスプローラーでの検索に使用）。
-
-```bash
-cardano-cli dijkstra stake-pool id --output-bech32 --cold-verification-key-file $HOME/cold-keys/node.vkey --out-file pool.id-bech32
-echo $(cat pool.id-bech32)
-```
-
-
-faucetからプールへ委任する
-
-<Callout type="info" title="tADA委任の要求">
-
-表示されたプールIDを `pool(required):` に貼り付け、プールへまとまったtADAを委任してもらうことでブロック生成を促します。
-
-[faucet.leios.play.dev.cardano.org/basic-faucet](https://faucet.leios.play.dev.cardano.org/basic-faucet)
-
-</Callout>
-
-
-
-> 表示されたプールIDで [KleioScan](https://kleioscan.com/#/leios) からプールを確認できます。
-
 <Callout type="warn" title="次のステップ">
 
-プール登録が完了したら[リレー/BP接続設定](/cardano/leios-testnet/relay-bp-setup) に進んでください。
+[リレー/BP接続設定](/cardano/leios-testnet/relay-bp-setup) に進んでください。
 
 </Callout>
 
