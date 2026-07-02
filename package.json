@@ -12,7 +12,7 @@
     "docs:infer-fence-lang": "node scripts/infer-code-fence-lang.mjs",
     "start": "next start",
     "test": "pnpm run types:check",
-    "types:check": "fumadocs-mdx && next typegen && tsc --noEmit",
+    "types:check": "next typegen && fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },
   "pnpm": {

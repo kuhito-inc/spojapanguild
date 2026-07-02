@@ -83,13 +83,13 @@ echo $DMQ_NODE_SOCKET_PATH
 
 #### 設定ファイルの作成
 
-
 <Tabs items={["リレー", "BP"]}>
 <Tab value="リレー">
 
 ```bash
 cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json << EOF
 {
+  "NetworkMagic": 2147483650,
   "CardanoNetworkMagic": ${NODE_NETWORK_ID},
   "CardanoNodeSocket": "${CARDANO_NODE_SOCKET_PATH}",
   "PeerSharing": true,
@@ -98,7 +98,7 @@ cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json << EOF
     "": {
       "backends": [
         "Stdout MachineFormat",
-        "PrometheusSimple suffix 127.0.0.1 12000"
+        "PrometheusSimple suffix 0.0.0.0 12000"
       ],
       "severity": "Debug"
     }
@@ -113,6 +113,7 @@ EOF
 ```bash
 cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json << EOF
 {
+  "NetworkMagic": 2147483650,
   "CardanoNetworkMagic": ${NODE_NETWORK_ID},
   "CardanoNodeSocket": "${CARDANO_NODE_SOCKET_PATH}",
   "PeerSharing": false,
@@ -121,7 +122,7 @@ cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json << EOF
     "": {
       "backends": [
         "Stdout MachineFormat",
-        "PrometheusSimple suffix 127.0.0.1 12000"
+        "PrometheusSimple suffix 0.0.0.0 12000"
       ],
       "severity": "Debug"
     }
