@@ -83,7 +83,7 @@ exit
 
 ブラケットペースト機能を無効化します。
 ```bash
-grep -qxF 'set enable-bracketed-paste off' ~/.inputrc || echo 'set enable-bracketed-paste off' >> ~/.inputrc
+grep -qxF 'set enable-bracketed-paste off' ~/.inputrc 2>/dev/null || echo 'set enable-bracketed-paste off' >> ~/.inputrc
 ```
 > 設定反映のため、ターミナルから一度ログアウトして再ログインしてください。
 

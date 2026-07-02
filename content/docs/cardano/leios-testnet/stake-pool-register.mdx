@@ -1,0 +1,194 @@
+---
+title: "ステークプール登録"
+---
+
+ステークアドレスとプールの登録、ステークの委任を **BP** 上で実施し、最後に BP をブロック生成モードへ切り替えます。
+
+<Callout type="info" title="事前確認">
+
+- [BP用キーの生成](/cardano/leios-testnet/bp-key-setup) が完了していること
+- `payment.addr` に Faucet からの tADA が入金済みであること
+- ノードが同期済み（`syncProgress: 100.00`）であること
+
+</Callout>
+
+## 1. メタデータの作成
+<Callout type="info" title="メタデータ事前作成">
+
+- [こちらのページ](/cardano/setup/stake-pool-register)を参考にメタデータを作成しホスト先へアップロードしてください。
+- メタデータファイル名は `musashiMetaData.json`としてください
+
+</Callout>
+
+メタデータダウンロード
+```
+cd $NODE_HOME
+wget -O musashiMetaData.json <メタデータURL>
+```
+
+メタデータチェック
+```
+jq . $NODE_HOME/musashiMetaData.json
+```
+
+メタデータファイルのハッシュ値算出
+```
+cd $NODE_HOME
+cardano-cli latest stake-pool metadata-hash --pool-metadata-file musashiMetaData.json > musashiMetaDataHash.txt
+```
+
+## 1. ステーク登録証明書の作成 [#sec-1]
+
+```bash
+cardano-cli dijkstra stake-address registration-certificate \
+  --stake-verification-key-file stake.vkey \
+  --key-reg-deposit-amt "$(cardano-cli dijkstra query gov-state | jq .currentPParams.stakeAddressDeposit)" \
+  --out-file stake.cert
+```
+
+
+## 2. プール登録証明書の作成 [#sec-2]
+
+<Callout type="error" title="実行前に変更する値">
+
+- `--pool-pledge`：誓約額（lovelace 単位。例 `1000000000` = 1,000 tADA）
+- `--pool-cost`：固定手数料（lovelace 単位）
+- `--pool-margin`：変動手数料（0〜1 の小数。例 `0.05` = 5%）
+- `<YOUR_RELAY_IP>`：**リレーノードのパブリックIPアドレス**
+
+</Callout>
+
+
+```bash
+cd $NODE_HOME
+cardano-cli dijkstra stake-pool registration-certificate \
+  --cold-verification-key-file $HOME/cold-keys/node.vkey \
+  --vrf-verification-key-file vrf.vkey \
+  --pool-pledge 1000000000 \
+  --pool-cost 170000000 \
+  --pool-margin 0.05 \
+  --pool-reward-account-verification-key-file stake.vkey \
+  --pool-owner-stake-verification-key-file stake.vkey \
+  --pool-relay-ipv4 <YOUR_REALY_IP> \
+  --pool-relay-port 3010 \
+  --metadata-url https://xxx.github.io/xxx/musashiMetaData.json \
+  --metadata-hash $(cat musashiMetaDataHash.txt) \
+  --out-file pool.cert
+```
+
+<Callout type="info" title="誓約（Pledge）について">
+
+誓約額は `payment.addr` の残高で満たす必要があります。  
+残高が誓約額を下回るとプール報酬が得られなくなる場合があります。
+
+</Callout>
+
+
+## 3. 登録トランザクションの送信 [#sec-3]
+
+ステーク登録証明書とプール登録証明書を 1 つのトランザクションで送信します。  
+`transaction build` は手数料を自動計算します。
+
+```bash
+cd $NODE_HOME
+TXIN=$(cardano-cli dijkstra query utxo --address "$(cat payment.addr)" | jq -r 'keys[0]')
+echo TXIN: $TXIN
+```
+
+```bash
+cardano-cli dijkstra transaction build \
+  --tx-in "$TXIN" \
+  --change-address "$(cat payment.addr)" \
+  --certificate-file stake.cert \
+  --certificate-file pool.cert \
+  --out-file tx.raw
+```
+
+トランザクションに署名します。
+
+```bash
+cardano-cli dijkstra transaction sign \
+  --tx-body-file tx.raw \
+  --signing-key-file payment.skey \
+  --signing-key-file stake.skey \
+  --signing-key-file $HOME/cold-keys/node.skey \
+  --out-file tx.signed
+```
+
+トランザクションを送信します。
+
+```bash
+cardano-cli dijkstra transaction submit \
+  --tx-file tx.signed
+```
+> `Transaction successfully submitted` と表示されれば成功です。
+
+
+## 4. 登録確認 [#sec-4]
+
+bech32 形式のプールIDを作成します（エクスプローラーでの検索に使用）。
+
+```bash
+cardano-cli dijkstra stake-pool id --output-bech32 --cold-verification-key-file $HOME/cold-keys/node.vkey --out-file pool.id-bech32
+echo $(cat pool.id-bech32)
+```
+
+プール登録確認
+```
+cardano-cli dijkstra query pool-state --stake-pool-id $(cat $NODE_HOME/pool.id-bech32)
+```
+> `"poolParams":`に値があればプール登録完了です。
+> [KleioScan](https://kleioscan.com/#/leios) からも確認できます。
+
+
+faucetからプールへ委任する
+
+<Callout type="info" title="tADA委任の要求">
+
+表示されたプールIDを `pool(required):` に貼り付け、プールへまとまったtADAを委任してもらうことでブロック生成を促します。
+
+[faucet.leios.play.dev.cardano.org/basic-faucet](https://faucet.leios.play.dev.cardano.org/basic-faucet)
+
+</Callout>
+
+
+
+## 5. ステークの委任 [#sec-5]
+
+ご自身のステークをプールへ委任します（誓約を満たすために必要です）。
+
+```bash
+cd $NODE_HOME
+cardano-cli dijkstra stake-address stake-delegation-certificate \
+  --stake-verification-key-file stake.vkey \
+  --cold-verification-key-file $HOME/cold-keys/node.vkey \
+  --out-file deleg.cert
+```
+
+```bash
+TXIN=$(cardano-cli dijkstra query utxo --address "$(cat payment.addr)" | jq -r 'keys[0]')
+
+cardano-cli dijkstra transaction build \
+  --tx-in "$TXIN" \
+  --change-address "$(cat payment.addr)" \
+  --certificate-file deleg.cert \
+  --out-file tx.raw
+
+cardano-cli dijkstra transaction sign \
+  --tx-body-file tx.raw \
+  --signing-key-file payment.skey \
+  --signing-key-file stake.skey \
+  --out-file tx.signed
+
+cardano-cli dijkstra transaction submit \
+  --tx-file tx.signed
+```
+
+
+<Callout type="warn" title="次のステップ">
+
+[リレー/BP接続設定](/cardano/leios-testnet/relay-bp-setup) に進んでください。
+
+</Callout>
+
+---

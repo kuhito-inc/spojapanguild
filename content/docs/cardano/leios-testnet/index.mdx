@@ -1,0 +1,89 @@
+---
+title: "概要"
+---
+
+このマニュアルは、**Ouroboros Leios テストネット**上でステークプール（リレー＋ブロック生成ノード）を構築するための手順書です。  
+公式ドキュメント [Leios Testnet - Getting Started](https://leios.cardano-scaling.org/docs/testnet/getting-started) をベースに構成しています。
+
+<Callout type="warn" title="Musashi Dojo Testnetについて">
+
+- Leios テストネットは **開発・検証用のプロトタイプテストネットワーク** です。  
+- テストネットの各フェーズに応じてチェーンがリセットされる場合があります。チェーンがリセットされた場合はプールを再登録する必要がありこれは頻繁に発生する可能性があります。  
+- 当マニュアルのセットアップ構成も大幅に変更になる場合があります。
+
+</Callout>
+
+
+## 1. ネットワーク情報 [#sec-1]
+
+<Callout type="info" title="接続情報">
+
+| 項目 | 値 |
+| :---- | :---- |
+| ネットワークマジック | `164` |
+| ブートストラップリレー | `leios-node.play.dev.cardano.org:3001` |
+| ノードリリース | `prototype-2026w26` |
+| Faucet | [faucet.leios.play.dev.cardano.org/basic-faucet](https://faucet.leios.play.dev.cardano.org/basic-faucet) |
+| エクスプローラー | [KleioScan](https://kleioscan.com/#/leios) |
+| エラ（Era） | `Dijkstra` |
+| ノード待受ポート | `3010` |
+
+</Callout>
+
+
+## 2. システム要件 [#sec-2]
+
+<Callout type="info" title="推奨スペック">
+
+| 項目 | 要件 |
+| :---- | :---- |
+| OS / アーキテクチャ | Linux x86-64 または macOS aarch64 |
+| CPU | 2コア以上 |
+| メモリ | 4GB 以上（ノードは約2〜2.5GB使用） |
+| ディスク | SSD 空き 25GB 程度 |
+
+</Callout>
+
+
+## 3. 構成 [#sec-3]
+
+本マニュアルでは、以下の構成でステークプールを構築します。
+
+<Callout type="info" title="本マニュアルの構成">
+
+- **ノード構築（リレー・BP共通）**：**Nix**（`nix profile install` で固定パス導入）した cardano-node を **systemd** でバックグラウンド常駐させます。手順は [ノード構築](/cardano/leios-testnet/node-setup) に共通化されており、リレー・BP の両サーバーで実施します。
+- **ブロック生成モードへの切替**：BP は [BP用キーの生成](/cardano/leios-testnet/bp-key-setup) で KES / VRF / 運用証明書を追加して切り替えます。
+- **プール登録**：**BP** 上で実施します（キー生成・証明書作成・トランザクション送信）。
+
+</Callout>
+
+
+```mermaid
+graph LR
+    Relay[リレーノード<br/>Nix + systemd];
+    Relay <--> BP[ブロック生成ノード BP<br/>Nix + systemd];
+    BP -.プール登録.-> Internet;
+```
+
+<Callout type="warn" title="リレーとBPの役割">
+
+- **リレーノード** … 外部ネットワークと接続し、ブロックを中継します。パブリックIP・ポート開放が必要です。
+- **ブロック生成ノード（BP）** … KES / VRF / 運用証明書を用いてブロックを生成します。リレー経由で外部と接続します。
+
+</Callout>
+
+
+## 4. 構築の流れ [#sec-4]
+
+1. [ノード構築（リレー・BP共通）](/cardano/leios-testnet/node-setup)
+2. [BP用キーの生成](/cardano/leios-testnet/bp-key-setup)
+3. [ステークプール登録](/cardano/leios-testnet/stake-pool-register)
+4. [リレー/BP接続設定](/cardano/leios-testnet/relay-bp-setup)
+
+<Callout type="info" title="サポート">
+
+不明点や不具合の報告は [SPO JAPAN GUILD Discord](https://discord.gg/snTdTSC5pn) で受け付けています。
+
+</Callout>
+
+---
