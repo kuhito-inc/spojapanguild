@@ -113,6 +113,22 @@ glive
 
 2-2. [運用証明書の作成](/cardano/leios-testnet/bp-key-setup#sec-7)   
 
+`Prototype 2026w27`の`cardano-cli dijkstra transaction build`において不具合が発生しているため、暫定対応として`Prototype 2026w26`のCLIを使用してトランザクション作成コマンドを実行してください
+
+```bash
+cd $HOME
+wget https://github.com/input-output-hk/ouroboros-leios/releases/download/prototype-2026w26/cardano-node-leios-x86_64-linux.tar.gz
+tar -xzf cardano-node-leios-x86_64-linux.tar.gz
+```
+
+```bash
+$HOME/bin/cardano-cli version
+```
+> cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6
+> git rev db5373ea6a6f79b398b468d2e04ce43eafcf90d0
+
+以下のページで実行する`cardano-cli`は`$HOME/bin/cardano-cli`パスで実行してください
+
 2-3. [登録トランザクションの送信](/cardano/leios-testnet/stake-pool-register#sec-3)   
 
 2-4. [登録確認](/cardano/leios-testnet/stake-pool-register#sec-4)   

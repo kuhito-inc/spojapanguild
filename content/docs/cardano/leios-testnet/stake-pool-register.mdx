@@ -98,9 +98,9 @@ echo TXIN: $TXIN
 ```bash
 cardano-cli dijkstra transaction build \
   --tx-in "$TXIN" \
-  --change-address "$(cat payment.addr)" \
-  --certificate-file stake.cert \
-  --certificate-file pool.cert \
+  --change-address $(cat $NODE_HOME/payment.addr) \
+  --certificate-file $NODE_HOME/stake.cert \
+  --certificate-file $NODE_HOME/pool.cert \
   --out-file tx.raw
 ```
 
@@ -144,6 +144,10 @@ cardano-cli dijkstra query pool-state --stake-pool-id $(cat $NODE_HOME/pool.id-b
 faucetからプールへ委任する
 
 <Callout type="info" title="tADA委任の要求">
+
+```
+echo $(cat $NODE_HOME/pool.id-bech32)
+```
 
 表示されたプールIDを `pool(required):` に貼り付け、プールへまとまったtADAを委任してもらうことでブロック生成を促します。
 
