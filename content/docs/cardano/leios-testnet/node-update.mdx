@@ -93,5 +93,27 @@ glive
 
 2. チェーンがリスピン(リセット)した場合
 
-既存の鍵ファイルを使用してプールを再登録してください。
+既存の鍵ファイルを使用してプールを再登録できます。
+
+<Callout type="warn" title="Musashi-Testnetについて">
+
+リスピン前に作成した鍵ファイル類が$NODE_HOMEに揃っていることを前提とします
+- `kes.skey` / `kes.vkey`
+- `vrf.sky` / `vrf.vkey`
+- `payment.skey` / `payment.vkey`
+- `stake.skey` / `stake.vkey`
+- `node.vkey` / `node.skey` / `node.counter`
+- `stake.cert`
+- `musashiMetaData.json` / `musashiMetaDataHash.txt` (メタデータの値を変更する場合は再作成が必要です)
+
+
+</Callout>
+
+2-1. [Faucetから入金する](/cardano/leios-testnet/bp-key-setup#sec-6) 
+2-2. [運用証明書の作成](/cardano/leios-testnet/bp-key-setup#sec-7) 
+2-3. [登録トランザクションの送信](/cardano/leios-testnet/stake-pool-register#sec-3) 
+2-4. [登録確認](/cardano/leios-testnet/stake-pool-register#sec-4) 
+2-5. [ステークの委任](/cardano/leios-testnet/stake-pool-register#sec-5)
+
+
 
