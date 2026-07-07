@@ -94,6 +94,10 @@ echo $(cat payment.addr)
 
 <Callout type="info" title="tADAの請求">
 
+```
+echo $(cat $NODE_HOME/payment.addr)
+```
+
 表示された支払いアドレスを `address(required):` に貼り付け、テスト用 tADA を請求します。
 
 [faucet.leios.play.dev.cardano.org/basic-faucet](https://faucet.leios.play.dev.cardano.org/basic-faucet)
@@ -104,6 +108,7 @@ echo $(cat payment.addr)
 入金後、残高を確認します。
 
 ```bash
+cd $NODE_HOME
 cardano-cli dijkstra query utxo --address "$(cat payment.addr)" --output-text
 ```
 ```yaml title="期待される表示例：" noCopy

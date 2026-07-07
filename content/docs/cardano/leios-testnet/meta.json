@@ -5,6 +5,7 @@
     "node-setup",
     "bp-key-setup",
     "stake-pool-register",
-    "relay-bp-setup"
+    "relay-bp-setup",
+    "node-update"
   ]
 }
