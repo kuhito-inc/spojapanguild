@@ -1,0 +1,97 @@
+---
+title: "ノードアップデート"
+---
+
+
+<Callout type="warn" title="Musashi-Testnetについて">
+
+`Musashi-Testnet` は仕様・バージョンが更新されることがあります。  
+新しいビルドが公開されたら、以下の手順で固定インストール済みの `cardano-node` / `cardano-cli` を更新します。  
+またチェーンがリスピン(リセット)した場合はプールを再登録する必要があります。
+
+</Callout>
+
+
+## 1. cardano-node / cardano-cliのアップデート [#sec-1]
+
+ノードを停止します。
+```bash
+sudo systemctl stop cardano-node
+```
+
+最新ビルドの store パスを取得します。  
+`--refresh` を付けて flake のキャッシュを無視し、最新のリビジョンを取得します。
+```bash
+cd $HOME
+NODE_STORE=$(nix develop --refresh github:input-output-hk/ouroboros-leios#dev-testnet \
+  --command bash -c 'dirname "$(dirname "$(readlink -f "$(command -v cardano-node)")")"')
+```
+```bash
+CLI_STORE=$(nix develop --refresh github:input-output-hk/ouroboros-leios#dev-testnet \
+  --command bash -c 'dirname "$(dirname "$(readlink -f "$(command -v cardano-cli)")")"')
+```
+```bash
+echo "cardano-node: $NODE_STORE"
+echo "cardano-cli : $CLI_STORE"
+```
+
+現在プロファイルに登録されているエントリを確認します。
+```bash
+nix profile list
+```
+
+古い `cardano-node` / `cardano-cli` のエントリを削除します。  
+（名前で一致しない場合は、`nix profile list` に表示される番号（index）で指定します）
+```bash
+nix profile remove cardano-cli-exe-cardano-cli cardano-node-exe-cardano-node
+```
+
+取得した最新の store パスを固定インストールします。
+```bash
+nix profile install "$NODE_STORE"
+[ "$CLI_STORE" != "$NODE_STORE" ] && nix profile install "$CLI_STORE"
+```
+
+バージョンが更新されたことを確認します。
+```bash
+cardano-node --version
+cardano-cli --version
+```
+> cardano-node 11.1.0.164 - linux-x86_64 - ghc-9.6  
+> git rev 3cc6340a896eadee5cdbf2b256751d23dc267ba3  
+
+> cardano-cli 11.1.0.0 - linux-x86_64 - ghc-9.6  
+> git rev 3cc6340a896eadee5cdbf2b256751d23dc267ba3  
+
+
+旧DBを削除する
+```bash
+rm -rf $NODE_HOME/db
+rm $NODE_HOME/leios.db*
+```
+
+新しい設定ファイルをダウンロードする
+```
+wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/byron-genesis.json -O byron-genesis.json
+wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/shelley-genesis.json -O shelley-genesis.json
+wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/alonzo-genesis.json -O alonzo-genesis.json
+wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/conway-genesis.json -O conway-genesis.json
+wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/dijkstra-genesis.json -O dijkstra-genesis.json
+wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/peer-snapshot.json -O peer-snapshot.json
+wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/config.json -O config.json
+```
+
+ノードを起動し、同期状況を確認します。
+```bash
+sudo systemctl start cardano-node
+```
+
+チェーン同期状況を確認する
+```bash
+glive
+```
+
+2. チェーンがリスピン(リセット)した場合
+
+既存の鍵ファイルを使用してプールを再登録してください。
+
