@@ -1,0 +1,139 @@
+---
+title: "リレー/BP接続設定"
+---
+
+
+## 1. トポロジーファイルの変更 [#sec-1]
+
+<Callout type="error" title="リレー">
+
+
+行末の「`＋`」で注釈を表示できます。
+
+
+<AnnotatedCode
+  code={[
+    'cat > ${NODE_HOME}/topology.json << EOF',
+    '{',
+    '  "bootstrapPeers": [',
+    '    {',
+    '      "address": "leios-node.play.dev.cardano.org",',
+    '      "port": 3001',
+    '    }',
+    '  ],',
+    '  "localRoots": [',
+    '    {',
+    '      "accessPoints": [',
+    '        {',
+    '          "address": "BPのIP",',
+    '          "port": 3010',
+    '        }',
+    '      ],',
+    '      "advertise": false,',
+    '      "trustable": true,',
+    '      "valency": 1',
+    '    }',
+    '  ],',
+    '  "peerSnapshotFile": "peer-snapshot.json",',
+    '  "publicRoots": [],',
+    '  "useLedgerAfterSlot": 1000',
+    '}',
+    'EOF',
+  ].join('\n')}
+  annotations={{
+    12: 'BP の IP',
+  }}
+/>
+
+
+</Callout>
+
+<Callout type="error" title="BP">
+行末の「`＋`」で注釈を表示できます。
+
+<AnnotatedCode
+  code={[
+    'cat > ${NODE_HOME}/topology.json << EOF',
+    '{',
+    '  "bootstrapPeers": null,',
+    '  "localRoots": [',
+    '    {',
+    '      "accessPoints": [',
+    '        {',
+    '          "address": "リレー1のIP",',
+    '          "port": 3010',
+    '        }',
+    '      ],',
+    '      "advertise": false,',
+    '      "trustable": true,',
+    '      "valency": 1',
+    '    }',
+    '  ],',
+    '  "publicRoots": [],',
+    '  "useLedgerAfterSlot": -1',
+    '}',
+    'EOF',
+  ].join('\n')}
+  annotations={{
+    6: 'リレー1 の IP アドレス',
+    16: '`-1` で台帳ピアを使わない BP 向けモードになります。',
+  }}
+/>
+
+</Callout>
+
+
+構文チェックと再起動
+
+```bash
+jq . $NODE_HOME/topology.json
+```
+
+JSON がそのまま表示されれば問題ありません。  
+`parse error` のときは `{}` `[]` `,` を確認してください。
+
+設定ファイル再読み込み
+```bash
+cnrestart
+```
+
+## 2. BPをブロック生成モードへ切替 [#sec-2]
+
+最後に、BP ノードを KES / VRF / 運用証明書を指定して起動するよう切り替えます。
+
+ノードを停止します。
+```bash
+sudo systemctl stop cardano-node
+```
+
+起動スクリプトにブロック生成キーを追記して更新します。
+
+```bash
+cat > $NODE_HOME/startNode.sh << EOF
+#!/bin/bash
+DIRECTORY=${NODE_HOME}
+PORT=3010
+HOSTADDR=0.0.0.0
+TOPOLOGY=\${DIRECTORY}/topology.json
+DB_PATH=\${DIRECTORY}/db
+SOCKET_PATH=\${DIRECTORY}/db/socket
+CONFIG=\${DIRECTORY}/config.json
+KES=\${DIRECTORY}/kes.skey
+VRF=\${DIRECTORY}/vrf.skey
+CERT=\${DIRECTORY}/node.cert
+${HOME}/.nix-profile/bin/cardano-node run --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG} --shelley-kes-key \${KES} --shelley-vrf-key \${VRF} --shelley-operational-certificate \${CERT}
+EOF
+chmod +x $NODE_HOME/startNode.sh
+```
+
+ノードを起動します。
+```bash
+sudo systemctl start cardano-node
+```
+
+gLiveViewでブロック生成ノードとして起動しているか確認します。
+```bash
+glive
+```
+
+---

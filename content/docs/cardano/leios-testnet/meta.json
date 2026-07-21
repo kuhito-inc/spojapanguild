@@ -1,0 +1,11 @@
+{
+  "title": "Leiosテストネット(SPO)",
+  "pages": [
+    "index",
+    "node-setup",
+    "bp-key-setup",
+    "stake-pool-register",
+    "relay-bp-setup",
+    "node-update"
+  ]
+}
