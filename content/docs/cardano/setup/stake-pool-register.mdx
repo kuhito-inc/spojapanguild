@@ -121,10 +121,27 @@ title: "ステークプール登録"
 
 </Callout>
 
+URLを変数に代入
+```bash
+metadata_url=xxxxx
+```
+> 以下のように変数metadata_urlにURLを代入してください。  
+> metadata_url=https://xxx.github.io/xxx/poolMetaData.json
 
+変数に正しいURLが代入されているか確認
+```bash
+echo $metadata_url
+```
+
+URLをテキストファイルに保存
+```bash
+echo "$metadata_url" > metadata-url.txt
+```
+
+公開したメタデータをダウンロード
 ```bash
 cd $NODE_HOME
-wget -O poolMetaData.json https://xxx.github.io/xxx/poolMetaData.json 
+wget -O poolMetaData.json "$metadata_url"
 ```
 
 </Callout>
@@ -179,6 +196,29 @@ EOF
 
 </Callout>
 
+アップロード先のURLを変数に代入
+```bash
+metadata_url=xxxxx
+```
+> 以下のように変数metadata_urlにURLを代入してください。  
+> metadata_url=https://example.com/poolMetaData.json
+
+変数に正しいURLが代入されているか確認
+```bash
+echo $metadata_url
+```
+
+URLをテキストファイルに保存
+```bash
+echo "$metadata_url" > metadata-url.txt
+```
+
+公開したメタデータをダウンロード
+```bash
+cd $NODE_HOME
+wget -O poolMetaData.json "$metadata_url"
+```
+
 
 </Tab>
 </Tabs>
@@ -212,10 +252,10 @@ cardano-cli latest stake-pool metadata-hash --pool-metadata-file poolMetaData.js
 
 <Callout type="warn" title="ファイル転送">
 
-BPにある`vrf.vkey`と`poolMetaDataHash.txt` をエアギャップのcnodeディレクトリにコピーしてください。
+BPにある`vrf.vkey`と`poolMetaDataHash.txt`と`metadata-url.txt`をエアギャップのcnodeディレクトリにコピーしてください。
 ```mermaid
 graph LR
-    A[BP] -->| vrf.vkey / poolMetaDataHash.txt | B[エアギャップ];
+    A[BP] -->| vrf.vkey / poolMetaDataHash.txt / metadata-url.txt | B[エアギャップ];
 ```
 
 </Callout>
@@ -372,10 +412,13 @@ DNSの [SRV record](https://support.dnsimple.com/articles/srv-record/) を設定
 - `--pool-cost`：固定手数料
 - `--pool-margin`：変動手数料
 - `***.***.***.***`：リレー1、リレー2のパブリックIPアドレス
-- `https://xxx.github.io/xxx/poolMetaData.json`：ご自身のメタデータURL
 
 </Callout>
 
+```bash
+cd $NODE_HOME
+metadata_url=$(cat metadata-url.txt)
+```
 
 ```bash
 cd $NODE_HOME
@@ -392,8 +435,8 @@ cardano-cli latest stake-pool registration-certificate \
   --pool-relay-port 6000 \
   --pool-relay-ipv4 ***.***.***.*** \
   --pool-relay-port 6000 \
-  --metadata-url https://xxx.github.io/xxx/poolMetaData.json \
-  --metadata-hash $(cat poolMetaDataHash.txt) \
+  --metadata-url "$metadata_url" \
+  --metadata-hash "$(cat poolMetaDataHash.txt)" \
   --out-file pool.cert
 ```
 

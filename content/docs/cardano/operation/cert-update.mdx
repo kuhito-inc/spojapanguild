@@ -79,11 +79,28 @@ cardano-cli latest stake-pool metadata-hash --pool-metadata-file poolMetaData.js
 </Tabs>
 
 オンラインファイルハッシュ値確認
-> `https:****.**.**`をメタデータファイルのURLに置き換えてから実行してください
+> 公開したメタデータファイルをダウンロードし、ハッシュ値を確認します。
+
+メタデータURLを変数に代入
+```bash
+metadata_url=xxxxx
+```
+> 以下のように変数metadata_urlにURLを代入してください。  
+> metadata_url=https://xxx.github.io/xxx/poolMetaData.json  
+
+変数に正しいURLが代入されているか確認
+```bash
+echo $metadata_url
+```
+
+URLをテキストファイルに保存
+```bash
+echo "$metadata_url" > metadata-url.txt
+```
 
 ```bash
 cd $NODE_HOME
-wget -O onlineMetaData.json https:****.**.**
+wget -O onlineMetaData.json "$metadata_url"
 ```
 
 オンラインメタデータハッシュ値
@@ -106,10 +123,10 @@ rm onlineMetaData.json
 
 <Callout type="warn" title="ファイル転送">
 
-BPの``poolMetaDataHash.txt`` をエアギャップのcnodeディレクトリにコピーします。
+BPの`poolMetaDataHash.txt`と`metadata-url.txt` をエアギャップのcnodeディレクトリにコピーします。
 ```mermaid
 graph LR
-    A[BP] -->|poolMetaDataHash.txt| B[エアギャップ];
+    A[BP] -->| poolMetaDataHash.txt / metadata-url.txt | B[エアギャップ];
 ```
 
 </Callout>
@@ -140,7 +157,33 @@ echo $(cat poolMetaDataHash.txt)
 </Tab>
 <Tab value="誓約、手数料、リレー情報のみ更新の場合">
 
-このタブではプールメタデータの変更はありません。**登録証明書トランザクションを作成する**以降の手順へ進んでください。
+このタブではプールメタデータの変更はありません。  
+前回登録時に使用した `metadata-url.txt` がエアギャップに存在することを確認したうえで、**登録証明書トランザクションを作成する**以降の手順へ進んでください。  
+`metadata-url.txt` が存在しない場合は、以下のコマンドで作成してください。
+
+エアギャップで実行します。  
+
+存在確認
+```bash
+ls -l metadata-url.txt
+```
+
+メタデータURLを変数に代入
+```bash
+metadata_url=xxxxx
+```
+> 以下のように変数metadata_urlにURLを代入してください。  
+> metadata_url=https://xxx.github.io/xxx/poolMetaData.json
+
+変数に正しいURLが代入されているか確認
+```bash
+echo $metadata_url
+```
+
+URLをテキストファイルに保存
+```bash
+echo "$metadata_url" > metadata-url.txt
+```
 
 </Tab>
 </Tabs>
@@ -164,8 +207,8 @@ echo $(cat poolMetaDataHash.txt)
 
 ```bash
 cd $NODE_HOME
+metadata_url=$(cat metadata-url.txt)
 ```
-
 ```bash
 chmod u+rwx $HOME/cold-keys
 cardano-cli latest stake-pool registration-certificate \
@@ -181,8 +224,8 @@ cardano-cli latest stake-pool registration-certificate \
   --pool-relay-port 6000 \
   --pool-relay-ipv4 ***.***.***.*** \
   --pool-relay-port 6000 \
-  --metadata-url https://xxx.github.io/xxx/poolMetaData.json \
-  --metadata-hash $(cat poolMetaDataHash.txt) \
+  --metadata-url "$metadata_url" \
+  --metadata-hash "$(cat poolMetaDataHash.txt)" \
   --out-file pool.cert
 ```
 
@@ -401,7 +444,7 @@ cardano-cli latest transaction submit \
   --tx-file tx.signed \
   $NODE_NETWORK
 ```
-> Transacsion Successfully submittedと表示されれば成功
+> `Transaction successfully submitted`と表示されれば成功
 
 </Tab>
 </Tabs>
