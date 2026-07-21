@@ -41,7 +41,7 @@ mkdir -p $HOME/mithril
 
 ビルド済みバイナリのダウンロード
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/input-output-hk/mithril/refs/heads/main/mithril-install.sh | sh -s -- -c mithril-signer -d 2617.0 -p $HOME/git/mithril
+curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/intersectmbo/mithril/refs/heads/main/mithril-install.sh | sh -s -- -c mithril-signer -d 2617.0 -p $HOME/git/mithril
 ```
 
 `bin`ディレクトリへコピー
@@ -61,7 +61,7 @@ mithril-signer 1.0.0+2478748
 
 パラメータ値算出
 ```bash
-era_params=$(jq -nc --arg address $(wget -q -O - https://raw.githubusercontent.com/input-output-hk/mithril/main/mithril-infra/configuration/release-mainnet/era.addr) --arg verification_key $(wget -q -O - https://raw.githubusercontent.com/input-output-hk/mithril/main/mithril-infra/configuration/release-mainnet/era.vkey) '{"address": $address, "verification_key": $verification_key}')
+era_params=$(jq -nc --arg address $(wget -q -O - https://raw.githubusercontent.com/intersectmbo/mithril/main/mithril-infra/configuration/release-mainnet/era.addr) --arg verification_key $(wget -q -O - https://raw.githubusercontent.com/intersectmbo/mithril/main/mithril-infra/configuration/release-mainnet/era.vkey) '{"address": $address, "verification_key": $verification_key}')
 ```
 
 BPから接続するリレーIPを指定
@@ -532,7 +532,7 @@ rm -rf $HOME/git/mithril/*
 
 ビルド済みバイナリファイルのダウンロード
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/input-output-hk/mithril/refs/heads/main/mithril-install.sh | sh -s -- -c mithril-signer -d 2617.0 -p $HOME/git/mithril
+curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/intersectmbo/mithril/refs/heads/main/mithril-install.sh | sh -s -- -c mithril-signer -d 2617.0 -p $HOME/git/mithril
 ```
 
 `bin`ディレクトリへコピー
