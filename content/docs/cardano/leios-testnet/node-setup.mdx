@@ -67,8 +67,8 @@ Leios のリリースはすべて **Pre-release** として公開されている
 作業用ディレクトリを作成し、バイナリとチェックサムをダウンロードします。
 
 ```bash
-mkdir -p $HOME/leios-bin
-cd $HOME/leios-bin
+mkdir -p $HOME/git
+cd $HOME/git
 wget https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.tar.gz
 wget https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.sha256
 ```
@@ -110,12 +110,6 @@ git rev 6971bb527288d0f362147fbe318c0e9c84312ab3
 ```
 > 末尾に `164` が含まれていれば Leios プロトタイプ用ビルドです。
 
-不要になった作業用ディレクトリを削除します。
-```bash
-cd $HOME
-rm -rf $HOME/leios-bin
-```
-
 
 ## 3. 作業ディレクトリと環境変数の設定 [#sec-3]
 
@@ -133,9 +127,16 @@ mkdir -p "$NODE_HOME"
 設定ファイル（`config.json` / `topology.json` / 各ジェネシスファイル）を取得します。
 
 ```bash
-cd "$NODE_HOME"
-git clone --depth 1 https://github.com/input-output-hk/ouroboros-leios
-cp ouroboros-leios/testnet/config/* "$NODE_HOME"/
+cd $NODE_HOME
+curl -LO https://raw.githubusercontent.com/input-output-hk/ouroboros-leios/main/testnet/pin-config.sh
+bash pin-config.sh
+```
+
+取得したファイルは `config` ディレクトリに配置されるため、`$NODE_HOME` 直下へ移動します。
+
+```bash
+mv $NODE_HOME/config/* $NODE_HOME/
+rmdir $NODE_HOME/config
 ```
 
 
@@ -170,11 +171,6 @@ $NODE_HOMEに展開します。
 ```bash
 tar -I zstd -xvf leios.chain.tar.zst -C "$NODE_HOME"
 tar -I zstd -xvf leios.leiosdb.tar.zst -C "$NODE_HOME"
-```
-
-```bash
-cd "$NODE_HOME"
-mv db-leios db
 ```
 
 展開後、不要になったアーカイブを削除します。
@@ -238,13 +234,6 @@ WantedBy        = multi-user.target
 EOF
 ```
 
-<Callout type="info" title="ExecStartについて">
-
-起動スクリプト内で `/usr/local/bin/cardano-node` を**絶対パス**で呼び出しているため、systemd の最小 PATH 環境でも確実に起動できます。
-
-</Callout>
-
-
 `/etc/systemd/system` にユニットファイルをコピーし、権限を付与します。
 ```bash
 sudo cp $NODE_HOME/cardano-node.service /etc/systemd/system/cardano-node.service
@@ -277,11 +266,14 @@ cardano-cli query tip
 
 ```yaml title="期待される表示例：" noCopy
 {
-  "block": 12345,
-  "epoch": 42,
-  "era": "Dijkstra",
-  "slot": 678910,
-  "syncProgress": "100.00"
+    "block": 115311,
+    "epoch": 37,
+    "era": "Dijkstra",
+    "hash": "5072a5f8ba0ac4ea54b1844e6117451e751c30097aff94683c7dd0b8f0a80dc7",
+    "slot": 3244075,
+    "slotInEpoch": 47275,
+    "slotsToEpochEnd": 39125,
+    "syncProgress": "100.00"
 }
 ```
 > `syncProgress` が `100.00` になればフル同期完了です。
@@ -314,7 +306,6 @@ sudo apt install bc tcptraceroute -y
 
 `gLiveView` 本体と `env` ファイルをダウンロードします。
 ```bash
-
 curl -s -o gLiveView.sh https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/gLiveView.sh
 curl -s -o env https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/env
 chmod 755 gLiveView.sh
@@ -331,18 +322,6 @@ sed -i $NODE_HOME/scripts/env \
     -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
     -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
 ```
-
-<Callout type="info" title="修正される定義">
-
-| 項目 | 値 |
-| :---- | :---- |
-| `CNODE_HOME` | `$NODE_HOME`（`$HOME/cnode`） |
-| `CNODE_PORT` | `3010` |
-| `CONFIG` | `${CNODE_HOME}/config.json` |
-| `SOCKET` | `${CNODE_HOME}/db/socket` |
-| `PROM_PORT` | `12798` |
-
-</Callout>
 
 任意の単語で起動できるようエイリアスを登録します。
 ```bash
