@@ -38,10 +38,10 @@ Leios のリリースはすべて **Pre-release** として公開されている
 
 バイナリとチェックサムをダウンロードします。
 ```bash
-mkdir -p $HOME/leios-bin
-cd $HOME/leios-bin
-wget https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.tar.gz
-wget https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.sha256
+mkdir -p $HOME/git
+cd $HOME/git
+wget -O cardano-node-leios-x86_64-linux.tar.gz https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.tar.gz
+wget -O cardano-node-leios-x86_64-linux.sha256 https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.sha256
 ```
 
 チェックサムを検証します。
@@ -73,30 +73,6 @@ cardano-cli --version
 > cardano-cli 11.1.0.0 - linux-x86_64 - ghc-9.6  
 > git rev 6971bb527288d0f362147fbe318c0e9c84312ab3  
 
-不要になった作業用ディレクトリを削除します。
-```bash
-cd $HOME
-rm -rf $HOME/leios-bin
-```
-
-
-旧DBを削除する
-```bash
-rm -rf $NODE_HOME/db
-rm $NODE_HOME/leios.db*
-```
-
-新しい設定ファイルをダウンロードする
-```bash
-cd $NODE_HOME
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/byron-genesis.json -O byron-genesis.json
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/shelley-genesis.json -O shelley-genesis.json
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/alonzo-genesis.json -O alonzo-genesis.json
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/conway-genesis.json -O conway-genesis.json
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/dijkstra-genesis.json -O dijkstra-genesis.json
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/peer-snapshot.json -O peer-snapshot.json
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/config.json -O config.json
-```
 
 ノードを起動し、同期状況を確認します。
 ```bash
