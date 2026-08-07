@@ -8,7 +8,7 @@ title: "DMQノードの設定"
 以下は、[Mithril Signerノードの設定](/cardano/operation/mithril-signer-node-setup-and-updates)をしている方のみ対象です。
 
 
-## 1. DMQ Nodeのインストール [#sec-1]
+## DMQ Nodeのインストール [#sec-1]
 
 システムのアップデート
 ```bash
@@ -23,7 +23,7 @@ cd $HOME/git/mithril/dmq
 
 ビルド済みバイナリファイルのダウンロード
 ```bash
-wget -O dmq-node.tar.gz https://github.com/IntersectMBO/dmq-node/releases/download/0.4.2.0/dmq-node-linux.tar.gz
+wget -O dmq-node.tar.gz https://github.com/IntersectMBO/dmq-node/releases/download/0.7.0.0/dmq-node-linux.tar.gz
 ```
 
 解凍してtar.gzファイルの削除
@@ -38,7 +38,7 @@ rm dmq-node.tar.gz
 ```
 
 ```yaml title="期待される表示例：" noCopy
-dmq-node version: 0.4.2.0
+dmq-node version: 0.7.0.0
 ```
 
 バイナリファイルをシステムフォルダへコピー
@@ -52,11 +52,11 @@ dmq-node --version
 ```
 
 ```yaml title="期待される表示例：" noCopy
-dmq-node version: 0.4.2.0
+dmq-node version: 0.7.0.0
 ```
 
 
-## 2. ソケット・設定ディレクトリ作成 [#sec-2]
+## ソケット・設定ディレクトリ作成 [#sec-2]
 
 ### DMQ Node設定ディレクトリの作成
 
@@ -92,6 +92,7 @@ cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json << EOF
   "NetworkMagic": 2147483650,
   "CardanoNetworkMagic": ${NODE_NETWORK_ID},
   "CardanoNodeSocket": "${CARDANO_NODE_SOCKET_PATH}",
+  "ShelleyGenesisFile": "$NODE_HOME/${NODE_CONFIG}-shelley-genesis.json",
   "PeerSharing": true,
   "PeerSelectionCounters": true,
   "TraceOptions": {
@@ -116,6 +117,7 @@ cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json << EOF
   "NetworkMagic": 2147483650,
   "CardanoNetworkMagic": ${NODE_NETWORK_ID},
   "CardanoNodeSocket": "${CARDANO_NODE_SOCKET_PATH}",
+  "ShelleyGenesisFile": "$NODE_HOME/${NODE_CONFIG}-shelley-genesis.json",
   "PeerSharing": false,
   "PeerSelectionCounters": true,
   "TraceOptions": {
@@ -136,7 +138,7 @@ EOF
 
 
 
-## 3. トポロジーファイル作成 [#sec-3]
+## トポロジーファイル作成 [#sec-3]
 
 <Tabs items={["リレー", "BP"]}>
 <Tab value="リレー">
@@ -235,7 +237,7 @@ EOF
 </Tabs>
 
 
-## 4. systemd サービス作成 [#sec-4]
+## systemd サービス作成 [#sec-4]
 
 <Tabs items={["リレー", "BP"]}>
 <Tab value="リレー">
@@ -334,7 +336,7 @@ echo alias dmqnode='"journalctl -u dmq-node -f"' >> $HOME/.bashrc
 source $HOME/.bashrc
 ```
 
-## 5. DMQ Node の動作確認 [#sec-5]
+## DMQ Node の動作確認 [#sec-5]
 
 DMQ Node のログを確認します。
 ```bash
@@ -358,7 +360,7 @@ sudo ss -lntp | grep 6161
 LISTEN 0      8       xxx.xxx.xxx.xxx:6161       0.0.0.0:*    users:(("dmq-node",pid=***,fd=***))   
 ```
 
-## 6. Mithril Signer と連携 [#sec-6]
+## Mithril Signer との連携 [#sec-6]
 
 Mithril Signer が DMQ Node を利用するよう設定します。
 
@@ -396,5 +398,64 @@ journalctl -u mithril-signer -f --output=cat
 ```
 </Tab>
 </Tabs>
+
+
+## DMQ Nodeの更新
+
+システムのアップデート
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+dmq-nodeの停止
+```bash
+sudo systemctl stop dmq-node
+```
+
+既存のdmqフォルダの削除
+```bash
+rm -rf $HOME/git/mithril/dmq
+```
+
+作業ディレクトリの作成
+```bash
+mkdir -p $HOME/git/mithril/dmq
+cd $HOME/git/mithril/dmq
+```
+
+ビルド済みバイナリファイルのダウンロード
+```bash
+wget -O dmq-node.tar.gz https://github.com/IntersectMBO/dmq-node/releases/download/0.7.0.0/dmq-node-linux.tar.gz
+```
+
+解凍してtar.gzファイルの削除
+```bash
+tar -xzf dmq-node.tar.gz --strip-components=2 result/bin
+rm dmq-node.tar.gz
+```
+
+バイナリファイルをシステムフォルダへコピー
+```bash
+sudo cp dmq-node /usr/local/bin/dmq-node
+```
+
+システムに反映されたバージョン確認
+```bash
+dmq-node --version
+```
+
+```yaml title="期待される表示例：" noCopy
+dmq-node version: 0.7.0.0
+```
+
+dmq-nodeの起動
+```bash
+sudo systemctl start dmq-node
+```
+
+dmq-nodeのログを確認
+```bash
+sudo journalctl -u dmq-node -f
+```
 
 ---

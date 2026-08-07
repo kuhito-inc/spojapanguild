@@ -28,8 +28,8 @@ sudo apt update && sudo apt upgrade -y
 ### Mithirlインストール [#sec-3]
 ```bash
 cd $HOME/git
-mithril_release="$(curl -s https://api.github.com/repos/intersectmbo/mithril/releases/latest | jq -r '.tag_name')"
-wget https://github.com/intersectmbo/mithril/releases/download/${mithril_release}/mithril-${mithril_release}-linux-x64.tar.gz -O mithril.tar.gz
+mithril_release="$(curl -s https://api.github.com/repos/IntersectMBO/mithril/releases/latest | jq -r '.tag_name')"
+wget https://github.com/IntersectMBO/mithril/releases/download/${mithril_release}/mithril-${mithril_release}-linux-x64.tar.gz -O mithril.tar.gz
 ```
 
 設定
@@ -51,7 +51,7 @@ rm mithril.tar.gz mithril-client
 ```bash
 mithril-client -V
 ```
-> Mithril Githubの[リリースノート](https://github.com/intersectmbo/mithril/releases/latest)内にある`mithril-client-cli`のバージョンをご確認ください。
+> Mithril Githubの[リリースノート](https://github.com/IntersectMBO/mithril/releases/latest)内にある`mithril-client-cli`のバージョンをご確認ください。
 
 ## 2. DBブートストラップ [#sec-4]
 
@@ -64,8 +64,8 @@ tmux new -s mithril
 
 ```bash
 export AGGREGATOR_ENDPOINT=https://aggregator.release-mainnet.api.mithril.network/aggregator
-export GENESIS_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.com/intersectmbo/mithril/main/mithril-infra/configuration/release-mainnet/genesis.vkey)
-export ANCILLARY_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.com/intersectmbo/mithril/main/mithril-infra/configuration/release-mainnet/ancillary.vkey)
+export GENESIS_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/genesis.vkey)
+export ANCILLARY_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/ancillary.vkey)
 export SNAPSHOT_DIGEST=latest
 ```
 
