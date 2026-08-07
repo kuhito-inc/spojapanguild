@@ -22,7 +22,7 @@ title: "概要"
 | :---- | :---- |
 | ネットワークマジック | `164` |
 | ブートストラップリレー | `leios-node.play.dev.cardano.org:3001` |
-| ノードリリース | `prototype-2026w26` |
+| ノードリリース | [prototype-2026w31a](https://github.com/input-output-hk/ouroboros-leios/releases/tag/prototype-2026w31a)（`cardano-node 11.1.0.164`） |
 | Faucet | [faucet.leios.play.dev.cardano.org/basic-faucet](https://faucet.leios.play.dev.cardano.org/basic-faucet) |
 | エクスプローラー | [KleioScan](https://kleioscan.com/#/leios) |
 | エラ（Era） | `Dijkstra` |
@@ -51,7 +51,7 @@ title: "概要"
 
 <Callout type="info" title="本マニュアルの構成">
 
-- **ノード構築（リレー・BP共通）**：**Nix**（`nix profile install` で固定パス導入）した cardano-node を **systemd** でバックグラウンド常駐させます。手順は [ノード構築](/cardano/leios-testnet/node-setup) に共通化されており、リレー・BP の両サーバーで実施します。
+- **ノード構築（リレー・BP共通）**：公式配布の**リリースバイナリ**を `/usr/local/bin` に配置し、cardano-node を **systemd** でバックグラウンド常駐させます。手順は [ノード構築](/cardano/leios-testnet/node-setup) に共通化されており、リレー・BP の両サーバーで実施します。
 - **ブロック生成モードへの切替**：BP は [BP用キーの生成](/cardano/leios-testnet/bp-key-setup) で KES / VRF / 運用証明書を追加して切り替えます。
 - **プール登録**：**BP** 上で実施します（キー生成・証明書作成・トランザクション送信）。
 
@@ -60,8 +60,8 @@ title: "概要"
 
 ```mermaid
 graph LR
-    Relay[リレーノード<br/>Nix + systemd];
-    Relay <--> BP[ブロック生成ノード BP<br/>Nix + systemd];
+    Relay[リレーノード<br/>binary + systemd];
+    Relay <--> BP[ブロック生成ノード BP<br/>binary + systemd];
     BP -.プール登録.-> Internet;
 ```
 
@@ -75,10 +75,11 @@ graph LR
 
 ## 4. 構築の流れ [#sec-4]
 
-1. [ノード構築（リレー・BP共通）](/cardano/leios-testnet/node-setup)
-2. [BP用キーの生成](/cardano/leios-testnet/bp-key-setup)
-3. [ステークプール登録](/cardano/leios-testnet/stake-pool-register)
-4. [リレー/BP接続設定](/cardano/leios-testnet/relay-bp-setup)
+1. [Ubuntu初期設定](/cardano/setup/ubuntu-setup)（リレー・BP共通）
+2. [ノード構築（リレー・BP共通）](/cardano/leios-testnet/node-setup)
+3. [BP用キーの生成](/cardano/leios-testnet/bp-key-setup)
+4. [ステークプール登録](/cardano/leios-testnet/stake-pool-register)
+5. [リレー/BP接続設定](/cardano/leios-testnet/relay-bp-setup)
 
 <Callout type="info" title="サポート">
 
