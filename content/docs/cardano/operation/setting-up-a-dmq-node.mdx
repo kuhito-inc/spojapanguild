@@ -1,11 +1,49 @@
 ---
-title: "DMQノードの設定"
+title: "DMQノードの設定（ベータ版）"
 ---
 
-このマニュアルは、Stake Pool Operator（SPO）が DMQ Node を安全に運用するための設定手順をまとめたものです。  
-ドキュメント作成時点では、DMQ Node はテストネット（preview）のみサポートされており、メインネットでの利用には対応していません。  
+DMQ（Decentralized Message Queue）は、Mithril Signerが署名を分散型の方法で交換するためのプロトコルです。
+Mithrilネットワークの堅牢性とスケーラビリティを向上させ、DMQが十分に普及することで複数のAggregatorを同時に稼働できるようになり、Mithrilプロトコル全体の可用性向上につながります。
 
-以下は、[Mithril Signerノードの設定](/cardano/operation/mithril-signer-node-setup-and-updates)をしている方のみ対象です。
+
+<Callout type="info" title="情報">
+
+以下の構成により、DMQ NodeをMainnet環境にデプロイできます。  
+最新安定版の`DMQ Node 0.7.0.0`と`Mithril Signer 1.1.6`の組み合わせです。
+
+</Callout>
+
+<Callout type="tip" title="補足">
+
+以下の手順は、[Mithril Signerノードの設定](/cardano/operation/mithril-signer-node-setup-and-updates)を行っている方のみ対象です。
+
+
+<Tabs items={["BP"]}>
+<Tab value="BP">
+
+Mithril Signerのバージョンを確認します。
+```bash
+mithril-signer -V
+```
+
+`1.1.6`であることを確認し、以降の手順へ進んでください。
+```yaml title="期待される表示例：" noCopy
+mithril-signer 1.1.6+23e124d
+```
+
+</Tab>
+</Tabs>
+
+</Callout>
+
+
+<Callout type="info" title="インストールバージョン">
+
+| Cardano Node | Mithril Signer | Squid | DMQ Node |
+| :----------- | :------------- | :---- | :------- |
+| 11.0.1       | 1.1.6          | 7.6   | 0.7.0.0  |
+
+</Callout>
 
 
 ## DMQ Nodeのインストール [#sec-1]
@@ -30,15 +68,6 @@ wget -O dmq-node.tar.gz https://github.com/IntersectMBO/dmq-node/releases/downlo
 ```bash
 tar -xzf dmq-node.tar.gz --strip-components=2 result/bin
 rm dmq-node.tar.gz
-```
-
-バージョン確認
-```bash
-./dmq-node --version
-```
-
-```yaml title="期待される表示例：" noCopy
-dmq-node version: 0.7.0.0
 ```
 
 バイナリファイルをシステムフォルダへコピー
@@ -77,7 +106,7 @@ echo $DMQ_NODE_SOCKET_PATH
 ```
 
 ```yaml title="期待される表示例：" noCopy
-/home/cardano/mithril/dmq/socket
+/home/<USER>/mithril/dmq/socket
 ```
 
 
@@ -89,8 +118,8 @@ echo $DMQ_NODE_SOCKET_PATH
 ```bash
 cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json << EOF
 {
-  "NetworkMagic": 2147483650,
-  "CardanoNetworkMagic": ${NODE_NETWORK_ID},
+  "NetworkMagic": 2912307721,
+  "CardanoNetworkMagic": 764824073,
   "CardanoNodeSocket": "${CARDANO_NODE_SOCKET_PATH}",
   "ShelleyGenesisFile": "$NODE_HOME/${NODE_CONFIG}-shelley-genesis.json",
   "PeerSharing": true,
@@ -101,7 +130,7 @@ cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json << EOF
         "Stdout MachineFormat",
         "PrometheusSimple suffix 0.0.0.0 12000"
       ],
-      "severity": "Debug"
+      "severity": "Info"
     }
   }
 }
@@ -114,8 +143,8 @@ EOF
 ```bash
 cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json << EOF
 {
-  "NetworkMagic": 2147483650,
-  "CardanoNetworkMagic": ${NODE_NETWORK_ID},
+  "NetworkMagic": 2912307721,
+  "CardanoNetworkMagic": 764824073,
   "CardanoNodeSocket": "${CARDANO_NODE_SOCKET_PATH}",
   "ShelleyGenesisFile": "$NODE_HOME/${NODE_CONFIG}-shelley-genesis.json",
   "PeerSharing": false,
@@ -126,7 +155,7 @@ cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json << EOF
         "Stdout MachineFormat",
         "PrometheusSimple suffix 0.0.0.0 12000"
       ],
-      "severity": "Debug"
+      "severity": "Info"
     }
   }
 }
@@ -136,6 +165,10 @@ EOF
 </Tab>
 </Tabs>
 
+設定ファイルが正しいJSON形式で作成されていることを確認します。
+```bash
+jq . $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json
+```
 
 
 ## トポロジーファイル作成 [#sec-3]
@@ -145,7 +178,7 @@ EOF
 
 <Callout type="warn" title="クラウドのセキュリティグループでファイアウォールを開けている場合">
 
-`ufw` は使わず、コンソールで **BPサーバーから DMQ 通信に使用するIP のみ Relayサーバーの DMQ ポート（例: 6161）へのインバウンド** を許可してください。
+`ufw`は使わず、コンソールでBPサーバーからDMQ通信に使用するIPのみ、RelayサーバーのDMQポート（例: 6161）へのインバウンド通信を許可してください。
 
 </Callout>
 
@@ -158,11 +191,7 @@ sudo ufw allow from <BPのIP> to any port 6161 proto tcp
 sudo ufw reload
 ```
 
-```bash
-dmq_bootstrap_peer_ip=34.76.22.193
-dmq_bootstrap_peer_port=6161
-```
-
+DMQ Bootstrap PeerのIPとポート番号をすでに入力しているので、そのまま実行してください。
 ```bash
 cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-topology.json << EOF
 {
@@ -171,8 +200,8 @@ cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-topology.json << EOF
     {
       "accessPoints": [
         {
-          "address": "${dmq_bootstrap_peer_ip}",
-          "port": ${dmq_bootstrap_peer_port}
+          "address": "35.233.75.24",
+          "port": 6161
         }
       ],
       "advertise": true,
@@ -191,23 +220,32 @@ EOF
 
 <Callout type="warn" title="クラウドのセキュリティグループでファイアウォールを開けている場合">
 
-`ufw` は使わず、コンソールで **Relayサーバーから DMQ 通信に使用するIP のみ BPサーバーの DMQ ポート（例: 6161）へのインバウンド** を許可してください。
+`ufw`は使わず、コンソールでRelayサーバーからDMQ通信に使用するIPのみ、BPサーバーのDMQポート（例: 6161）へのインバウンド通信を許可してください。
 
 </Callout>
 
 
 ```bash
-sudo ufw allow from <リレーのIP> to any port 6161 proto tcp
+relay1_ipv4=
 ```
-
+```bash
+relay2_ipv4=
+```
+```bash
+sudo ufw allow from $relay1_ipv4 to any port 6161 proto tcp
+```
+```bash
+sudo ufw allow from $relay2_ipv4 to any port 6161 proto tcp
+```
 ```bash
 sudo ufw reload
 ```
 
-自身のRelayサーバーで稼働する`DMQ Node`の`IPアドレス`を調べ、BPタブの変数`relay_dmq_ip`に代入してください。
+自身の2台のRelayサーバーで稼働する`DMQ Node`の`IPアドレス`または`DNS名`を調べ、それぞれ`relay1_dmq_ip_or_dns`、`relay2_dmq_ip_or_dns`に代入してください。
+
 ```bash
-relay_dmq_ip=***.***.***.***
-relay_dmq_port=6161
+relay1_dmq_ip_or_dns=
+relay2_dmq_ip_or_dns=
 ```
 
 ```bash
@@ -218,13 +256,17 @@ cat > $HOME/mithril/dmq/${NODE_CONFIG}-dmq-topology.json << EOF
     {
       "accessPoints": [
         {
-          "address": "${relay_dmq_ip}",
-          "port": ${relay_dmq_port}
+          "address": "${relay1_dmq_ip_or_dns}",
+          "port": 6161
+        },
+        {
+          "address": "${relay2_dmq_ip_or_dns}",
+          "port": 6161
         }
       ],
       "advertise": false,
       "trustable": false,
-      "hotValency": 1
+      "hotValency": 2
     }
   ],
   "peerSnapshotFile": null,
@@ -235,6 +277,11 @@ EOF
 
 </Tab>
 </Tabs>
+
+設定ファイルが正しいJSON形式で作成されていることを確認します。
+```bash
+jq . $HOME/mithril/dmq/${NODE_CONFIG}-dmq-topology.json
+```
 
 
 ## systemd サービス作成 [#sec-4]
@@ -269,6 +316,7 @@ EOF
 
 </Tab>
 <Tab value="BP">
+
 ```bash
 cat > $HOME/mithril/dmq/dmq-node.service << EOF
 [Unit]
@@ -330,6 +378,13 @@ sudo systemctl status dmq-node --no-pager
 journalctl -u dmq-node -f
 ```
 
+DMQ Peerとの接続状態を確認します。
+
+```bash
+sudo journalctl -u dmq-node -n 200 -o cat | grep 'HandshakeSuccess'
+```
+> `HandshakeSuccess`に関するログが出力されていることを確認します。
+
 エイリアス設定
 ```bash
 echo alias dmqnode='"journalctl -u dmq-node -f"' >> $HOME/.bashrc
@@ -338,17 +393,12 @@ source $HOME/.bashrc
 
 ## DMQ Node の動作確認 [#sec-5]
 
-DMQ Node のログを確認します。
-```bash
-sudo journalctl -u dmq-node -f
-```
-
 ソケットファイルの確認
 ```bash
 ls -l ${DMQ_NODE_SOCKET_PATH}
 ```
 ```yaml title="期待される表示例：" noCopy
-srwxr-xr-x 1 cardano cardano 0 xxx xx xx:xx /home/cardano/mithril/dmq/socket
+srwxr-xr-x 1 <USER> <USER> 0 xxx xx xx:xx /home/<USER>/mithril/dmq/socket
 ```
 
 サービスポート確認
@@ -357,7 +407,7 @@ srwxr-xr-x 1 cardano cardano 0 xxx xx xx:xx /home/cardano/mithril/dmq/socket
 sudo ss -lntp | grep 6161
 ```
 ```yaml title="期待される表示例：" noCopy
-LISTEN 0      8       xxx.xxx.xxx.xxx:6161       0.0.0.0:*    users:(("dmq-node",pid=***,fd=***))   
+LISTEN 0      8       xxx.xxx.xxx.xxx:6161       0.0.0.0:*    users:(("dmq-node",pid=***,fd=***))
 ```
 
 ## Mithril Signer との連携 [#sec-6]
@@ -374,7 +424,7 @@ grep DMQ_NODE_SOCKET_PATH $HOME/mithril/mithril-signer.env
 ```
 
 ```yaml title="期待される表示例：" noCopy
-DMQ_NODE_SOCKET_PATH=/home/cardano/mithril/dmq/socket
+DMQ_NODE_SOCKET_PATH=/home/<USER>/mithril/dmq/socket
 ```
 
 Mithril Signer を再起動

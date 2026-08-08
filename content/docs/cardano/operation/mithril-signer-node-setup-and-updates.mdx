@@ -2,13 +2,13 @@
 title: "Mithril Signerノードの設定、更新"
 ---
 
-このマニュアルは、Stake Pool Operator（SPO）がCardano メインネット上で `Mithril Signer` を安全に運用するための設定および更新手順をまとめたものです。  
+このマニュアルは、Stake Pool Operator（SPO）がCardano メインネット上で `Mithril Signer` を安全に運用するための設定および更新手順をまとめたものです。
 
 <Callout type="info" title="インストールバージョン">
 
-| Node | Mithril-signer | squid |
-| :---------- | :---------- | :---------- |
-| 11.0.1 | 1.1.6 | 7.6 |
+| Cardano Node | Mithril Signer | Squid |
+| :----------- | :------------- | :---- |
+| 11.0.1       | 1.1.6          | 7.6   |
 
 </Callout>
 
@@ -276,10 +276,10 @@ forwarded_for delete
 
 # Turn off via header
 via off
- 
+
 # Deny request for original source of a request
 follow_x_forwarded_for deny all
- 
+
 # Anonymize request headers
 request_header_access Authorization allow all
 request_header_access Proxy-Authorization allow all
@@ -327,7 +327,7 @@ sudo systemctl status squid --no-pager
 ```yaml title="期待される表示例：" noCopy
 ● squid.service - Squid service
 ~~
-     Active: active (running) 
+     Active: active (running)
 ```
 
 </Tab>
@@ -345,7 +345,7 @@ sudo systemctl start mithril-signer
 journalctl -u mithril-signer -f --output=cat
 ```
 
-以上で、署名者登録が完了しました。  
+以上で、署名者登録が完了しました。
 スナップショットに署名するのは2エポック後からとなります。
 
 </Tab>
@@ -491,17 +491,17 @@ BPのcnodeディレクトリに取得した`Mithril-Signer-on-SJG-Grafana-dashbo
 ```mermaid
 graph LR
     A[BP] -->|Mithril-Signer-on-SJG-Grafana-dashboard.json| B[ローカルのホストマシン];
-``` 
+```
 
 </Callout>
 
 
-Grafanaの左メニューから「`Dashboards`」を開き、「`New`」→「`Import`」→「`Upload dashboard JSON file`」を選択し、ダウンロードした `Mithril-Signer-on-SJG-Grafana-dashboard.json` を指定します。  
+Grafanaの左メニューから「`Dashboards`」を開き、「`New`」→「`Import`」→「`Upload dashboard JSON file`」を選択し、ダウンロードした `Mithril-Signer-on-SJG-Grafana-dashboard.json` を指定します。
 
-データソースの割り当て画面では、  
+データソースの割り当て画面では、
 
-- `Prometheus` には `Prometheus`  
-- `yesoreyeram-infinity-datasource` には `yesoreyeram-infinity-datasource`  
+- `Prometheus` には `Prometheus`
+- `yesoreyeram-infinity-datasource` には `yesoreyeram-infinity-datasource`
 
 をそれぞれ選択してください。
 
@@ -553,7 +553,7 @@ mithril-signer 1.1.6+23e124d
 sudo systemctl start mithril-signer
 ```
 
-起動から約3分後に`Signer`の登録を確認 
+起動から約3分後に`Signer`の登録を確認
 ```bash
 curl -s localhost:61234/metrics | grep ^mithril_signer_signer_registration_success
 ```
