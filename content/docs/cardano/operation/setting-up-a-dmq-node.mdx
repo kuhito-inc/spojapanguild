@@ -412,10 +412,18 @@ LISTEN 0      8       xxx.xxx.xxx.xxx:6161       0.0.0.0:*    users:(("dmq-node"
 
 ## Mithril Signer との連携 [#sec-6]
 
-Mithril Signer が DMQ Node を利用するよう設定します。
+Mithril Signer が DMQ Node を利用するよう設定します。  
+> この章は、BPで「DMQ Nodeのインストール」から順番に設定を完了してから実行してください。
 
 <Tabs items={["BP"]}>
 <Tab value="BP">
+
+設定内容の確認
+```bash
+echo $DMQ_NODE_SOCKET_PATH
+```
+> /home/`<USER>`/cnode/mithril/dmq/socket
+
 ```bash
 grep -q '^DMQ_NODE_SOCKET_PATH=' $HOME/mithril/mithril-signer.env || echo "DMQ_NODE_SOCKET_PATH=${DMQ_NODE_SOCKET_PATH}" | sudo tee -a $HOME/mithril/mithril-signer.env > /dev/null
 ```
