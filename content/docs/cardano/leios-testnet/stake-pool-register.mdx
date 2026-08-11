@@ -12,7 +12,8 @@ title: "ステークプール登録"
 
 </Callout>
 
-## 1. メタデータの作成
+## 1. メタデータの作成 [#sec-1]
+
 <Callout type="info" title="メタデータ事前作成">
 
 - [こちらのページ](/cardano/setup/stake-pool-register)を参考にメタデータを作成しホスト先へアップロードしてください。
@@ -21,23 +22,23 @@ title: "ステークプール登録"
 </Callout>
 
 メタデータダウンロード
-```
+```bash
 cd $NODE_HOME
 wget -O musashiMetaData.json <メタデータURL>
 ```
 
 メタデータチェック
-```
+```bash
 jq . $NODE_HOME/musashiMetaData.json
 ```
 
 メタデータファイルのハッシュ値算出
-```
+```bash
 cd $NODE_HOME
-cardano-cli latest stake-pool metadata-hash --pool-metadata-file musashiMetaData.json > musashiMetaDataHash.txt
+cardano-cli dijkstra stake-pool metadata-hash --pool-metadata-file musashiMetaData.json > musashiMetaDataHash.txt
 ```
 
-## 1. ステーク登録証明書の作成 [#sec-1]
+## 2. ステーク登録証明書の作成 [#sec-2]
 
 ```bash
 cardano-cli dijkstra stake-address registration-certificate \
@@ -47,7 +48,14 @@ cardano-cli dijkstra stake-address registration-certificate \
 ```
 
 
-## 2. プール登録証明書の作成 [#sec-2]
+## 3. プール登録証明書の作成 [#sec-3]
+
+Leios ではプール登録証明書に **BLS署名キー** が必須です。  
+[BP用キーの生成](/cardano/leios-testnet/bp-key-setup#sec-4) で作成した `bls.skey` が `$NODE_HOME` にあることを確認してください。
+
+```bash
+ls -l $NODE_HOME/bls.skey
+```
 
 <Callout type="error" title="実行前に変更する値">
 
@@ -64,6 +72,7 @@ cd $NODE_HOME
 cardano-cli dijkstra stake-pool registration-certificate \
   --cold-verification-key-file $HOME/cold-keys/node.vkey \
   --vrf-verification-key-file vrf.vkey \
+  --bls-signing-key-file bls.skey \
   --pool-pledge 1000000000 \
   --pool-cost 170000000 \
   --pool-margin 0.05 \
@@ -84,7 +93,7 @@ cardano-cli dijkstra stake-pool registration-certificate \
 </Callout>
 
 
-## 3. 登録トランザクションの送信 [#sec-3]
+## 4. 登録トランザクションの送信 [#sec-4]
 
 ステーク登録証明書とプール登録証明書を 1 つのトランザクションで送信します。  
 `transaction build` は手数料を自動計算します。
@@ -124,7 +133,7 @@ cardano-cli dijkstra transaction submit \
 > `Transaction successfully submitted` と表示されれば成功です。
 
 
-## 4. 登録確認 [#sec-4]
+## 5. 登録確認 [#sec-5]
 
 bech32 形式のプールIDを作成します（エクスプローラーでの検索に使用）。
 
@@ -134,7 +143,7 @@ echo $(cat pool.id-bech32)
 ```
 
 プール登録確認
-```
+```bash
 cardano-cli dijkstra query pool-state --stake-pool-id $(cat $NODE_HOME/pool.id-bech32)
 ```
 > `"poolParams":`に値があればプール登録完了です。
@@ -145,7 +154,7 @@ faucetからプールへ委任する
 
 <Callout type="info" title="tADA委任の要求">
 
-```
+```bash
 echo $(cat $NODE_HOME/pool.id-bech32)
 ```
 
@@ -157,7 +166,7 @@ echo $(cat $NODE_HOME/pool.id-bech32)
 
 
 
-## 5. ステークの委任 [#sec-5]
+## 6. ステークの委任 [#sec-6]
 
 ご自身のステークをプールへ委任します（誓約を満たすために必要です）。
 

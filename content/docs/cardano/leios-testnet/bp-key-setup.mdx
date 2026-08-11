@@ -34,6 +34,7 @@ cardano-cli query tip | jq -r '.syncProgress'
 | `node.vkey` / `node.skey` / `node.counter` | コールドキー（プールの根幹） |
 | `kes.vkey` / `kes.skey` | KESキー |
 | `vrf.vkey` / `vrf.skey` | VRFキー |
+| `bls.vkey` / `bls.skey` | BLSキー（Leiosのブロック生成・投票に使用） |
 | `node.cert` | 運用証明書 |
 
 </Callout>
@@ -66,7 +67,7 @@ cardano-cli dijkstra node key-gen \
 ```
 
 
-## 4. KES・VRFキーの作成 [#sec-4]
+## 3. KES・VRF・BLSキーの作成 [#sec-4]
 
 ```bash
 cd $NODE_HOME
@@ -76,10 +77,19 @@ cardano-cli dijkstra node key-gen-KES \
 cardano-cli dijkstra node key-gen-VRF \
   --verification-key-file vrf.vkey \
   --signing-key-file vrf.skey
+cardano-cli dijkstra node key-gen-BLS \
+  --verification-key-file bls.vkey \
+  --signing-key-file bls.skey
 ```
 
+<Callout type="info" title="BLSキーについて">
 
-## 5. 支払いアドレスの作成 [#sec-5]
+`bls.skey` は Leios のブロック生成・投票に用いられる署名キーで、[ステークプール登録](/cardano/leios-testnet/stake-pool-register) のプール登録証明書作成時に必須です。
+
+</Callout>
+
+
+## 4. 支払いアドレスの作成 [#sec-5]
 
 ```bash
 cardano-cli dijkstra address build \
@@ -90,11 +100,11 @@ echo $(cat payment.addr)
 ```
 
 
-## 6. Faucetからの入金 [#sec-6]
+## 5. Faucetからの入金 [#sec-6]
 
 <Callout type="info" title="tADAの請求">
 
-```
+```bash
 echo $(cat $NODE_HOME/payment.addr)
 ```
 
@@ -119,7 +129,7 @@ cardano-cli dijkstra query utxo --address "$(cat payment.addr)" --output-text
 > UTxO が表示されれば入金完了です。
 
 
-## 7. 運用証明書の作成 [#sec-7]
+## 6. 運用証明書の作成 [#sec-7]
 
 ジェネシスから `slotsPerKESPeriod` を取得し、現在のスロットから KES Period を算出します。
 
