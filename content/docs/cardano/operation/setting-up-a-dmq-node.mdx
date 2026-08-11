@@ -422,7 +422,7 @@ Mithril Signer が DMQ Node を利用するよう設定します。
 ```bash
 echo $DMQ_NODE_SOCKET_PATH
 ```
-> /home/`<USER>`/cnode/mithril/dmq/socket
+> /home/`<USER>`/mithril/dmq/socket
 
 ```bash
 grep -q '^DMQ_NODE_SOCKET_PATH=' $HOME/mithril/mithril-signer.env || echo "DMQ_NODE_SOCKET_PATH=${DMQ_NODE_SOCKET_PATH}" | sudo tee -a $HOME/mithril/mithril-signer.env > /dev/null
