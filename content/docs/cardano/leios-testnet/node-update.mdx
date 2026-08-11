@@ -6,7 +6,7 @@ title: "ノードアップデート"
 <Callout type="warn" title="Musashi-Testnetについて">
 
 `Musashi-Testnet` は仕様・バージョンが更新されることがあります。  
-新しいビルドが公開されたら、以下の手順で固定インストール済みの `cardano-node` / `cardano-cli` を更新します。  
+新しいリリースが公開されたら、以下の手順で `/usr/local/bin` の `cardano-node` / `cardano-cli` を差し替えます。  
 またチェーンがリスピン(リセット)した場合はプールを再登録する必要があります。
 
 </Callout>
@@ -19,37 +19,47 @@ title: "ノードアップデート"
 sudo systemctl stop cardano-node
 ```
 
-最新ビルドの store パスを取得します。  
-`--refresh` を付けて flake のキャッシュを無視し、最新のリビジョンを取得します。
+最新のリリースタグを GitHub API から取得します。
 ```bash
-cd $HOME
-NODE_STORE=$(nix develop --refresh github:input-output-hk/ouroboros-leios#dev-testnet \
-  --command bash -c 'dirname "$(dirname "$(readlink -f "$(command -v cardano-node)")")"')
-```
-```bash
-CLI_STORE=$(nix develop --refresh github:input-output-hk/ouroboros-leios#dev-testnet \
-  --command bash -c 'dirname "$(dirname "$(readlink -f "$(command -v cardano-cli)")")"')
-```
-```bash
-echo "cardano-node: $NODE_STORE"
-echo "cardano-cli : $CLI_STORE"
+RELEASE=$(curl -s "https://api.github.com/repos/input-output-hk/ouroboros-leios/releases?per_page=20" \
+  | jq -r '[.[] | select(.draft == false)
+            | select([.assets[].name] | index("cardano-node-leios-x86_64-linux.tar.gz"))]
+           | sort_by(.published_at) | last | .tag_name')
+echo "RELEASE=${RELEASE}"
 ```
 
-現在プロファイルに登録されているエントリを確認します。
+<Callout type="warn" title="リリースタグについて">
+
+Leios のリリースはすべて **Pre-release** として公開されているため、`releases/latest` API では取得できません。  
+`RELEASE=` が空で表示された場合や、特定のバージョンを指定したい場合は、[Releases](https://github.com/input-output-hk/ouroboros-leios/releases) ページで確認のうえ `RELEASE=prototype-2026wXX` の形式で直接指定してください。
+
+</Callout>
+
+
+バイナリとチェックサムをダウンロードします。
 ```bash
-nix profile list
+mkdir -p $HOME/git
+cd $HOME/git
+wget -O cardano-node-leios-x86_64-linux.tar.gz https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.tar.gz
+wget -O cardano-node-leios-x86_64-linux.sha256 https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.sha256
 ```
 
-古い `cardano-node` / `cardano-cli` のエントリを削除します。  
-（名前で一致しない場合は、`nix profile list` に表示される番号（index）で指定します）
+チェックサムを検証します。
 ```bash
-nix profile remove cardano-cli-exe-cardano-cli cardano-node-exe-cardano-node
+sha256sum -c cardano-node-leios-x86_64-linux.sha256
+```
+```yaml title="期待される表示例：" noCopy
+cardano-node-leios-x86_64-linux.tar.gz: OK
 ```
 
-取得した最新の store パスを固定インストールします。
+アーカイブを展開し、`/usr/local/bin` のバイナリを差し替えます。
 ```bash
-nix profile install "$NODE_STORE"
-[ "$CLI_STORE" != "$NODE_STORE" ] && nix profile install "$CLI_STORE"
+tar -xzf cardano-node-leios-x86_64-linux.tar.gz
+```
+```bash
+sudo cp bin/cardano-node /usr/local/bin/cardano-node
+sudo cp bin/cardano-cli /usr/local/bin/cardano-cli
+sudo chmod +x /usr/local/bin/cardano-node /usr/local/bin/cardano-cli
 ```
 
 バージョンが更新されたことを確認します。
@@ -58,28 +68,11 @@ cardano-node --version
 cardano-cli --version
 ```
 > cardano-node 11.1.0.164 - linux-x86_64 - ghc-9.6  
-> git rev 3cc6340a896eadee5cdbf2b256751d23dc267ba3  
+> git rev 6971bb527288d0f362147fbe318c0e9c84312ab3  
 
 > cardano-cli 11.1.0.0 - linux-x86_64 - ghc-9.6  
-> git rev 3cc6340a896eadee5cdbf2b256751d23dc267ba3  
+> git rev 6971bb527288d0f362147fbe318c0e9c84312ab3  
 
-
-旧DBを削除する
-```bash
-rm -rf $NODE_HOME/db
-rm $NODE_HOME/leios.db*
-```
-
-新しい設定ファイルをダウンロードする
-```
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/byron-genesis.json -O byron-genesis.json
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/shelley-genesis.json -O shelley-genesis.json
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/alonzo-genesis.json -O alonzo-genesis.json
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/conway-genesis.json -O conway-genesis.json
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/dijkstra-genesis.json -O dijkstra-genesis.json
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/peer-snapshot.json -O peer-snapshot.json
-wget --no-use-server-timestamps -q https://book.play.dev.cardano.org/environments-pre/leios/config.json -O config.json
-```
 
 ノードを起動し、同期状況を確認します。
 ```bash
@@ -99,7 +92,8 @@ glive
 
 リスピン前に作成した鍵ファイル類が`$NODE_HOME`に揃っていることを前提とします
 - `kes.skey` / `kes.vkey`
-- `vrf.sky` / `vrf.vkey`
+- `vrf.skey` / `vrf.vkey`
+- `bls.skey` / `bls.vkey`
 - `payment.skey` / `payment.vkey`
 - `stake.skey` / `stake.vkey`
 - `node.vkey` / `node.skey` / `node.counter`
@@ -113,29 +107,11 @@ glive
 
 2-2. [運用証明書の作成](/cardano/leios-testnet/bp-key-setup#sec-7)   
 
-<Callout type="warn" title="7/7時点における既知の問題">
-`Prototype 2026w27`の`cardano-cli dijkstra transaction build`において不具合が発生しているため、暫定対応として`Prototype 2026w26`のCLIを使用してトランザクション作成コマンドを実行してください
+2-3. [登録トランザクションの送信](/cardano/leios-testnet/stake-pool-register#sec-4)   
 
-```bash
-cd $HOME
-wget https://github.com/input-output-hk/ouroboros-leios/releases/download/prototype-2026w26/cardano-node-leios-x86_64-linux.tar.gz
-tar -xzf cardano-node-leios-x86_64-linux.tar.gz
-```
+2-4. [登録確認](/cardano/leios-testnet/stake-pool-register#sec-5)   
 
-```bash
-$HOME/bin/cardano-cli version
-```
-> cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
-> git rev db5373ea6a6f79b398b468d2e04ce43eafcf90d0  
-
-以下のページで実行する`transaction build`は`$HOME/bin/cardano-cli dijkstra transaction build`パスで実行してください
-</Callout>
-
-2-3. [登録トランザクションの送信](/cardano/leios-testnet/stake-pool-register#sec-3)   
-
-2-4. [登録確認](/cardano/leios-testnet/stake-pool-register#sec-4)   
-
-2-5. [ステークの委任](/cardano/leios-testnet/stake-pool-register#sec-5)  
+2-5. [ステークの委任](/cardano/leios-testnet/stake-pool-register#sec-6)  
 
 
 ---

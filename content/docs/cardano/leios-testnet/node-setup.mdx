@@ -1,98 +1,99 @@
 ---
-title: "ノード構築(Nix)"
+title: "ノード構築"
 ---
 
 リレー・BP とも、ノードの基本構築手順は共通です。  
 **リレーサーバー・BPサーバーの両方**で本ページの手順を実施してください。  
 まずは両ノードともリレーとして起動してチェーンを同期させ、BP は後の手順（[BP用キーの生成](/cardano/leios-testnet/bp-key-setup)）でブロック生成モードへ切り替えます。
 
-<Callout type="info" title="Nixを使う理由">
+<Callout type="warn" title="事前準備">
 
-- Musashi-Testnet は仕様やバージョンが都度変更される可能性があるため、依存関係を含む `cardano-node` / `cardano-cli` をIOGキャッシュから一括導入でき、作業工数を軽減できます。
-- `nix profile install` で **固定パスにインストール**するため、再現性を保ちつつ systemd で安定稼働させられます。
-- 当構成はメインネット稼働時に大幅に変更される可能性があります。
+ノード構築の前に、**リレーサーバー・BPサーバーの両方**で [Ubuntu初期設定](/cardano/setup/ubuntu-setup) を実施してください。  
+作業用ユーザーの作成、SSHの鍵認証、ファイアウォール（UFW）、時刻同期などを設定します。  
+UFW を有効化した場合は、SSHポートに加えてノード待受ポート `3010` の許可が必要です（リレーは外部から、BP はリレーのIPからのみ許可してください）。
+
+</Callout>
+
+<Callout type="info" title="本ページの構成">
+
+- 公式が配布する**リリースバイナリ**を `/usr/local/bin` に配置し、**systemd** で常駐させる、SJG従来と同じ構成です。
+- Leios プロトタイプのバイナリは**静的リンク**されているため、`libsodium` / `secp256k1` / `blst` の導入やソースからのビルドは不要です。
+- Musashi-Testnet は仕様やバージョンが都度変更される可能性があります。新しいリリースが公開された場合は [ノードアップデート](/cardano/leios-testnet/node-update) の手順で差し替えてください。
 
 </Callout>
 
 
-## 1. Nixのインストール [#sec-1]
+## 1. 依存パッケージのインストール [#sec-1]
 
-依存パッケージと Nix をインストールします。
+パッケージを更新し、`Ubuntu` を最新の状態に保ちます。
 
 ```bash
 sudo apt update && sudo apt upgrade -y
 ```
+
+必要なパッケージをインストールします。
 ```bash
 sudo apt install curl jq git wget -y
 ```
 
-```bash
-curl --proto '=https' --tlsv1.2 -L https://nixos.org/nix/install | sh -s -- --daemon
-```
 
-セッションの再起動
-```
-exec $SHELL
-```
+## 2. cardano-node / cardano-cliのインストール [#sec-2]
 
-インストールを確認します。
+公式リポジトリの [Releases](https://github.com/input-output-hk/ouroboros-leios/releases) で配布されているバイナリを導入します。
+
+最新のリリースタグを GitHub API から取得します。
+
 ```bash
-nix --version
+RELEASE=$(curl -s "https://api.github.com/repos/input-output-hk/ouroboros-leios/releases?per_page=20" \
+  | jq -r '[.[] | select(.draft == false)
+            | select([.assets[].name] | index("cardano-node-leios-x86_64-linux.tar.gz"))]
+           | sort_by(.published_at) | last | .tag_name')
+echo "RELEASE=${RELEASE}"
 ```
 ```yaml title="期待される表示例：" noCopy
-nix (Nix) 2.x.x
+RELEASE=prototype-2026w31a
 ```
 
+<Callout type="warn" title="リリースタグについて">
 
-## 2. flakesの有効化 [#sec-2]
-
-```bash
-echo "experimental-features = nix-command flakes" | sudo tee -a /etc/nix/nix.conf
-echo "accept-flake-config = true" | sudo tee -a /etc/nix/nix.conf
-echo "trusted-users = $(whoami)" | sudo tee -a /etc/nix/nix.conf
-sudo systemctl restart nix-daemon
-```
-
-## 3. cardano-node / cardano-cliの固定インストール [#sec-3]
-
-`dev-testnet` シェルが提供する `cardano-node` / `cardano-cli` の **Nix store 上の実体パス**を取得します。
-
-```bash
-NODE_STORE=$(nix develop github:input-output-hk/ouroboros-leios#dev-testnet \
-  --command bash -c 'dirname "$(dirname "$(readlink -f "$(command -v cardano-node)")")"')
-```
-<Callout type="info" title="初回実行時">
-nixキャッシュダウンロードのため初回実行時は数分かかります
-</Callout>
-
-```bash
-CLI_STORE=$(nix develop github:input-output-hk/ouroboros-leios#dev-testnet \
-  --command bash -c 'dirname "$(dirname "$(readlink -f "$(command -v cardano-cli)")")"')
-```
-```bash
-echo "cardano-node: $NODE_STORE"
-echo "cardano-cli : $CLI_STORE"
-```
-```yaml title="期待される表示例：" noCopy
-cardano-node: /nix/store/xxxx...-cardano-node-...
-cardano-cli : /nix/store/yyyy...-cardano-cli-...
-```
-
-取得した store パスを `nix profile install` でプロファイルに固定インストールします。
-
-```bash
-nix profile install "$NODE_STORE"
-[ "$CLI_STORE" != "$NODE_STORE" ] && nix profile install "$CLI_STORE"
-```
-
-<Callout type="info" title="このコマンドの効果">
-
-- `~/.nix-profile/bin/cardano-node` / `~/.nix-profile/bin/cardano-cli` という**安定したパス**が作成されます。
-- プロファイルには **gc-root** が張られるため、`nix-collect-garbage` でバイナリが削除されません。
-- systemd からはこの固定パスを参照します（`nix develop` を実行時に評価しません）。
+Leios のリリースはすべて **Pre-release** として公開されているため、`releases/latest` API では取得できません。  
+上記コマンドは、リリース一覧から `cardano-node-leios-x86_64-linux.tar.gz` を持つ最も新しいものを選択します。  
+`RELEASE=` が空で表示された場合は、[Releases](https://github.com/input-output-hk/ouroboros-leios/releases) ページで最新のタグを確認し、`RELEASE=prototype-2026wXX` の形式で直接指定してください。  
+`aarch64` 環境の場合は、上記コマンドと以降のファイル名を `cardano-node-leios-aarch64-linux` / `cardano-node-leios-aarch64-darwin` に読み替えてください。
 
 </Callout>
 
+
+作業用ディレクトリを作成し、バイナリとチェックサムをダウンロードします。
+
+```bash
+mkdir -p $HOME/git
+cd $HOME/git
+wget https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.tar.gz
+wget https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.sha256
+```
+
+チェックサムを検証します。
+```bash
+sha256sum -c cardano-node-leios-x86_64-linux.sha256
+```
+```yaml title="期待される表示例：" noCopy
+cardano-node-leios-x86_64-linux.tar.gz: OK
+```
+> `OK` 以外が表示された場合はダウンロードをやり直してください。
+
+アーカイブを展開します。
+```bash
+tar -xzf cardano-node-leios-x86_64-linux.tar.gz
+```
+> `bin/cardano-node` と `bin/cardano-cli` が展開されます。
+
+`/usr/local/bin` に配置します。
+```bash
+sudo cp bin/cardano-node /usr/local/bin/cardano-node
+sudo cp bin/cardano-cli /usr/local/bin/cardano-cli
+sudo chmod +x /usr/local/bin/cardano-node /usr/local/bin/cardano-cli
+```
 
 バージョンを確認します。
 
@@ -101,16 +102,16 @@ cardano-node --version
 cardano-cli --version
 ```
 ```yaml title="期待される表示例：" noCopy
-cardano-node 11.0.1.164 - linux-x86_64 - ghc-9.6
-git rev db5373ea6a6f79b398b468d2e04ce43eafcf90d0
+cardano-node 11.1.0.164 - linux-x86_64 - ghc-9.6
+git rev 6971bb527288d0f362147fbe318c0e9c84312ab3
 
-cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6
-git rev db5373ea6a6f79b398b468d2e04ce43eafcf90d0
+cardano-cli 11.1.0.0 - linux-x86_64 - ghc-9.6
+git rev 6971bb527288d0f362147fbe318c0e9c84312ab3
 ```
 > 末尾に `164` が含まれていれば Leios プロトタイプ用ビルドです。
 
 
-## 4. 作業ディレクトリと環境変数の設定 [#sec-4]
+## 3. 作業ディレクトリと環境変数の設定 [#sec-3]
 
 ```bash
 echo 'export NODE_HOME=$HOME/cnode' >> $HOME/.bashrc
@@ -121,18 +122,25 @@ mkdir -p "$NODE_HOME"
 ```
 
 
-## 5. 設定ファイルの取得 [#sec-5]
+## 4. 設定ファイルの取得 [#sec-4]
 
 設定ファイル（`config.json` / `topology.json` / 各ジェネシスファイル）を取得します。
 
 ```bash
-cd "$NODE_HOME"
-git clone --depth 1 https://github.com/input-output-hk/ouroboros-leios
-cp ouroboros-leios/testnet/config/* "$NODE_HOME"/
+cd $NODE_HOME
+curl -LO https://raw.githubusercontent.com/input-output-hk/ouroboros-leios/main/testnet/pin-config.sh
+bash pin-config.sh
+```
+
+取得したファイルは `config` ディレクトリに配置されるため、`$NODE_HOME` 直下へ移動します。
+
+```bash
+mv $NODE_HOME/config/* $NODE_HOME/
+rmdir $NODE_HOME/config
 ```
 
 
-## 6. DBスナップショットの復元 [#sec-6]
+## 5. DBスナップショットの復元 [#sec-5]
 
 ジェネシスからのフル同期には長い時間がかかります。  
 公開されている **DBスナップショット** を `$NODE_HOME/db` に復元することで、同期時間を大幅に短縮できます。
@@ -165,18 +173,13 @@ tar -I zstd -xvf leios.chain.tar.zst -C "$NODE_HOME"
 tar -I zstd -xvf leios.leiosdb.tar.zst -C "$NODE_HOME"
 ```
 
-```bash
-cd "$NODE_HOME"
-mv db-leios db
-```
-
 展開後、不要になったアーカイブを削除します。
 ```bash
 rm -f "$NODE_HOME"/leios.chain.tar.zst "$NODE_HOME"/leios.leiosdb.tar.zst
 ```
 
 
-## 7. 起動スクリプトの作成 [#sec-7]
+## 6. 起動スクリプトの作成 [#sec-6]
 
 ノードの起動スクリプトを作成します。  
 （BP の場合、ブロック生成キーは [BP用キーの生成](/cardano/leios-testnet/bp-key-setup) で作成後に追記します）
@@ -191,13 +194,13 @@ TOPOLOGY=\${DIRECTORY}/topology.json
 DB_PATH=\${DIRECTORY}/db
 SOCKET_PATH=\${DIRECTORY}/db/socket
 CONFIG=\${DIRECTORY}/config.json
-${HOME}/.nix-profile/bin/cardano-node run --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG}
+/usr/local/bin/cardano-node run --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG}
 EOF
 chmod +x $NODE_HOME/startNode.sh
 ```
 
 
-## 8. systemdサービスの作成 [#sec-8]
+## 7. systemdサービスの作成 [#sec-7]
 
 ユニットファイルを作成します。
 
@@ -231,13 +234,6 @@ WantedBy        = multi-user.target
 EOF
 ```
 
-<Callout type="info" title="ExecStartについて">
-
-起動スクリプト内で `~/.nix-profile/bin/cardano-node` を**絶対パス**で呼び出しているため、systemd の最小 PATH 環境でも Nix 導入のバイナリを確実に起動できます。
-
-</Callout>
-
-
 `/etc/systemd/system` にユニットファイルをコピーし、権限を付与します。
 ```bash
 sudo cp $NODE_HOME/cardano-node.service /etc/systemd/system/cardano-node.service
@@ -255,7 +251,7 @@ sudo systemctl enable --now cardano-node
 ```
 
 
-## 9. 同期確認 [#sec-9]
+## 8. 同期確認 [#sec-8]
 
 ログを確認します。
 ```bash
@@ -270,11 +266,14 @@ cardano-cli query tip
 
 ```yaml title="期待される表示例：" noCopy
 {
-  "block": 12345,
-  "epoch": 42,
-  "era": "Dijkstra",
-  "slot": 678910,
-  "syncProgress": "100.00"
+    "block": 115311,
+    "epoch": 37,
+    "era": "Dijkstra",
+    "hash": "5072a5f8ba0ac4ea54b1844e6117451e751c30097aff94683c7dd0b8f0a80dc7",
+    "slot": 3244075,
+    "slotInEpoch": 47275,
+    "slotsToEpochEnd": 39125,
+    "syncProgress": "100.00"
 }
 ```
 > `syncProgress` が `100.00` になればフル同期完了です。
@@ -292,7 +291,7 @@ source $HOME/.bashrc
 ```
 
 
-## 10. gLiveViewのインストール [#sec-10]
+## 9. gLiveViewのインストール [#sec-9]
 
 `cardano-node` はログが流れる画面だけでは状態が分かりにくいため、ノードの状態を視覚的に確認できる `gLiveView` を導入します。
 
@@ -307,7 +306,6 @@ sudo apt install bc tcptraceroute -y
 
 `gLiveView` 本体と `env` ファイルをダウンロードします。
 ```bash
-
 curl -s -o gLiveView.sh https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/gLiveView.sh
 curl -s -o env https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/env
 chmod 755 gLiveView.sh
@@ -324,18 +322,6 @@ sed -i $NODE_HOME/scripts/env \
     -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
     -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
 ```
-
-<Callout type="info" title="修正される定義">
-
-| 項目 | 値 |
-| :---- | :---- |
-| `CNODE_HOME` | `$NODE_HOME`（`$HOME/cnode`） |
-| `CNODE_PORT` | `3010` |
-| `CONFIG` | `${CNODE_HOME}/config.json` |
-| `SOCKET` | `${CNODE_HOME}/db/socket` |
-| `PROM_PORT` | `12798` |
-
-</Callout>
 
 任意の単語で起動できるようエイリアスを登録します。
 ```bash
