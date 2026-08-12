@@ -1,0 +1,390 @@
+---
+title: Mithrilダッシュボード
+---
+
+## 概要
+
+本手順では、Mithril専用のPrometheusを構築し、既存のGrafanaへData Sourceとして追加します。
+
+Cardano Node用Prometheusとは分離して管理するため、既存環境へ影響を与えません。
+
+```yaml title="" noCopy
+Grafana
+
+├── Prometheus (Cardano)
+│     └── Cardano Dashboard
+│
+└── Prometheus (Mithril)
+      └── Mithril Dashboard
+            ├── Mithril Signer
+            └── DMQ Node
+```
+
+### 構成
+
+| 項目 | Cardano | Mithril |
+| --- | --- | --- |
+| バイナリ | `/usr/bin/prometheus` (apt) | `/usr/local/bin/prometheus` (GitHub Release) |
+| 設定 | `/etc/prometheus/prometheus.yml` | `/etc/prometheus-mithril/prometheus.yml` |
+| データ | `/var/lib/prometheus` | `$HOME/prometheus-mithril/data` |
+| Service | `prometheus.service` | `prometheus-mithril.service` |
+| Port | `9090` | `9091` |
+
+---
+
+<Callout type="warning" title="💡">
+
+Prometheus (Mithril)のインストール・設定・サービス作成・動作確認（手順1〜5）は、Grafanaが稼働しているサーバーで実行します。
+
+</Callout>
+
+## 1. Prometheus(Mithril)のインストール
+
+システムを更新します。
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+作業ディレクトリを作成します。
+
+```bash
+mkdir -p $HOME/git/prometheus
+cd $HOME/git/prometheus
+```
+
+最新版を取得します。
+
+```bash
+release_tag=$(curl -s https://api.github.com/repos/prometheus/prometheus/releases/latest | jq -r .tag_name)
+version=${release_tag#v}
+
+echo "Release tag : ${release_tag}"
+echo "Release version : ${version}"
+```
+
+Prometheusをダウンロードします。
+
+```bash
+wget https://github.com/prometheus/prometheus/releases/download/${release_tag}/prometheus-${version}.linux-amd64.tar.gz
+```
+
+展開します。
+
+```bash
+tar xvf prometheus-${version}.linux-amd64.tar.gz
+```
+
+バイナリをシステムフォルダへコピーします。
+
+```bash
+cd prometheus-${version}.linux-amd64
+```
+
+```bash
+sudo cp prometheus /usr/local/bin/
+```
+
+```bash
+sudo cp promtool /usr/local/bin/
+```
+
+バージョンを確認します。
+
+```bash
+prometheus --version
+```
+
+設定ディレクトリを作成します。
+
+```bash
+sudo mkdir -p /etc/prometheus-mithril
+```
+
+Mithril用Prometheus関連ディレクトリを作成します。
+
+```bash
+mkdir -p $HOME/prometheus-mithril/data
+```
+
+---
+
+## 2. Prometheus(Mithril)設定
+
+Prometheus (Mithril)からメトリクスを取得するため、別のサーバーで稼働しているMithril Signerおよび各DMQ NodeのIPアドレスまたはDNS名を代入します。
+```bash
+mithril_signer_ipv4=
+```
+
+```bash
+dmq_relay2_ipv4_or_dns=
+```
+
+```bash
+dmq_bp_ipv4=
+```
+
+設定内容を確認します。
+
+```bash
+echo ${mithril_signer_ipv4}
+echo ${dmq_relay2_ipv4_or_dns}
+echo ${dmq_bp_ipv4}
+```
+
+Prometheus(Mithril)設定ファイルを作成します。  
+
+<Callout type="warning" title="💡">
+
+Prometheus (Mithril)と同じサーバーでDMQ Nodeが稼働している場合は、そのDMQ Nodeのターゲットに`localhost:12000`を指定します。
+
+この場合、そのDMQ NodeのIPアドレスまたはDNS名を`prometheus.yml`で指定する必要はありません。
+
+別のサーバーで稼働しているDMQ Nodeについては、そのサーバーのIPアドレスまたはDNS名を指定します。
+
+</Callout>
+
+以下は、Prometheus (Mithril)とDMQ Relay-1が同じサーバーで稼働している場合の設定例です。
+
+```bash
+cat > $HOME/prometheus-mithril/prometheus.yml << EOF
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'mithril-signer'
+    static_configs:
+      - targets: ['${mithril_signer_ipv4}:61234']
+        labels: { alias: 'BP-Signer', role: 'bp', type: 'mithril-signer' }
+
+  - job_name: 'dmq'
+    static_configs:
+      - targets: ['localhost:12000']
+        labels: { alias: 'DMQ-Relay-1', role: 'relay-1', type: 'dmq-node' }
+      - targets: ['${dmq_relay2_ipv4_or_dns}:12000']
+        labels: { alias: 'DMQ-Relay-2', role: 'relay-2', type: 'dmq-node' }
+      - targets: ['${dmq_bp_ipv4}:12000']
+        labels: { alias: 'DMQ-BP', role: 'bp', type: 'dmq-node' }
+EOF
+```
+
+構文を確認します。
+
+```bash
+promtool check config $HOME/prometheus-mithril/prometheus.yml
+```
+
+```yaml title="期待される表示例：" noCopy
+Checking /home/<USER>/prometheus-mithril/prometheus.yml
+ SUCCESS: 0 rule files found
+```
+
+設定ファイルを配置します。
+
+```bash
+sudo cp $HOME/prometheus-mithril/prometheus.yml /etc/prometheus-mithril/prometheus.yml
+```
+
+---
+
+## 3. systemdサービス作成
+
+Prometheus(Mithril)サービスファイルを作成します。
+
+```bash
+cat > $HOME/prometheus-mithril/prometheus-mithril.service << EOF
+[Unit]
+Description=Prometheus (Mithril)
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+User=${USER}
+WorkingDirectory=${HOME}
+Type=simple
+Restart=always
+RestartSec=60
+LimitNOFILE=32768
+
+ExecStart=/usr/local/bin/prometheus --config.file=/etc/prometheus-mithril/prometheus.yml --storage.tsdb.path=${HOME}/prometheus-mithril/data --web.listen-address=:9091
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+システムディレクトリへ配置します。
+
+```bash
+sudo cp $HOME/prometheus-mithril/prometheus-mithril.service /etc/systemd/system/prometheus-mithril.service
+```
+
+```bash
+sudo chmod 644 /etc/systemd/system/prometheus-mithril.service
+```
+
+サービス設定を反映します。
+
+```bash
+sudo systemctl daemon-reload
+```
+
+自動起動登録して起動します。
+
+```bash
+sudo systemctl enable prometheus-mithril --now
+```
+
+状態を確認します。
+
+```bash
+sudo systemctl status prometheus-mithril --no-pager
+```
+
+```yaml title="期待される表示例：" noCopy
+Active: active (running)
+```
+
+---
+
+## 4. Grafana設定
+
+Grafanaへログインします。
+> Grafanaをすでに導入している場合は、Data Sourceの追加に進んでください。
+
+```text
+http://<Grafanaサーバー>:3000
+```
+
+### Prometheus(Mithril) Data Source追加
+
+1. 左メニューの **Connections** を選択します。
+2. **Data sources** を選択します。
+3. **Add data source** を選択します。
+4. 検索欄に **Prometheus** と入力し、選択します。
+
+以下を設定します。
+
+URL :
+```text
+http://localhost:9091
+```
+
+Name :
+```text
+Prometheus-Mithril
+```
+> バージョンによっては、画面左上の鉛筆マークからData Source名を編集します。
+
+<Callout type="warning" title="💡">
+
+名前の編集中に「Validation error, invalid URL」と表示された場合は、ひとまず「prometheus-1」のまま保存します。  
+その後、「Data sources」に戻り、Data Source名を編集してください。
+
+</Callout>
+
+「**Save & Test**」を選択します。
+
+```yaml title="期待される表示例：" noCopy
+Successfully queried the Prometheus API.
+```
+
+---
+
+## 5. Prometheus(Mithril) 動作確認
+
+サービス状態を確認します。
+
+```bash
+sudo systemctl status prometheus-mithril --no-pager
+```
+
+Prometheus APIを確認します。
+
+```bash
+curl http://127.0.0.1:9091/-/healthy
+```
+
+```yaml title="期待される表示例：" noCopy
+Prometheus Server is Healthy.
+```
+
+---
+
+## 6. Dashboardのインポート
+
+以下のGrafana Dashboardを使用します。
+
+<a
+  href="/grafana/mithril/sjg-mithril-operations-monitoring_jp.json"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  Grafana Mithril Dashboard
+</a>
+
+> DashboardのJSONをすべてコピーします。
+
+
+Grafanaの左メニューから **Dashboards** を選択し、右上の「**New**」→「**Import dashboard**」を選択します。  
+
+「**Import via dashboard JSON model**」にコピーしたJSONを貼り付け、「**Load**」を選択します。  
+
+「**DS_PROMETHEUS-MITHRIL**」では、先ほど作成したPrometheus Data Sourceを選択し、「**Import**」を選択します。  
+
+インポートしたDashboardでは、以下を確認できます。
+
+```text
+Mithril Operations Monitoring
+
+├── Mithril Signer
+└── DMQ Node
+```
+
+---
+
+## 7. ファイアウォール設定
+
+Mithril Signerおよび各DMQ Nodeのメトリクスポートに対して、Prometheus (Mithril)を稼働しているGrafanaサーバーからのアクセスのみを許可します。
+
+<Callout type="warning" title="クラウドのセキュリティグループでファイアウォールを管理している場合">
+
+`ufw`ではなく、クラウドの管理コンソールで、Prometheus (Mithril)を稼働しているGrafanaサーバーのIPアドレスからのインバウンド通信を許可してください。
+  
+- Mithril Signer：TCP `61234`
+- DMQ Node：TCP `12000`
+
+</Callout>
+
+`ufw`を使用する場合は、以下の設定を**Mithril SignerまたはDMQ Nodeが稼働している各サーバー**で実行します。
+
+Prometheus (Mithril)を稼働しているGrafanaサーバーのIPアドレスを代入してください。
+
+```bash
+grafana_ipv4=
+```
+
+### Mithril Signer
+
+Mithril Signerが稼働しているサーバーで実行します。
+
+```bash
+sudo ufw allow from ${grafana_ipv4} to any port 61234 proto tcp
+```
+
+### DMQ Node
+
+DMQ Nodeが稼働している各サーバー（Relay-1、Relay-2、BP）で実行します。
+
+```bash
+sudo ufw allow from ${grafana_ipv4} to any port 12000 proto tcp
+```
+
+ファイアウォール設定を行った各サーバーで、設定を反映します。
+
+```bash
+sudo ufw reload
+```
+
+以上で、Mithril専用の監視環境の構築が完了しました。
