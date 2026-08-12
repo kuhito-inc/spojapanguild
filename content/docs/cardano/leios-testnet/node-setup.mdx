@@ -103,10 +103,10 @@ cardano-cli --version
 ```
 ```yaml title="期待される表示例：" noCopy
 cardano-node 11.1.0.164 - linux-x86_64 - ghc-9.6
-git rev 6971bb527288d0f362147fbe318c0e9c84312ab3
+git rev c5f7d9121beb67e6d03d0632ae2bd3b76259728e
 
 cardano-cli 11.1.0.0 - linux-x86_64 - ghc-9.6
-git rev 6971bb527288d0f362147fbe318c0e9c84312ab3
+git rev c5f7d9121beb67e6d03d0632ae2bd3b76259728e
 ```
 > 末尾に `164` が含まれていれば Leios プロトタイプ用ビルドです。
 
@@ -128,17 +128,15 @@ mkdir -p "$NODE_HOME"
 
 ```bash
 cd $NODE_HOME
-curl -LO https://raw.githubusercontent.com/input-output-hk/ouroboros-leios/main/testnet/pin-config.sh
-bash pin-config.sh
+wget https://book.play.dev.cardano.org/environments-pre/leios/config.json -O config.json
+wget https://book.play.dev.cardano.org/environments-pre/leios/topology.json -O topology.json
+wget https://book.play.dev.cardano.org/environments-pre/leios/peer-snapshot.json -O peer-snapshot.json
+wget https://book.play.dev.cardano.org/environments-pre/leios/byron-genesis.json -O byron-genesis.json
+wget https://book.play.dev.cardano.org/environments-pre/leios/shelley-genesis.json -O shelley-genesis.json
+wget https://book.play.dev.cardano.org/environments-pre/leios/alonzo-genesis.json -O alonzo-genesis.json
+wget https://book.play.dev.cardano.org/environments-pre/leios/conway-genesis.json -O conway-genesis.json
+wget https://book.play.dev.cardano.org/environments-pre/leios/dijkstra-genesis.json -O dijkstra-genesis.json
 ```
-
-取得したファイルは `config` ディレクトリに配置されるため、`$NODE_HOME` 直下へ移動します。
-
-```bash
-mv $NODE_HOME/config/* $NODE_HOME/
-rmdir $NODE_HOME/config
-```
-
 
 ## 5. DBスナップショットの復元 [#sec-5]
 
