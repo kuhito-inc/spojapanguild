@@ -8,6 +8,7 @@ import { DocsMdxAnchor } from '@/components/docs-mdx-anchor';
 import { Mermaid } from '@/components/mermaid';
 import { MdxCodeBlock } from '@/components/mdx-code-block';
 import { MdxImage } from '@/components/mdx-image';
+import { LastUpdated } from '@/components/last-updated';
 import type { MDXComponents } from 'mdx/types';
 import type { ComponentPropsWithoutRef } from 'react';
 
@@ -81,6 +82,7 @@ export function getMDXComponents(components?: MDXComponents) {
     AnnotatedCode,
     Changelog,
     Release,
+    LastUpdated,
     img: ZoomableImage,
     ZoomImage: ZoomableImage,
     Mermaid,

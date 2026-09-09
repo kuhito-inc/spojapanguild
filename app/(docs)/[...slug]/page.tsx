@@ -8,6 +8,7 @@ import {
 } from 'fumadocs-ui/layouts/docs/page';
 import { notFound } from 'next/navigation';
 import { getMDXComponents } from '@/components/mdx';
+import { LastUpdated } from '@/components/last-updated';
 import type { Metadata } from 'next';
 
 const ogImageUrl = 'https://spojapanguild.net/wp-content/uploads/2026/05/ogp2026.png';
@@ -45,7 +46,9 @@ export default async function Page(props: PageProps<'/[...slug]'>) {
       <DocsTitle>{page.data.title}</DocsTitle>
       <DocsDescription className="mb-0">{page.data.description}</DocsDescription>
       <DocsBody>
-        <MDX components={getMDXComponents()} />
+        <MDX components={getMDXComponents({
+          LastUpdated: (props) => <LastUpdated {...props} date={lastModified} />,
+        })} />
       </DocsBody>
       {lastModified && <PageLastUpdate date={lastModified} className="mt-10" />}
     </DocsPage>

@@ -5,14 +5,14 @@
  * fumadocs の remark-heading と同様、末尾の `[#custom-id]` がある見出しは
  * その文字列を oldId（移行前の URL フラグメント）として扱う。
  *
- * Usage: node scripts/english-anchor-docs.mjs [--dry-run]
+ * Usage: node tools/docs/english-anchor-docs.mjs [--dry-run]
  */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Slugger from "github-slugger";
 
-const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "content", "docs");
+const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "content", "docs");
 const DRY = process.argv.includes("--dry-run");
 
 function docPathToSlug(relNoExt) {

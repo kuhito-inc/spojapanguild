@@ -2,7 +2,7 @@
  * english-anchor-docs.mjs の後続: `./foo.md#old` 形式の相対パス＋フラグメントを
  * Git HEAD（移行前）の見出しスラッグと現在の `sec-N` を行順で対応づけて置換する。
  *
- * Usage（リポジトリルート）: node scripts/fix-relative-doc-fragments.mjs [--dry-run]
+ * Usage（リポジトリルート）: node tools/docs/fix-relative-doc-fragments.mjs [--dry-run]
  */
 import { execSync } from "node:child_process";
 import fs from "node:fs";
@@ -10,7 +10,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import Slugger from "github-slugger";
 
-const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
+const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..");
 const ROOT = path.join(REPO, "content", "docs");
 const DRY = process.argv.includes("--dry-run");
 

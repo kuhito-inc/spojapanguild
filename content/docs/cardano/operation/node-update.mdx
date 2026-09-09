@@ -4,7 +4,7 @@ title: "ノードアップデート"
 
 このガイドは ノードバージョン`11.0.1`に対応しています。  
 
-最終更新日：2026年5月5日  
+<LastUpdated />
 
 <Callout type="info" title="バージョン対応表">
 
@@ -28,8 +28,6 @@ title: "ノードアップデート"
 - 作業実施前にブロック生成スケジュールを確認してください。  
 {/* - 今回のアップデートではDB更新があるため、ブロック生成が2時間以上無いことを確認してください。    */}
 - 複数行のコードをコードボックスのコピーボタンを使用してコマンドラインに貼り付ける場合は、最後の行が自動実行されないため確認の上`Enter`を押してコードを実行してください。  
-- OSバージョンアップを完了していること  
-[Ubuntu22.04から24.04へ移行](/cardano/operation/ubuntu24-migration)
 
 </Callout>
 
@@ -45,16 +43,6 @@ title: "ノードアップデート"
 - `cardano-api` / `cardano-cli` を`11系`へ更新
 - `EKG`・`Prometheus`の`HTTPS対応`や`時系列API`を追加
 - `LSM`利用時に既知の不具合あり（次回修正予定）
-
-**10.7.1 <span style={{color: "red"}}>マイナーアップデート</span>**  
-
-- 10.7.0で確認されたパフォーマンス問題を修正し、Plutus・Consensus・トレーシングの改善を含むマイナーアップデート  
-- PraosModeを有効  
-
-**10.6.4 <span style={{color: "red"}}>Plutusインタープリタに対する多数の修正と改善リリース</span>**
-
-- ソースビルドの場合 blst v0.3.14使用必須
-- PraosModeを有効
 
 </Callout>
 
@@ -102,9 +90,6 @@ echo $current_node
 
 ```bash
 sudo apt update && sudo apt upgrade -y
-```
-```bash
-sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
 ```
 
 ### 依存関係バージョン確認 [#sec-3]
@@ -320,7 +305,11 @@ Version: 0.3.14
 
 
 
-### CNCLIバージョン確認(BPのみ) [#sec-4]
+### CNCLIバージョン確認 [#sec-4]
+
+<Tabs items={["BP"]}>
+
+<Tab value="BP">
 
 CNCLIバージョン確認
 ```bash
@@ -360,7 +349,9 @@ cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
   </Accordion>
 </AccordionsRed>
 
+</Tab>
 
+</Tabs>
 
 ## 2. ノードアップデート [#sec-5]
 
@@ -373,6 +364,16 @@ cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
 
 </Callout>
 
+
+MainnetのネットワークIDを修正
+```bash
+sed -i 's/CARDANO_NODE_NETWORK_ID=mainnet/CARDANO_NODE_NETWORK_ID=764824073/g' ~/.bashrc
+source ~/.bashrc
+```
+```bash
+echo $CARDANO_NODE_NETWORK_ID
+```
+> `764824073`であること
 
 
 <Tabs items={["ビルド済みバイナリを使用する場合", "ソースコードからビルドする場合はこちら"]}>
@@ -388,30 +389,15 @@ rm -rf $HOME/git/cardano-node-old/
 
 バイナリファイルのダウンロード
 ```bash
-mkdir $HOME/git/cardano-node2
+mkdir -p $HOME/git/cardano-node2
 cd $HOME/git/cardano-node2
-wget -q https://github.com/IntersectMBO/cardano-node/releases/download/11.0.1/cardano-node-11.0.1-linux-amd64.tar.gz
+wget https://github.com/IntersectMBO/cardano-node/releases/download/11.0.1/cardano-node-11.0.1-linux-amd64.tar.gz
 ```
 
 解凍
 ```bash
-tar zxvf cardano-node-11.0.1-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano-cli ./bin/snapshot-converter
+tar zxvf cardano-node-11.0.1-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano-cli ./bin/snapshot-converter ./bin/cardano-tracer
 ```
-
-**バージョンの確認**
-
-```bash
-$(find $HOME/git/cardano-node2 -type f -name "cardano-node") version
-$(find $HOME/git/cardano-node2 -type f -name "cardano-cli") version
-```
-```yaml title="期待される表示例：" noCopy
-cardano-node 11.0.1 - linux-x86_64 - ghc-9.6  
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
-
-cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
-```
-
 
 **ノードの停止** 
 ```bash
@@ -423,10 +409,7 @@ sudo systemctl stop cardano-node
 **バイナリーファイルをシステムフォルダーへコピー**
 
 ```bash
-sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-node") /usr/local/bin/cardano-node
-```
-```bash
-sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-cli") /usr/local/bin/cardano-cli
+sudo cp $(find $HOME/git/cardano-node2 -type f \( -name "cardano-node" -o -name "cardano-cli" -o -name "cardano-tracer" \)) /usr/local/bin/
 ```
 
 **システムに反映されたノードバージョンの確認**
@@ -434,6 +417,7 @@ sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-cli") /usr/local/b
 ```bash
 cardano-node version
 cardano-cli version
+cardano-tracer --version
 ```
 ```yaml title="期待される表示例：" noCopy
 cardano-node 11.0.1 - linux-x86_64 - ghc-9.6
@@ -441,6 +425,8 @@ git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
 
 cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6
 git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
+
+0.5.0
 ```
 
 </Tab>
@@ -496,74 +482,41 @@ cabal build all cardano-cli
 
 </Callout>
 
+`cardano-node`、`cardano-cli`、`cardano-tracer`バイナリをbinディレクトリにコピーします。
 
-
-
-**バージョン確認**
-
-```bash
-$(./scripts/bin-path.sh cardano-node) version
-$(./scripts/bin-path.sh cardano-cli) version
-```
-```yaml title="期待される表示例：" noCopy
-cardano-node 11.0.1 - linux-x86_64 - ghc-9.6  
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
-
-cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
-```
-
-**ビルド用TMUXセッションを終了します。** 
-```bash
-exit
-```
-
-**ノードの停止** 
+ノードの停止
 ```bash
 sudo systemctl stop cardano-node
 ```
 
-**バイナリーファイルをシステムフォルダーへコピー**
-
 ```bash
 cd $HOME/git/cardano-node2
-sudo cp $(./scripts/bin-path.sh cardano-node) /usr/local/bin/cardano-node
-```
-```bash
-sudo cp $(./scripts/bin-path.sh cardano-cli) /usr/local/bin/cardano-cli
+sudo cp -p "$(./scripts/bin-path.sh cardano-node)" "$(./scripts/bin-path.sh cardano-cli)" "$(./scripts/bin-path.sh cardano-tracer)" /usr/local/bin/
 ```
 
-
-**システムに反映されたノードバージョンの確認**
+**cardano-node**、**cardano-cli**、**cardano-tracer**のバージョンが最新Gitタグバージョンであることを確認してください。
 
 ```bash
 cardano-node version
 cardano-cli version
+cardano-tracer --version
 ```
+
 ```yaml title="期待される表示例：" noCopy
-cardano-node 11.0.1 - linux-x86_64 - ghc-9.6
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
+cardano-node 11.0.1 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef  
 
-cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
+cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
+git rev 97036a66bcf8c89f687ae57a048eecc0389977ef  
+
+0.5.0
 ```
 
-<AccordionsYellow type="single">
-  <Accordion id="node-update-from-1031-below-extra" title="10.3.1 未満のバージョンから更新する場合は、こちらを実施">
+`TMUX`セッションを閉じます。
 
-**snapshot-converterのダウンロード**
 ```bash
-cd $HOME/git/cardano-node2
-wget -q https://github.com/IntersectMBO/cardano-node/releases/download/11.0.1/cardano-node-11.0.1-linux-amd64.tar.gz
+exit
 ```
-解凍
-```bash
-tar zxvf cardano-node-11.0.1-linux-amd64.tar.gz ./bin/snapshot-converter
-```
-
-  </Accordion>
-</AccordionsYellow>
-
 
 </Tab>
 </Tabs>
@@ -579,160 +532,56 @@ cp $NODE_HOME/${NODE_CONFIG}-config.json $NODE_HOME/backup/${NODE_CONFIG}-config
 
 設定ファイルダウンロード
 
-BPとリレー共通：
 ```bash
 cd $NODE_HOME
-wget -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
-
-wget -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+wget https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+wget https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
 
+`config.json`の`TraceOptionNodeName`を、各ノードを識別するためのNode名に変更します。
 
-<AccordionsYellow type="single">
-  <Accordion id="node-update-from-1014-extra" title="10.7.1 未満のバージョンから更新する場合は、こちらを実施">
+<Tabs items={["リレー1", "リレー2", "BP"]}>
 
+<Tab value="リレー1">
 
-<Callout type="info" title="BPのみ">
-
-起動スクリプト更新 
-```bash
-PORT=`grep "PORT=" $NODE_HOME/startBlockProducingNode.sh`
-b_PORT=${PORT#"PORT="}
-echo "BPポートは ${b_PORT} です"
-```
-> BPのポート番号が表示されることを確認します。
+`TraceOptionNodeName`を`${NODE_CONFIG}-relay-1`に変更します。
 
 ```bash
-cat > $NODE_HOME/startBlockProducingNode.sh << EOF 
-#!/bin/bash
-DIRECTORY=$NODE_HOME
-PORT=${b_PORT}
-HOSTADDR=0.0.0.0
-TOPOLOGY=\${DIRECTORY}/${NODE_CONFIG}-topology.json
-DB_PATH=\${DIRECTORY}/db
-SOCKET_PATH=\${DIRECTORY}/db/socket
-CONFIG=\${DIRECTORY}/${NODE_CONFIG}-config.json
-KES=\${DIRECTORY}/kes.skey
-VRF=\${DIRECTORY}/vrf.skey
-CERT=\${DIRECTORY}/node.cert
-/usr/local/bin/cardano-node +RTS -N --disable-delayed-os-memory-return -I0.1 -Iw300 -A32m -n4m -F1.5 -H2500M -RTS run --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG} --shelley-kes-key \${KES} --shelley-vrf-key \${VRF} --shelley-operational-certificate \${CERT}
-EOF
+sed -i "s/\"TraceOptionNodeName\": \"\"/\"TraceOptionNodeName\": \"${NODE_CONFIG}-relay-1\"/" ${NODE_CONFIG}-config.json
 ```
 
-</Callout>
+</Tab>
 
+<Tab value="リレー2">
 
-<Callout type="info" title="全ノード">
+`TraceOptionNodeName`を`${NODE_CONFIG}-relay-2`に変更します。
 
-**DB更新**  
-
-**Mithrilインストール**
 ```bash
-cd $HOME/git
-mithril_release="$(curl -s https://api.github.com/repos/IntersectMBO/mithril/releases/latest | jq -r '.tag_name')"
-wget https://github.com/IntersectMBO/mithril/releases/download/${mithril_release}/mithril-${mithril_release}-linux-x64.tar.gz -O mithril.tar.gz
+sed -i "s/\"TraceOptionNodeName\": \"\"/\"TraceOptionNodeName\": \"${NODE_CONFIG}-relay-2\"/" ${NODE_CONFIG}-config.json
 ```
 
-設定
+</Tab>
+
+<Tab value="BP">
+
+`TraceOptionNodeName`を`${NODE_CONFIG}-bp`に変更します。
+
 ```bash
-tar zxvf mithril.tar.gz mithril-client
-sudo cp mithril-client /usr/local/bin/mithril-client
+sed -i "s/\"TraceOptionNodeName\": \"\"/\"TraceOptionNodeName\": \"${NODE_CONFIG}-bp\"/" ${NODE_CONFIG}-config.json
 ```
 
-パーミッション設定
+</Tab>
+
+</Tabs>
+
+設定したNode名を確認します。
+
 ```bash
-sudo chmod +x /usr/local/bin/mithril-client
+jq -r '.TraceOptionNodeName' $NODE_HOME/${NODE_CONFIG}-config.json
 ```
-
-DLファイル削除
-```bash
-rm mithril.tar.gz mithril-client
-```
-
-バージョン確認
-```bash
-mithril-client -V
-```
-> Mithril Githubの[リリースノート](https://github.com/IntersectMBO/mithril/releases/latest)内にある`mithril-client-cli`のバージョンをご確認ください。
-
-
-スナップショット復元
-
-作業用TMUX起動
-```bash
-tmux new -s mithril
-```
-
-変数セット
-```bash
-export AGGREGATOR_ENDPOINT=https://aggregator.release-mainnet.api.mithril.network/aggregator
-export GENESIS_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/genesis.vkey)
-export ANCILLARY_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/ancillary.vkey)
-export SNAPSHOT_DIGEST=latest
-```
-
-<AccordionsBlue type="single">
-  <Accordion id="node-update-backup-old-db" title="旧dbをバックアップしたい方はこちら">
-
-<Callout type="error" title="空き容量に関しての注意事項">
-
-DBをバックアップする場合、サーバーディスクの空き容量をご確認ください。
-安定稼働のためには250GB以上の空き容量が必要です。
-```bash
-df -h /usr | awk '{print $4}'
-```
-<strong><span style={{color: "red"}}>Availが250GB以上あることを確認してください。</span></strong>
-
-</Callout>
-
-リネーム
-```bash
-mv $NODE_HOME/db/ $NODE_HOME/backup/db9/
-```
-
-<Callout type="error" title="ノードバージョンアップ後の作業">
-
-稼働に問題がないことが確認でき次第削除することをお勧めします。
-```bash
-rm -rf $NODE_HOME/backup/db9/
-```
-
-</Callout>
-
-  </Accordion>
-</AccordionsBlue>
-
-
-既存DBの削除
-```bash
-rm -rf $NODE_HOME/db
-```
-
-最新スナップショットDL
-```bash
-mithril-client cardano-db download \
-  --download-dir $NODE_HOME \
-  --include-ancillary \
-  $SNAPSHOT_DIGEST
-```
-> スナップショットダウンロード～解凍まで自動的に行われます。1/7～7/7が終了するまで待ちましょう。  
-
-DBスナップショットDL/解凍完了メッセージ  
 ```yaml title="期待される表示例：" noCopy
-7/7 - Verifying the cardano db signature…    
-Cardano database snapshot '*****' archives have been successfully unpacked. Immutable files have been successfully verified with Mithril.
+mainnet-relay-1 または mainnet-relay-2 または mainnet-bp
 ```
-
-tmux作業ウィンドウを終了します。
-```bash
-exit
-```
-
-</Callout>
-
-
-  </Accordion>
-</AccordionsYellow>
 
 {/*
 ### DB更新 [#sec-9]
@@ -815,7 +664,378 @@ exit
 </Tabs>
 */}
 
-### サーバー再起動 [#sec-10]
+## 3. Tracer設定 [#sec-10]
+
+### ノード起動スクリプトの修正 [#sec-11]
+
+<Tabs items={["リレー", "BP"]}>
+<Tab value="リレー">
+
+リレーのポート番号を確認します。
+```bash
+PORT=`grep "PORT=" $NODE_HOME/startRelayNode1.sh`
+r_PORT=${PORT#"PORT="}
+echo "リレーポートは ${r_PORT} です"
+```
+> リレーのポート番号が表示されることを確認します。
+
+起動スクリプトファイルの作成
+```bash
+cat > $NODE_HOME/startRelayNode1.sh << EOF 
+#!/bin/bash
+DIRECTORY=$NODE_HOME
+PORT=${r_PORT}
+HOSTADDR=0.0.0.0
+TOPOLOGY=\${DIRECTORY}/${NODE_CONFIG}-topology.json
+DB_PATH=\${DIRECTORY}/db
+SOCKET_PATH=\${DIRECTORY}/db/socket
+CONFIG=\${DIRECTORY}/${NODE_CONFIG}-config.json
+TRACER_SOCKET_PATH=\${DIRECTORY}/tracer/socket
+/usr/local/bin/cardano-node run +RTS -N --disable-delayed-os-memory-return -I0.1 -Iw300 -A16m -F1.5 -H2500M -RTS --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG} --tracer-socket-path-connect \${TRACER_SOCKET_PATH}
+EOF
+```
+
+</Tab>
+<Tab value="BP">
+
+ノードポート番号を確認します。
+```bash
+PORT=`grep "PORT=" $NODE_HOME/startBlockProducingNode.sh`
+b_PORT=${PORT#"PORT="}
+echo "BPポートは ${b_PORT} です"
+```
+> BPのポート番号が表示されることを確認します。
+
+起動スクリプトにKES、VRF、運用証明書のパスを追記し、更新します。
+
+```bash
+cat > $NODE_HOME/startBlockProducingNode.sh << EOF 
+#!/bin/bash
+DIRECTORY=$NODE_HOME
+PORT=${b_PORT}
+HOSTADDR=0.0.0.0
+TOPOLOGY=\${DIRECTORY}/${NODE_CONFIG}-topology.json
+DB_PATH=\${DIRECTORY}/db
+SOCKET_PATH=\${DIRECTORY}/db/socket
+CONFIG=\${DIRECTORY}/${NODE_CONFIG}-config.json
+TRACER_SOCKET_PATH=\${DIRECTORY}/tracer/socket
+KES=\${DIRECTORY}/kes.skey
+VRF=\${DIRECTORY}/vrf.skey
+CERT=\${DIRECTORY}/node.cert
+/usr/local/bin/cardano-node run +RTS -N --disable-delayed-os-memory-return -I0.1 -Iw300 -A32m -n4m -F1.5 -H2500M -RTS --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG} --tracer-socket-path-connect \${TRACER_SOCKET_PATH} --shelley-kes-key \${KES} --shelley-vrf-key \${VRF} --shelley-operational-certificate \${CERT}
+EOF
+```
+
+</Tab>
+</Tabs>
+
+### cardano-tracerサービス設定 [#sec-12]
+
+Tracer用のディレクトリとログ保存用のディレクトリを作成します。
+
+```bash
+mkdir -p ${NODE_HOME}/tracer
+mkdir -p ${NODE_HOME}/logs
+```
+
+既存のNodeログがある場合は、cardano-tracer導入前のログをarchiveディレクトリへ移動します。
+```bash
+mkdir -p ${NODE_HOME}/logs/archive
+
+find ${NODE_HOME}/logs -maxdepth 1 -type f -name 'node-*.json' \
+  -exec mv {} ${NODE_HOME}/logs/archive/ \;
+
+[ -L ${NODE_HOME}/logs/node.json ] && \
+  mv ${NODE_HOME}/logs/node.json ${NODE_HOME}/logs/archive/
+```
+
+TracerがCardano Nodeからtraceを受信するUnix SocketのPATHを環境変数へ設定します。
+```bash
+grep -q '^export CARDANO_TRACER_SOCKET_PATH=' $HOME/.bashrc || echo "export CARDANO_TRACER_SOCKET_PATH=\"${NODE_HOME}/tracer/socket\"" >> $HOME/.bashrc
+source $HOME/.bashrc
+```
+
+設定を確認します。
+```bash
+echo ${CARDANO_TRACER_SOCKET_PATH}
+```
+
+以下のように表示されることを確認します。
+```yaml title="期待される表示例：" noCopy
+/home/<USER>/cnode/tracer/socket
+```
+
+**tracer-config.jsonの取得**
+
+Tracer用の設定ファイルを取得します。
+
+```bash
+cd ${NODE_HOME}/tracer
+```
+
+```bash
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
+```
+
+**tracer-config.jsonの設定**
+
+`tracer-config.json`のログ保存先、Unix SocketのPATH、Network Magicを環境に合わせて変更します。
+
+```bash
+sed -i \
+  -e "s|\"logRoot\": \"\"|\"logRoot\": \"${NODE_HOME}/logs\"|" \
+  -e "s|\"contents\": \"\"|\"contents\": \"${NODE_HOME}/tracer/socket\"|" \
+  -e "s|\"networkMagic\": 0|\"networkMagic\": ${CARDANO_NODE_NETWORK_ID}|" \
+  ${NODE_CONFIG}-tracer-config.json
+```
+
+**cardano-tracerのsystemd service作成**
+
+`cardano-tracer`のsystemd serviceファイルを作成します。
+
+```bash
+cat > ${NODE_HOME}/tracer/cardano-tracer.service << EOF
+[Unit]
+Description=Cardano Tracer Service
+Wants=network-online.target
+After=network-online.target
+Before=cardano-node.service
+StartLimitIntervalSec=0
+
+[Service]
+User=${USER}
+Type=simple
+WorkingDirectory=${NODE_HOME}
+ExecStart=/usr/local/bin/cardano-tracer --config ${NODE_HOME}/tracer/${NODE_CONFIG}-tracer-config.json
+Restart=always
+RestartSec=5
+LimitNOFILE=32768
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cardano-tracer
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+systemdへ配置します。
+
+```bash
+sudo cp ${NODE_HOME}/tracer/cardano-tracer.service /etc/systemd/system/cardano-tracer.service
+```
+
+systemdへ設定を反映します。
+
+```bash
+sudo systemctl daemon-reload
+```
+
+`cardano-tracer`の自動起動を有効化します。
+
+```bash
+sudo systemctl enable --now cardano-tracer.service
+```
+
+### Firewallの設定 [#sec-13]
+
+<Callout type="tip" title="💡">
+
+AWS等のクラウドサービスを使用している場合は、管理コンソールからFirewallの設定を行ってください。
+
+</Callout>
+
+Grafana稼働サーバーでは、Prometheusから`localhost:12808`へアクセスするため、`12808`ポートのFirewall設定は不要です。
+
+BPまたはリレー2以降では、Grafana稼働サーバーから`cardano-tracer`の`12808`ポートへの接続を許可します。
+
+<Tabs items={["BPまたはリレー2以降"]}>
+
+<Tab value="BPまたはリレー2以降">
+
+従来、PrometheusからCardano Nodeの`12798`ポートへ直接アクセスするためにFirewallで接続を許可していた場合は、該当するルールを削除します。
+
+現在のFirewallルールを番号付きで確認します。
+
+```bash
+sudo ufw status numbered
+```
+
+`12798`ポートへの接続を許可しているルールの番号を確認し、削除します。
+
+```bash
+sudo ufw delete 番号
+```
+
+> 確認を求められた場合は`y`を入力します。
+
+Grafana稼働サーバーのIPアドレスを入力します。
+
+```bash
+prometheus_ipv4=
+```
+
+Grafana稼働サーバーのIPアドレスから`cardano-tracer`の`12808`ポートへの接続を許可します。
+
+```bash
+sudo ufw allow from ${prometheus_ipv4} to any port 12808 proto tcp
+```
+
+Firewallの設定を確認します。
+
+```bash
+sudo ufw status
+```
+
+Firewallの設定をリロードします。
+
+```bash
+sudo ufw reload
+```
+
+</Tab>
+
+</Tabs>
+
+### Prometheusの設定変更 [#sec-14]
+
+Cardano Nodeのmetricsを`cardano-tracer`経由で取得するため、Grafana稼働サーバーのPrometheus設定を変更します。
+
+従来はCardano Nodeの`12798`ポートから直接metricsを取得していましたが、`cardano-tracer`導入後は`12808`ポートから取得します。
+
+**Prometheusの設定ファイル作成**
+
+<Tabs items={["Grafana稼働サーバー"]}>
+
+<Tab value="Grafana稼働サーバー">
+
+以下の変数に各サーバーのIPアドレスまたはDNSを設定します。
+
+リレー2
+
+```bash
+relay2_ipv4_or_dns=
+```
+
+BP
+
+```bash
+bp_ipv4=
+```
+
+Node名を設定します。
+> 以下はそのまま実行してください。
+
+```bash
+NODE_NAME_RELAY_1=${NODE_CONFIG}-relay-1
+NODE_NAME_RELAY_2=${NODE_CONFIG}-relay-2
+NODE_NAME_BP=${NODE_CONFIG}-bp
+```
+
+> 設定するNode名は、各Cardano Nodeの`TraceOptionNodeName`と一致している必要があります。
+
+現在のPrometheus設定ファイルをバックアップします。
+
+```bash
+sudo cp /etc/prometheus/prometheus.yml /etc/prometheus/prometheus.yml.bak
+```
+
+Prometheusの設定ファイルを作成します。
+
+```bash
+cat > $HOME/prometheus.yml << EOF
+global:
+  scrape_interval: 15s
+
+  external_labels:
+    monitor: 'codelab-monitor'
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9100']
+        labels:
+          alias: 'relaynode1'
+          type: 'system'
+
+      - targets: ['${relay2_ipv4_or_dns}:9100']
+        labels:
+          alias: 'relaynode2'
+          type: 'system'
+
+      - targets: ['${bp_ipv4}:9100']
+        labels:
+          alias: 'block-producing-node'
+          type: 'system'
+
+      - targets: ['localhost:12808']
+        labels:
+          alias: 'relaynode1'
+          type: 'cardano-node'
+          __metrics_path__: '/${NODE_NAME_RELAY_1}'
+
+      - targets: ['${relay2_ipv4_or_dns}:12808']
+        labels:
+          alias: 'relaynode2'
+          type: 'cardano-node'
+          __metrics_path__: '/${NODE_NAME_RELAY_2}'
+
+      - targets: ['${bp_ipv4}:12808']
+        labels:
+          alias: 'block-producing-node'
+          type: 'cardano-node'
+          __metrics_path__: '/${NODE_NAME_BP}'
+EOF
+```
+
+<Callout type="info" title="備考">
+
+`9100`は`prometheus-node-exporter`によるCPU、メモリ、ディスクなどのシステムmetricsです。
+
+`12808`は`cardano-tracer`が公開するCardano Nodeのmetricsです。
+
+</Callout>
+
+Prometheus設定ファイルの構文を確認します。
+
+```bash
+sudo promtool check config $HOME/prometheus.yml
+```
+
+構文エラーがない場合は、以下のように表示されます。
+
+```yaml title="正常時の表示例：" noCopy
+Checking /home/$USER/prometheus.yml
+SUCCESS: /home/$USER/prometheus.yml is valid prometheus config file syntax
+```
+
+Prometheus設定ファイルを配置します。
+
+```bash
+sudo mv $HOME/prometheus.yml /etc/prometheus/prometheus.yml
+```
+
+Prometheusを再起動します。
+
+```bash
+sudo systemctl restart prometheus.service
+```
+
+Prometheusが正常に起動していることを確認します。
+
+```bash
+sudo systemctl status prometheus.service --no-pager
+```
+```yaml title="期待される表示例：" noCopy
+Active: active (running) 
+```
+
+</Tab>
+
+</Tabs>
+
+
+### サーバー再起動 [#sec-15]
 
 **作業フォルダリネーム**
 
@@ -834,13 +1054,12 @@ sudo reboot
 ```
 
 SSH接続後、ノード同期状況の確認
+
 ```bash
-journalctl -u cardano-node -f
+sudo journalctl -u cardano-node -f
 ```
 
-
 <Callout type="info" title="ノードログメッセージ確認">
-
 
 以下のメッセージがログに含まれている場合に同期状況を判断できます。
 
@@ -856,10 +1075,36 @@ journalctl -u cardano-node -f
 </Callout>
 
 
+`cardano-tracer`が正常に起動していることを確認します。
 
-## 3. 依存関係作業 [#sec-11]
+```bash
+sudo systemctl status cardano-tracer --no-pager
+```
+```yaml title="期待される表示例：" noCopy
+Active: active (running) 
+```
 
-### リレー/BP共通 [#sec-12]
+Tracer Socketの確認
+```bash
+test -S ${CARDANO_TRACER_SOCKET_PATH} && echo "Tracer socket OK"
+```
+```yaml title="期待される表示例：" noCopy
+Tracer socket OK
+```
+`cardano-tracer`にCardano Nodeが接続していることを確認します。
+```bash
+curl -s http://127.0.0.1:12808/
+```
+> Node名が表示されれば、Cardano Nodeがcardano-tracerに正常に接続されています。
+
+```yaml title="期待される表示例：" noCopy
+<html><head><title>Prometheus metrics</title></head><body><ul><li><a href="/mainnet-bp">mainnet-bp</a></li></ul></body></html>
+```
+
+## 4. 依存関係作業 [#sec-16]
+
+<Tabs items={["全ノード"]}>
+  <Tab value="全ノード">
 
 **gLiveView更新**
 ```bash
@@ -897,11 +1142,18 @@ sed -i $NODE_HOME/scripts/env \
 glive
 ```
 ```yaml title="期待される表示例：" noCopy
-Koios gLiveView v1.32.0
+Koios gLiveView v1.32.1
 ```
 
+</Tab>
+</Tabs>
 
-### BPサービス確認 [#sec-13]
+
+### BP関連ツールの更新・確認 [#sec-17]
+
+<Tabs items={["BP"]}>
+
+<Tab value="BP">
 
 <AccordionsYellow type="single">
   <Accordion id="node-update-blocknotify-missing" title="blocknotify（SPO Block Notify）未導入・未更新の場合">
@@ -923,14 +1175,121 @@ Koios gLiveView v1.32.0
   </Accordion>
 </AccordionsYellow>
 
-
 BPノードが完全に同期した後、サービス起動状態を確認します。
 
 - cnclilog  
 - leaderlog  
 - validate  
-- logmonitor  
 - blocknotify(SPO Block Notifyを導入している場合)
+
+#### `logMonitor`の更新
+
+`logMonitor`はCardano Nodeのログを監視し、ブロック生成に関する情報をCNCLIのblocklogへ反映するためのスクリプトです。
+
+`logMonitor`サービスを停止します。
+
+```bash
+sudo systemctl stop cnode-logmonitor.service
+```
+
+新しいTracingシステムに対応した`logMonitor`を取得します。
+
+```bash
+cd $NODE_HOME/scripts
+
+wget https://raw.githubusercontent.com/btbf/spojapanguild/master/scripts/logMonitor.sh -q -O ./logMonitor.sh
+chmod 755 logMonitor.sh
+```
+
+SQLiteの一時的なデータベースロック発生時に即時エラーとなるのを避けるため、SQLiteのタイムアウトを設定します。
+
+```bash
+grep -qxF '.timeout 5000' "$HOME/.sqliterc" 2>/dev/null || printf '.timeout 5000\n' >> "$HOME/.sqliterc"
+```
+
+SQLiteのタイムアウトが設定されていることを確認します。
+
+```bash
+sqlite3 "$NODE_HOME/guild-db/blocklog/blocklog.db" 'PRAGMA busy_timeout;'
+```
+
+```yaml title="期待される表示例：" noCopy
+-- Loading resources from /home/<USER>/.sqliterc
+5000
+```
+
+CNCLI関連サービスを再起動します。
+
+```bash
+sudo systemctl reload-or-restart cnode-cncli-sync.service
+```
+
+`logMonitor`サービスを起動します。
+
+```bash
+sudo systemctl start cnode-logmonitor.service
+```
+
+サービスが正常に起動していることを確認します。
+
+```bash
+sudo systemctl status cnode-logmonitor
+```
+
+```yaml title="期待される表示例：" noCopy
+Active: active (running)
+```
+
+`logMonitor`のログを確認します。
+
+```bash
+logmonitor
+```
+
+
+#### `blocknotify`の更新
+
+SPO BlockNotifyの停止
+
+```bash
+sudo systemctl stop cnode-blocknotify.service
+```
+
+アップデートファイルのダウンロード
+
+```bash
+bn_release="$(curl -s https://api.github.com/repos/btbf/block-notify/releases/latest | jq -r '.tag_name')"
+wget https://raw.githubusercontent.com/btbf/block-notify/refs/tags/${bn_release}/block_notify.py -O $NODE_HOME/scripts/block-notify/block_notify.py
+```
+
+設定ファイルの更新
+
+```bash
+cd $NODE_HOME/scripts/block-notify
+sed -i 's/^prometheus_port[[:space:]]*=.*/prometheus_port = 12808/' config.ini
+grep -q '^node_config[[:space:]]*=' config.ini || sed -i "/^node_home[[:space:]]*=/a node_config = %(node_home)s/${NODE_CONFIG}-config.json" config.ini
+```
+
+SPO BlockNotifyの起動
+
+```bash
+sudo systemctl start cnode-blocknotify.service
+```
+
+起動確認
+
+```bash
+blocknotify
+```
+
+バージョンの確認
+
+```bash
+$HOME/notify-venv/bin/python $NODE_HOME/scripts/block-notify/block_notify.py version
+```
+```yaml title="期待される表示例：" noCopy
+v2.5.0
+```
 
 
 <AccordionsRed type="single">
@@ -955,21 +1314,52 @@ cnclilog
   </Accordion>
 </AccordionsRed>
 
+</Tab>
+</Tabs>
 
 
-### Grafanaアラートの対象メトリクス変更 [#sec-14]
+## 5. Grafana Dashboard設定 [#sec-18]
 
-> すでに対応済みの場合は、スキップしてください。
+### Dashboardのインポート [#sec-19]
 
-左ペインの「Alerting」→「Alert rules」→「ノード監視」→「BPリレー接続監視」のメトリクスを変更して保存します。  
-`cardano_node_metrics_peers_connectedPeers_int`から  
+<Tabs items={["BP"]}>
+
+<Tab value="BP">
+
+Grafanaパネル用のJSONファイルをダウンロードします。
 ```bash
-cardano_node_metrics_peerSelection_ActivePeers
+curl -o $NODE_HOME/spo-japan-guild-cardano-node-dashboard.json https://docs.spojapanguild.net/grafana/cardano-node/spo-japan-guild-cardano-node-dashboard.json
+```
+```bash
+sed -i \
+  -e "s/bech32_id_of_your_pool/$(cat $NODE_HOME/pool.id-bech32)/g" \
+  $NODE_HOME/spo-japan-guild-cardano-node-dashboard.json
+```
+
+</Tab>
+</Tabs>
+
+BPの`cnode`フォルダにある`spo-japan-guild-cardano-node-dashboard.json`をローカルPCにダウンロードします。
+
+左ペインの「**Dashboards**」→「**New**」→「**Import dashboard**」を選択します。
+
+「**Import via dashboard JSON model**」を選択し、ダウンロードした`spo-japan-guild-cardano-node-dashboard.json`を指定します。
+
+「**DS_PROMETHEUS**」→「**Prometheus**」を選択し、「**DS_YESOREYERAM-INFINITY-DATASOURCE**」→「**yesoreyeram-infinity-datasource**」を選択し、「**Import**」を選択します。  
+
+
+### Grafanaアラートの対象メトリクス変更 [#sec-20]
+
+左ペインの「Alerting」→「Alert rules」→「Manage alert rules」→「SJG→ノード監視」→「BPリレー接続監視」のメトリクスを変更して保存します。  
+
+`cardano_node_metrics_peerSelection_ActivePeers{alias="block-producing-node"}`から  
+
+```bash
+cardano_node_metrics_peerSelection_ActivePeers_int{alias="block-producing-node"}
 ```
 へと変更してください。
 
-
-## 4. エアギャップアップデート [#sec-15]
+## 6. エアギャップアップデート [#sec-21]
 <Callout type="info" title="SFTP機能ソフト導入">
 
 R-loginの転送機能が遅いので、大容量ファイルをダウン・アップロードする場合は、SFTP接続可能なソフトを使用すると効率的です。（FileZilaなど）  
@@ -1011,6 +1401,15 @@ mkdir -p $HOME/git/cardano-node2
 ```
 > $HOME/git/cardano-node2/ に`cardano-cli`を格納します。  
 
+MainnetのネットワークIDを修正
+```bash
+sed -i 's/CARDANO_NODE_NETWORK_ID=mainnet/CARDANO_NODE_NETWORK_ID=764824073/g' ~/.bashrc
+source ~/.bashrc
+```
+```bash
+echo $CARDANO_NODE_NETWORK_ID
+```
+> `764824073`であること
 
 **`cardano-cli` バイナリの配置**
 ```bash
@@ -1089,6 +1488,16 @@ graph LR
 ```bash
 mkdir -p $HOME/git/cardano-node2
 ```
+
+MainnetのネットワークIDを修正
+```bash
+sed -i 's/CARDANO_NODE_NETWORK_ID=mainnet/CARDANO_NODE_NETWORK_ID=764824073/g' ~/.bashrc
+source ~/.bashrc
+```
+```bash
+echo $CARDANO_NODE_NETWORK_ID
+```
+> `764824073`であること
 
 **cardano-cliの配置**
 ```bash
