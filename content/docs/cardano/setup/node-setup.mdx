@@ -503,9 +503,6 @@ ExecStart=/usr/local/bin/cardano-tracer --config ${NODE_HOME}/tracer/${NODE_CONF
 Restart=always
 RestartSec=5
 LimitNOFILE=32768
-StandardOutput=journal
-StandardError=journal
-SyslogIdentifier=cardano-tracer
 
 [Install]
 WantedBy=multi-user.target
@@ -707,7 +704,6 @@ TimeoutStopSec=300
 LimitNOFILE=32768
 Restart=always
 RestartSec=5
-SyslogIdentifier=cardano-node
 
 [Install]
 WantedBy	= multi-user.target
@@ -739,7 +735,6 @@ TimeoutStopSec=300
 LimitNOFILE=32768
 Restart=always
 RestartSec=5
-SyslogIdentifier=cardano-node
 
 [Install]
 WantedBy    = multi-user.target
