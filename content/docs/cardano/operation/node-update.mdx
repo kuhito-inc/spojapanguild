@@ -1098,7 +1098,7 @@ curl -s http://127.0.0.1:12808/
 <html><head><title>Prometheus metrics</title></head><body><ul><li><a href="/mainnet-bp">mainnet-bp</a></li></ul></body></html>
 ```
 
-## 4. 依存関係作業 [#sec-16]
+## 4. 関連ツール・サービスの更新 [#sec-16]
 
 <Tabs items={["全ノード"]}>
   <Tab value="全ノード">
@@ -1146,7 +1146,197 @@ Koios gLiveView v1.32.1
 </Tabs>
 
 
-### BP関連ツールの更新・確認 [#sec-17]
+### systemdサービスのログ設定を変更 [#sec-17]
+
+`StandardOutput`、`StandardError`、`SyslogIdentifier`の設定を各systemdサービスから削除します。
+
+<Tabs items={['全ノード', 'BP']}>
+
+<Tab value="全ノード">
+
+`cardano-node.service`から`StandardOutput`、`StandardError`、`SyslogIdentifier`を削除します。
+
+```bash
+sudo sed -i \
+  -e '/^[[:space:]]*StandardOutput[[:space:]]*=/d' \
+  -e '/^[[:space:]]*StandardError[[:space:]]*=/d' \
+  -e '/^[[:space:]]*SyslogIdentifier[[:space:]]*=/d' \
+  /etc/systemd/system/cardano-node.service
+```
+
+```bash
+sed -i \
+  -e '/^[[:space:]]*StandardOutput[[:space:]]*=/d' \
+  -e '/^[[:space:]]*StandardError[[:space:]]*=/d' \
+  -e '/^[[:space:]]*SyslogIdentifier[[:space:]]*=/d' \
+  "${NODE_HOME}/cardano-node.service"
+```
+
+削除されていることを確認します。
+
+```bash
+grep -HnE '^[[:space:]]*(StandardOutput|StandardError|SyslogIdentifier)[[:space:]]*=' \
+  /etc/systemd/system/cardano-node.service \
+  "${NODE_HOME}/cardano-node.service" \
+  || echo "OK: syslog directives removed"
+```
+
+以下が表示されれば問題ありません。
+
+```yaml title="期待される表示例：" noCopy
+OK: syslog directives removed
+```
+
+<AccordionsBlue type="single">
+
+  <Accordion id="handling-when-using-dmq-nodes" title="DMQ Nodeを導入している場合の対応">
+
+<Callout type="info" title="DMQを導入している場合のみ">
+
+DMQを導入している場合のみ、以下の`dmq-node.service`に関する手順を実行してください。
+
+DMQを導入していない場合は、この手順をスキップしてください。
+
+</Callout>
+
+`dmq-node.service`から`StandardOutput`、`StandardError`、`SyslogIdentifier`を削除します。
+
+```bash
+sudo sed -i \
+  -e '/^[[:space:]]*StandardOutput[[:space:]]*=/d' \
+  -e '/^[[:space:]]*StandardError[[:space:]]*=/d' \
+  -e '/^[[:space:]]*SyslogIdentifier[[:space:]]*=/d' \
+  /etc/systemd/system/dmq-node.service
+```
+
+```bash
+sed -i \
+  -e '/^[[:space:]]*StandardOutput[[:space:]]*=/d' \
+  -e '/^[[:space:]]*StandardError[[:space:]]*=/d' \
+  -e '/^[[:space:]]*SyslogIdentifier[[:space:]]*=/d' \
+  "${HOME}/mithril/dmq/dmq-node.service"
+```
+
+削除されていることを確認します。
+
+```bash
+grep -HnE '^[[:space:]]*(StandardOutput|StandardError|SyslogIdentifier)[[:space:]]*=' \
+  /etc/systemd/system/dmq-node.service \
+  "${HOME}/mithril/dmq/dmq-node.service" \
+  || echo "OK: DMQ syslog directives removed"
+```
+
+以下が表示されれば問題ありません。
+
+```yaml title="期待される表示例：" noCopy
+OK: DMQ syslog directives removed
+```
+
+  </Accordion>
+
+</AccordionsBlue>
+
+systemdへ変更を反映します。
+
+```bash
+sudo systemctl daemon-reload
+```
+
+Cardano Nodeを再起動します。
+
+```bash
+sudo systemctl restart cardano-node.service
+```
+
+Cardano Nodeの状態を確認します。
+
+```bash
+systemctl status --no-pager cardano-node.service
+```
+
+<AccordionsBlue type="single">
+
+  <Accordion id="restart-dmq-node-after-systemd-update" title="DMQ Nodeを導入している場合">
+
+DMQ Nodeを導入している場合は、DMQ Nodeを再起動します。
+
+```bash
+sudo systemctl restart dmq-node.service
+```
+
+DMQ Nodeの状態を確認します。
+
+```bash
+systemctl status --no-pager dmq-node.service
+```
+
+  </Accordion>
+
+</AccordionsBlue>
+
+</Tab>
+
+<Tab value="BP">
+
+以下のBP関連サービスから`StandardOutput`、`StandardError`、`SyslogIdentifier`を削除します。
+
+```bash
+for service in \
+  cnode-blocknotify.service \
+  cnode-cncli-leaderlog.service \
+  cnode-cncli-sync.service \
+  cnode-cncli-validate.service \
+  cnode-logmonitor.service
+do
+  sed -i \
+    -e '/^[[:space:]]*StandardOutput[[:space:]]*=/d' \
+    -e '/^[[:space:]]*StandardError[[:space:]]*=/d' \
+    -e '/^[[:space:]]*SyslogIdentifier[[:space:]]*=/d' \
+    "${NODE_HOME}/service/${service}"
+
+  sudo sed -i \
+    -e '/^[[:space:]]*StandardOutput[[:space:]]*=/d' \
+    -e '/^[[:space:]]*StandardError[[:space:]]*=/d' \
+    -e '/^[[:space:]]*SyslogIdentifier[[:space:]]*=/d' \
+    "/etc/systemd/system/${service}"
+done
+```
+
+削除されていることを確認します。
+
+```bash
+grep -HnE '^[[:space:]]*(StandardOutput|StandardError|SyslogIdentifier)[[:space:]]*=' \
+  "${NODE_HOME}/service/cnode-blocknotify.service" \
+  "${NODE_HOME}/service/cnode-cncli-leaderlog.service" \
+  "${NODE_HOME}/service/cnode-cncli-sync.service" \
+  "${NODE_HOME}/service/cnode-cncli-validate.service" \
+  "${NODE_HOME}/service/cnode-logmonitor.service" \
+  /etc/systemd/system/cnode-blocknotify.service \
+  /etc/systemd/system/cnode-cncli-leaderlog.service \
+  /etc/systemd/system/cnode-cncli-sync.service \
+  /etc/systemd/system/cnode-cncli-validate.service \
+  /etc/systemd/system/cnode-logmonitor.service \
+  || echo "OK: syslog directives removed"
+```
+
+以下が表示されれば問題ありません。
+
+```yaml title="期待される表示例：" noCopy
+OK: syslog directives removed
+```
+
+systemdへ変更を反映します。
+
+```bash
+sudo systemctl daemon-reload
+```
+
+</Tab>
+
+</Tabs>
+
+
+### BP関連ツールの更新・確認 [#sec-18]
 
 <Tabs items={["BP"]}>
 
@@ -1179,7 +1369,7 @@ BPノードが完全に同期した後、サービス起動状態を確認しま
 - validate  
 - blocknotify(SPO Block Notifyを導入している場合)
 
-#### `logMonitor`の更新
+#### `logMonitor`の更新 [#sec-19]
 
 `logMonitor`はCardano Nodeのログを監視し、ブロック生成に関する情報をCNCLIのblocklogへ反映するためのスクリプトです。
 
@@ -1244,7 +1434,7 @@ logmonitor
 ```
 
 
-#### `blocknotify`の更新
+#### `blocknotify`の更新 [#sec-20]
 
 SPO BlockNotifyの停止
 
@@ -1315,9 +1505,9 @@ cnclilog
 </Tabs>
 
 
-## 5. Grafana Dashboard設定 [#sec-18]
+## 5. Grafana Dashboard設定 [#sec-21]
 
-### Dashboardのインポート [#sec-19]
+### Dashboardのインポート [#sec-22]
 
 <Tabs items={["BP"]}>
 
@@ -1345,7 +1535,7 @@ BPの`cnode`フォルダにある`spo-japan-guild-cardano-node-dashboard.json`�
 「**DS_PROMETHEUS**」→「**Prometheus**」を選択し、「**DS_YESOREYERAM-INFINITY-DATASOURCE**」→「**yesoreyeram-infinity-datasource**」を選択し、「**Import**」を選択します。  
 
 
-### Grafanaアラートの対象メトリクス変更 [#sec-20]
+### Grafanaアラートの対象メトリクス変更 [#sec-23]
 
 左ペインの「Alerting」→「Alert rules」→「Manage alert rules」→「SJG→ノード監視」→「BPリレー接続監視」のメトリクスを変更して保存します。  
 
@@ -1356,7 +1546,7 @@ cardano_node_metrics_peerSelection_ActivePeers_int{alias="block-producing-node"}
 ```
 へと変更してください。
 
-## 6. エアギャップアップデート [#sec-21]
+## 6. エアギャップアップデート [#sec-24]
 <Callout type="info" title="SFTP機能ソフト導入">
 
 R-loginの転送機能が遅いので、大容量ファイルをダウン・アップロードする場合は、SFTP接続可能なソフトを使用すると効率的です。（FileZilaなど）  
