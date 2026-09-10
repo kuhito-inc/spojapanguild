@@ -337,9 +337,6 @@ User=$(whoami)
 WorkingDirectory=${NODE_HOME}/scripts/block-notify
 ExecStart=/home/${USER}/notify-venv/bin/python -u ${NODE_HOME}/scripts/block-notify/block_notify.py
 Restart=on-failure
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=cnode-blocknotify
 
 [Install]
 WantedBy=cnode-cncli-sync.service
