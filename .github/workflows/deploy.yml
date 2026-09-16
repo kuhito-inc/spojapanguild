@@ -38,6 +38,9 @@ jobs:
       - name: Build (static export -> out/)
         run: pnpm build
 
+      - name: Check internal links and anchors
+        run: pnpm docs:check-links
+
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:

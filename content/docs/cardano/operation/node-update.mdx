@@ -2,7 +2,7 @@
 title: "ノードアップデート"
 ---
 
-このガイドは ノードバージョン`11.0.1`に対応しています。  
+このガイドは ノードバージョン`11.1.1`に対応しています。  
 
 <LastUpdated />
 
@@ -12,13 +12,13 @@ title: "ノードアップデート"
 
 | OS | Node | CLI | GHC | Cabal | CNCLI |
 | :----------: | :----------: | :----------: | :----------: | :----------: | :----------: |
-| ubuntu 24.04.* | 11.0.1 | 11.0.0.0 | 9.6.7 | 3.12.1.0 | 6.7.0 |
+| ubuntu 24.04.* | 11.1.1 | 11.2.3.0 | 9.6.7 | 3.12.1.0 | 6.7.0 |
 
 **■アップデートパターンDB再構築有無**
 
 | バージョン | DB再構築有無 | 設定ファイル更新有無 | トポロジーファイル更新有無 |
 | :----------: | :----------: | :----------: | :----------: |
-| 10.7.1 → 11.0.1 | なし | 更新あり | なし |
+| 11.0.1 → 11.1.1 | なし | 更新あり | 更新あり |
 
 </Callout>
 
@@ -35,23 +35,24 @@ title: "ノードアップデート"
 <AccordionsBlue type="single">
   <Accordion id="node-update-major-changes" title="主な変更点と新機能および検証結果">
 
-<Callout type="info" title="cardano-node">
+<Callout type="info" title="cardano-node 11.1.1">
 
-**11.0.1 <span style={{color: "red"}}>Protocol Version 11（PV11）対応アップデート</span>**
-
-- `Protocol Version 11`へのアップグレードを可能にする `intra-era Hard Fork` に対応
-- `cardano-api` / `cardano-cli` を`11系`へ更新
-- `EKG`・`Prometheus`の`HTTPS対応`や`時系列API`を追加
-- `LSM`利用時に既知の不具合あり（次回修正予定）
+- `Dijkstra` eraに向けたLedger・Consensus・Node機能を更新  
+- 旧Tracingシステムを削除し、New Tracingシステムへ完全移行  
+- `LedgerDB V1` / `LMDB`を削除し、`LedgerDB V2`へ統一  
+- LedgerDB Snapshotの生成・共有に関する仕組みを改善  
+- P2Pを唯一のネットワークモードとし、ネットワーク関連機能を更新  
+- Mainnet / Preprodの設定ファイルを更新し、`GenesisMode`構成に対応  
 
 </Callout>
 
 
-<Callout type="info" title="cardano-cli v11.0.0.0">
+<Callout type="info" title="cardano-cli 11.2.3.0">
 
-- `cardano-api` を`11.0.0.0`へ更新し、未署名トランザクション生成時のエラーハンドリングを改善
-- `TxCmdMakeUnsignedTxError` を追加し、エラー内容を明確化
-- `ghc-9.14` に対応
+- `Dijkstra` eraの各種コマンドに対応
+- `query kes-period-info` / `query tip`に影響していた不具合を修正
+- Dijkstra eraの`transaction view`、Protocol Parameter更新、Simple Scriptなどに対応
+- Conway以降のWitnessファイルを`transaction assemble`で扱えるよう修正
 
 </Callout>
 
@@ -59,7 +60,7 @@ title: "ノードアップデート"
 <Callout type="info" title="検証結果">
 
 ■検証環境
-PreProd-Testnet / cardano-node 11.0.1 / cardano-cli 11.0.0.0 / SJG-TOOL 4.1.2  
+PreProd-Testnet / cardano-node 11.1.1 / cardano-cli 11.2.3.0 / SJG-TOOL 4.2.0  
 
 | 検証項目 | 結果 |
 | :----------: | :----------: |
@@ -391,17 +392,22 @@ rm -rf $HOME/git/cardano-node-old/
 ```bash
 mkdir -p $HOME/git/cardano-node2
 cd $HOME/git/cardano-node2
-wget https://github.com/IntersectMBO/cardano-node/releases/download/11.0.1/cardano-node-11.0.1-linux-amd64.tar.gz
+wget https://github.com/IntersectMBO/cardano-node/releases/download/11.1.1/cardano-node-11.1.1-linux-amd64.tar.gz
 ```
 
 解凍
 ```bash
-tar zxvf cardano-node-11.0.1-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano-cli ./bin/snapshot-converter ./bin/cardano-tracer
+tar zxvf cardano-node-11.1.1-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano-cli ./bin/snapshot-converter ./bin/cardano-tracer
 ```
 
 **ノードの停止** 
 ```bash
 sudo systemctl stop cardano-node
+```
+
+**Tracerの停止** 
+```bash
+sudo systemctl stop cardano-tracer
 ```
 
 ### バイナリインストール [#sec-7]
@@ -420,11 +426,11 @@ cardano-cli version
 cardano-tracer --version
 ```
 ```yaml title="期待される表示例：" noCopy
-cardano-node 11.0.1 - linux-x86_64 - ghc-9.6
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
+cardano-node 11.1.1 - linux-x86_64 - ghc-9.6
+git rev c2ebdc87dfe07706a83e52f219e712c60d1b0a56
 
-cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
+cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6
+git rev c2ebdc87dfe07706a83e52f219e712c60d1b0a56
 
 0.5.0
 ```
@@ -467,7 +473,7 @@ cabal update
 
 ```bash
 git fetch --all --recurse-submodules --tags
-git checkout tags/11.0.1
+git checkout tags/11.1.1
 cabal configure --with-compiler=ghc-9.6.7
 ```
 
@@ -489,6 +495,11 @@ cabal build all cardano-cli
 sudo systemctl stop cardano-node
 ```
 
+Tracerの停止
+```bash
+sudo systemctl stop cardano-tracer
+```
+
 ```bash
 cd $HOME/git/cardano-node2
 sudo cp -p "$(./scripts/bin-path.sh cardano-node)" "$(./scripts/bin-path.sh cardano-cli)" "$(./scripts/bin-path.sh cardano-tracer)" /usr/local/bin/
@@ -503,11 +514,11 @@ cardano-tracer --version
 ```
 
 ```yaml title="期待される表示例：" noCopy
-cardano-node 11.0.1 - linux-x86_64 - ghc-9.6  
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef  
+cardano-node 11.1.1 - linux-x86_64 - ghc-9.6  
+git rev c2ebdc87dfe07706a83e52f219e712c60d1b0a56  
 
-cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef  
+cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6  
+git rev c2ebdc87dfe07706a83e52f219e712c60d1b0a56  
 
 0.5.0
 ```
@@ -526,17 +537,38 @@ exit
 既存ファイルのバックアップ
 ```bash
 mkdir -p $NODE_HOME/backup
-cp $NODE_HOME/${NODE_CONFIG}-config.json $NODE_HOME/backup/${NODE_CONFIG}-config.json
+
+cp $NODE_HOME/${NODE_CONFIG}-byron-genesis.json $NODE_HOME/${NODE_CONFIG}-shelley-genesis.json $NODE_HOME/${NODE_CONFIG}-alonzo-genesis.json $NODE_HOME/${NODE_CONFIG}-conway-genesis.json $NODE_HOME/${NODE_CONFIG}-config.json $NODE_HOME/${NODE_CONFIG}-topology.json $NODE_HOME/backup/
 ```
 
 
-設定ファイルダウンロード
-
+設定ファイルをダウンロードします。
 ```bash
 cd $NODE_HOME
-wget https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
-wget https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
+
+
+<Tabs items={["リレーのみ"]}>
+
+<Tab value="リレーのみ">
+
+`peer-snapshot.json`のダウンロード
+```bash
+cd $NODE_HOME
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
+```
+
+</Tab>
+
+</Tabs>
+
 
 `config.json`の`TraceOptionNodeName`を、各ノードを識別するためのNode名に変更します。
 
@@ -664,9 +696,181 @@ exit
 </Tabs>
 */}
 
-## 3. Tracer設定 [#sec-10]
+### トポロジーファイルの変更 [#sec-9]
 
-### ノード起動スクリプトの修正 [#sec-11]
+この手順では、`GenesisMode` を使用する構成を前提としています。  
+Genesis Modeでは bootstrapPeers を使用せず、リレーは peerSnapshotFile を使用してGenesis同期を行います。  
+BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
+
+
+<Callout type="error" title="リレー">
+
+
+[5. ノード起動スクリプトの作成](/cardano/setup/node-setup#sec-15) で決めた**ノード用ポート**に合わせること。  
+行末の「`＋`」で注釈を表示できます。
+
+<Tabs items={["リレー1", "リレー2"]}>
+<Tab value="リレー1">
+
+<AnnotatedCode
+  code={[
+    'cat > ${NODE_HOME}/${NODE_CONFIG}-topology.json << EOF',
+    '{',
+    '  "localRoots": [',
+    '    {',
+    '      "accessPoints": [',
+    '        {',
+    '          "address": "BPのIP",',
+    '          "port": 00000',
+    '        }',
+    '      ],',
+    '      "advertise": false,',
+    '      "trustable": false,',
+    '      "hotValency": 1',
+    '    },',
+    '    {',
+    '      "accessPoints": [',
+    '        {',
+    '          "address": "リレー2のIP or DNS",',
+    '          "port": 6000',
+    '        }',
+    '      ],',
+    '      "advertise": true,',
+    '      "trustable": false,',
+    '      "hotValency": 1',
+    '    }',
+    '  ],',
+    '  "peerSnapshotFile": "$NODE_HOME/${NODE_CONFIG}-peer-snapshot.json",',
+    '  "publicRoots": [],',
+    '  "useLedgerAfterSlot": 194140785',
+    '}',
+    'EOF',
+  ].join('\n')}
+  annotations={{
+    7: 'BP の IP。',
+    8: 'BP のポート。`grep PORT=` `startBlockProducingNode.sh` の値に合わせてください（例は `00000`）。',
+    11: 'BP 宛の接続先をPeer Sharingで他ノードへ知らせないため `advertise: false` にします。',
+    18: 'リレー2 の IP アドレスまたは DNS。',
+    19: 'リレー2 のポート。リレー2 ノード側に設定したポートへ合わせてください。',
+    22: '`true` にすると、この接続先をPeer Sharingで他ノードへ知らせることを許可します。',
+    27: 'Genesis Modeで初期同期に使用するPeer Snapshotファイルを指定します。',
+    29: 'このスロット以降、Ledger Peersを使用します。',
+  }}
+/>
+
+</Tab>
+<Tab value="リレー2">
+
+<AnnotatedCode
+  code={[
+    'cat > ${NODE_HOME}/${NODE_CONFIG}-topology.json << EOF',
+    '{',
+    '  "localRoots": [',
+    '    {',
+    '      "accessPoints": [',
+    '        {',
+    '          "address": "BPのIP",',
+    '          "port": 00000',
+    '        }',
+    '      ],',
+    '      "advertise": false,',
+    '      "trustable": false,',
+    '      "hotValency": 1',
+    '    },',
+    '    {',
+    '      "accessPoints": [',
+    '        {',
+    '          "address": "リレー1のIP or DNS",',
+    '          "port": 6000',
+    '        }',
+    '      ],',
+    '      "advertise": true,',
+    '      "trustable": false,',
+    '      "hotValency": 1',
+    '    }',
+    '  ],',
+    '  "peerSnapshotFile": "$NODE_HOME/${NODE_CONFIG}-peer-snapshot.json",',
+    '  "publicRoots": [],',
+    '  "useLedgerAfterSlot": 194140785',
+    '}',
+    'EOF',
+  ].join('\n')}
+  annotations={{
+    7: 'BP の IP。',
+    8: 'BP のポート。`grep PORT=` `startBlockProducingNode.sh` の値に合わせてください（例は `00000`）。',
+    11: 'BP 宛の接続先をPeer Sharingで他ノードへ知らせないため `advertise: false` にします。',
+    18: 'リレー1 の IP アドレスまたは DNS。',
+    19: 'リレー1 のポート。リレー1 ノード側に設定したポートへ合わせてください。',
+    22: '`true` にすると、この接続先をPeer Sharingで他ノードへ知らせることを許可します。',
+    27: 'Genesis Modeで初期同期に使用するPeer Snapshotファイルを指定します。',
+    29: 'このスロット以降、Ledger Peersを使用します。',
+  }}
+/>
+
+</Tab>
+</Tabs>
+
+
+</Callout>
+
+
+<Callout type="error" title="BP">
+
+行末の「`＋`」で注釈を表示できます。
+
+<AnnotatedCode
+  code={[
+    'cat > ${NODE_HOME}/${NODE_CONFIG}-topology.json << EOF',
+    '{',
+    '  "localRoots": [',
+    '    {',
+    '      "accessPoints": [',
+    '        {',
+    '          "address": "リレー1のIP or DNS",',
+    '          "port": 6000',
+    '        },',
+    '        {',
+    '          "address": "リレー2のIP or DNS",',
+    '          "port": 6000',
+    '        }',
+    '      ],',
+    '      "advertise": false,',
+    '      "trustable": false,',
+    '      "hotValency": 2',
+    '    }',
+    '  ],',
+    '  "publicRoots": [],',
+    '  "useLedgerAfterSlot": -1',
+    '}',
+    'EOF',
+  ].join('\n')}
+  annotations={{
+    7: 'リレー1 の IP アドレスまたは DNS。',
+    8: 'リレー1 ノード側に設定したポート。',
+    11: 'リレー2 の IP アドレスまたは DNS。',
+    12: 'リレー2 ノード側に設定したポート。',
+    15: 'BP は自リレーをPeer Sharingで他ノードへ知らせないため `advertise: false` にします。',
+    17: 'Hot として維持したい自リレー数。`accessPoints` の数と揃えるのが一般的です。',
+    21: '`-1` を指定してLedger Peersを使用しないようにします。',
+  }}
+/>
+
+</Callout>
+
+
+### 構文チェックと再起動 [#sec-10]
+
+```bash
+jq . $NODE_HOME/${NODE_CONFIG}-topology.json
+```
+
+JSON がそのまま表示されれば問題ありません。  
+`parse error` のときは `{}` `[]` `,` を確認してください。
+
+
+## 3. Tracer設定 [#sec-11]
+
+### ノード起動スクリプトの修正 [#sec-12]
 
 <Tabs items={["リレー", "BP"]}>
 <Tab value="リレー">
@@ -729,7 +933,7 @@ EOF
 </Tab>
 </Tabs>
 
-### cardano-tracerサービス設定 [#sec-12]
+### cardano-tracerサービス設定 [#sec-13]
 
 Tracer用のディレクトリとログ保存用のディレクトリを作成します。
 
@@ -774,7 +978,7 @@ cd ${NODE_HOME}/tracer
 ```
 
 ```bash
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
 ```
 
 **tracer-config.jsonの設定**
@@ -834,7 +1038,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now cardano-tracer.service
 ```
 
-### Firewallの設定 [#sec-13]
+### Firewallの設定 [#sec-14]
 
 <Callout type="tip" title="💡">
 
@@ -894,7 +1098,7 @@ sudo ufw reload
 
 </Tabs>
 
-### Prometheusの設定変更 [#sec-14]
+### Prometheusの設定変更 [#sec-15]
 
 Cardano Nodeのmetricsを`cardano-tracer`経由で取得するため、Grafana稼働サーバーのPrometheus設定を変更します。
 
@@ -1032,7 +1236,7 @@ Active: active (running)
 </Tabs>
 
 
-### サーバー再起動 [#sec-15]
+### サーバー再起動 [#sec-16]
 
 **作業フォルダリネーム**
 
@@ -1098,7 +1302,7 @@ curl -s http://127.0.0.1:12808/
 <html><head><title>Prometheus metrics</title></head><body><ul><li><a href="/mainnet-bp">mainnet-bp</a></li></ul></body></html>
 ```
 
-## 4. 関連ツール・サービスの更新 [#sec-16]
+## 4. 関連ツール・サービスの更新 [#sec-17]
 
 <Tabs items={["全ノード"]}>
   <Tab value="全ノード">
@@ -1146,7 +1350,7 @@ Koios gLiveView v1.32.1
 </Tabs>
 
 
-### systemdサービスのログ設定を変更 [#sec-17]
+### systemdサービスのログ設定を変更 [#sec-18]
 
 `StandardOutput`、`StandardError`、`SyslogIdentifier`の設定を各systemdサービスから削除します。
 
@@ -1336,7 +1540,7 @@ sudo systemctl daemon-reload
 </Tabs>
 
 
-### BP関連ツールの更新・確認 [#sec-18]
+### BP関連ツールの更新・確認 [#sec-19]
 
 <Tabs items={["BP"]}>
 
@@ -1369,7 +1573,7 @@ BPノードが完全に同期した後、サービス起動状態を確認しま
 - validate  
 - blocknotify(SPO Block Notifyを導入している場合)
 
-#### `logMonitor`の更新 [#sec-19]
+#### `logMonitor`の更新 [#sec-20]
 
 `logMonitor`はCardano Nodeのログを監視し、ブロック生成に関する情報をCNCLIのblocklogへ反映するためのスクリプトです。
 
@@ -1434,7 +1638,7 @@ logmonitor
 ```
 
 
-#### `blocknotify`の更新 [#sec-20]
+#### `blocknotify`の更新 [#sec-21]
 
 SPO BlockNotifyの停止
 
@@ -1505,9 +1709,9 @@ cnclilog
 </Tabs>
 
 
-## 5. Grafana Dashboard設定 [#sec-21]
+## 5. Grafana Dashboard設定 [#sec-22]
 
-### Dashboardのインポート [#sec-22]
+### Dashboardのインポート [#sec-23]
 
 <Tabs items={["BP"]}>
 
@@ -1535,7 +1739,7 @@ BPの`cnode`フォルダにある`spo-japan-guild-cardano-node-dashboard.json`�
 「**DS_PROMETHEUS**」→「**Prometheus**」を選択し、「**DS_YESOREYERAM-INFINITY-DATASOURCE**」→「**yesoreyeram-infinity-datasource**」を選択し、「**Import**」を選択します。  
 
 
-### Grafanaアラートの対象メトリクス変更 [#sec-23]
+### Grafanaアラートの対象メトリクス変更 [#sec-24]
 
 左ペインの「Alerting」→「Alert rules」→「Manage alert rules」→「SJG→ノード監視」→「BPリレー接続監視」のメトリクスを変更して保存します。  
 
@@ -1546,7 +1750,7 @@ cardano_node_metrics_peerSelection_ActivePeers_int{alias="block-producing-node"}
 ```
 へと変更してください。
 
-## 6. エアギャップアップデート [#sec-24]
+## 6. エアギャップアップデート [#sec-25]
 <Callout type="info" title="SFTP機能ソフト導入">
 
 R-loginの転送機能が遅いので、大容量ファイルをダウン・アップロードする場合は、SFTP接続可能なソフトを使用すると効率的です。（FileZilaなど）  
@@ -1613,8 +1817,8 @@ cardano-cli version
 
 **戻り値確認**
 ```yaml title="期待される表示例：" noCopy
-cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
+cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6  
+git rev c2ebdc87dfe07706a83e52f219e712c60d1b0a56
 ```
 
 </Tab>
@@ -1759,8 +1963,8 @@ cardano-cli version
 
 **戻り値確認**
 ```yaml title="期待される表示例：" noCopy
-cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6  
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
+cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6  
+git rev c2ebdc87dfe07706a83e52f219e712c60d1b0a56
 ```
 
 

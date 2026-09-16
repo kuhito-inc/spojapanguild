@@ -7,6 +7,7 @@
     "build": "next build --webpack",
     "dev": "next dev",
     "docs:absolutize-links": "node tools/docs/absolutize-docs-links.mjs",
+    "docs:check-links": "node tools/docs/check-internal-links.mjs",
     "docs:english-anchors": "node tools/docs/english-anchor-docs.mjs",
     "docs:fix-relative-fragments": "node tools/docs/fix-relative-doc-fragments.mjs",
     "docs:infer-fence-lang": "node tools/docs/infer-code-fence-lang.mjs",
@@ -43,6 +44,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "github-slugger": "^2.0.0",
+    "parse5": "7.3.0",
     "postcss": "^8.5.13",
     "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3"

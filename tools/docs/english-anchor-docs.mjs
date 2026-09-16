@@ -1,6 +1,7 @@
 /**
- * 全 MDX の見出しに英数字 ID（sec-1, sec-2, …）を付与し、
- * `/docs/...#...` 内部リンクのフラグメントを対応表で一括置換する。
+ * ID 未指定の MDX 見出しに英数字 ID（sec-N）を付与し、
+ * ルート相対の内部リンクのフラグメントを対応表で一括置換する。
+ * 既存の明示 ID は保持し、見出し追加・並べ替えによる再採番を避ける。
  *
  * fumadocs の remark-heading と同様、末尾の `[#custom-id]` がある見出しは
  * その文字列を oldId（移行前の URL フラグメント）として扱う。
@@ -44,16 +45,43 @@ function flattenHeadingForSlug(titleLine) {
 
 function extractHeadings(content) {
   const lines = content.split(/\r?\n/);
-  let inFence = false;
+  let fence = null;
+  let inComment = false;
   const out = [];
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    if (/^(\s*)```/.test(line)) {
-      inFence = !inFence;
+    let line = lines[i];
+    if (fence) {
+      const end = line.match(/^\s*(`{3,}|~{3,})\s*$/);
+      if (end && end[1][0] === fence[0] && end[1].length >= fence.length) fence = null;
       continue;
     }
-    if (inFence) continue;
+
+    // MDX comments can contain retired headings and entire fenced examples.
+    let visible = '';
+    while (line.length > 0) {
+      if (inComment) {
+        const end = line.indexOf('*/}');
+        if (end === -1) break;
+        line = line.slice(end + 3);
+        inComment = false;
+      } else {
+        const start = line.indexOf('{/*');
+        if (start === -1) {
+          visible += line;
+          break;
+        }
+        visible += line.slice(0, start);
+        line = line.slice(start + 3);
+        inComment = true;
+      }
+    }
+    line = visible;
+    const start = line.match(/^\s*(`{3,}|~{3,})/);
+    if (start) {
+      fence = start[1];
+      continue;
+    }
 
     const m = line.match(MD_HEADING);
     if (!m) continue;
@@ -65,12 +93,16 @@ function extractHeadings(content) {
 function computeMappingsForFile(docSlug, headings) {
   const slugger = new Slugger();
   const rows = [];
-  let n = 0;
+  // Allocate after existing numeric IDs; never change a published explicit ID.
+  let n = headings.reduce((max, h) => {
+    const id = h.titleRest.match(CUSTOM_ID)?.[1];
+    const number = id?.match(/^sec-(\d+)$/);
+    return number ? Math.max(max, Number(number[1])) : max;
+  }, 0);
 
   for (const h of headings) {
-    n += 1;
-    const newId = `sec-${n}`;
     const cust = h.titleRest.match(CUSTOM_ID);
+    const newId = cust ? cust[1] : `sec-${++n}`;
     let oldId;
     if (cust) {
       oldId = cust[1];
@@ -92,6 +124,7 @@ function computeMappingsForFile(docSlug, headings) {
 function applyHeadingRewrites(lines, rows) {
   const out = [...lines];
   for (const r of rows) {
+    if (r.oldId === r.newId) continue;
     const titleOnly = r.titleRest.replace(CUSTOM_ID, "").trimEnd();
     out[r.lineIndex] = `${r.hashes} ${titleOnly} [#${r.newId}]`;
   }
