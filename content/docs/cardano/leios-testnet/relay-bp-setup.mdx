@@ -121,7 +121,8 @@ CONFIG=\${DIRECTORY}/config.json
 KES=\${DIRECTORY}/kes.skey
 VRF=\${DIRECTORY}/vrf.skey
 CERT=\${DIRECTORY}/node.cert
-/usr/local/bin/cardano-node run --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG} --shelley-kes-key \${KES} --shelley-vrf-key \${VRF} --shelley-operational-certificate \${CERT}
+BLS=\${DIRECTORY}/bls.skey
+/usr/local/bin/cardano-node run --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG} --shelley-kes-key \${KES} --shelley-vrf-key \${VRF} --shelley-bls-key \${BLS} --shelley-operational-certificate \${CERT}
 EOF
 chmod +x $NODE_HOME/startNode.sh
 ```

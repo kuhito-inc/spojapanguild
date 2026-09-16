@@ -28,13 +28,6 @@ RELEASE=$(curl -s "https://api.github.com/repos/input-output-hk/ouroboros-leios/
 echo "RELEASE=${RELEASE}"
 ```
 
-<Callout type="warn" title="リリースタグについて">
-
-Leios のリリースはすべて **Pre-release** として公開されているため、`releases/latest` API では取得できません。  
-`RELEASE=` が空で表示された場合や、特定のバージョンを指定したい場合は、[Releases](https://github.com/input-output-hk/ouroboros-leios/releases) ページで確認のうえ `RELEASE=prototype-2026wXX` の形式で直接指定してください。
-
-</Callout>
-
 
 バイナリとチェックサムをダウンロードします。
 ```bash
@@ -58,7 +51,11 @@ tar -xzf cardano-node-leios-x86_64-linux.tar.gz
 ```
 ```bash
 sudo cp bin/cardano-node /usr/local/bin/cardano-node
+```
+```bash
 sudo cp bin/cardano-cli /usr/local/bin/cardano-cli
+```
+```bash
 sudo chmod +x /usr/local/bin/cardano-node /usr/local/bin/cardano-cli
 ```
 
@@ -68,11 +65,49 @@ cardano-node --version
 cardano-cli --version
 ```
 > cardano-node 11.1.0.164 - linux-x86_64 - ghc-9.6  
-> git rev 6971bb527288d0f362147fbe318c0e9c84312ab3  
+> git rev c5f7d9121beb67e6d03d0632ae2bd3b76259728e  
 
 > cardano-cli 11.1.0.0 - linux-x86_64 - ghc-9.6  
-> git rev 6971bb527288d0f362147fbe318c0e9c84312ab3  
+> git rev c5f7d9121beb67e6d03d0632ae2bd3b76259728e  
 
+
+<AccordionsBlue type="single">
+  <Accordion id="node-update-major-changes" title="チェーンがリスピン(リセット)した場合">
+
+```bash
+cd $NODE_HOME
+rm -rf db
+```
+
+設定ファイルダウンロード
+```bash
+wget https://book.play.dev.cardano.org/environments-pre/leios/config.json -O config.json
+wget https://book.play.dev.cardano.org/environments-pre/leios/peer-snapshot.json -O peer-snapshot.json
+wget https://book.play.dev.cardano.org/environments-pre/leios/byron-genesis.json -O byron-genesis.json
+wget https://book.play.dev.cardano.org/environments-pre/leios/shelley-genesis.json -O shelley-genesis.json
+wget https://book.play.dev.cardano.org/environments-pre/leios/alonzo-genesis.json -O alonzo-genesis.json
+wget https://book.play.dev.cardano.org/environments-pre/leios/conway-genesis.json -O conway-genesis.json
+wget https://book.play.dev.cardano.org/environments-pre/leios/dijkstra-genesis.json -O dijkstra-genesis.json
+```
+
+スナップショットダウンロード
+```bash
+cd "$NODE_HOME"
+curl -L -o leios.chain.tar.zst https://leios1-rel-a-1.play.dev.cardano.org/leios.chain.tar.zst
+```
+
+```bash
+curl -L -o leios.leiosdb.tar.zst https://leios3-rel-c-1.play.dev.cardano.org/leios.leiosdb.tar.zst
+```
+
+$NODE_HOMEに展開します。
+```bash
+tar -I zstd -xvf leios.chain.tar.zst -C "$NODE_HOME"
+tar -I zstd -xvf leios.leiosdb.tar.zst -C "$NODE_HOME"
+```
+
+  </Accordion>
+</AccordionsBlue>
 
 ノードを起動し、同期状況を確認します。
 ```bash
@@ -84,7 +119,8 @@ sudo systemctl start cardano-node
 glive
 ```
 
-2. チェーンがリスピン(リセット)した場合
+<AccordionsBlue type="single">
+  <Accordion id="node-update-major-changes" title="チェーンがリスピン(リセット)した場合の再登録">
 
 既存の鍵ファイルを使用してプールを再登録できます。
 
@@ -113,5 +149,6 @@ glive
 
 2-5. [ステークの委任](/cardano/leios-testnet/stake-pool-register#sec-6)  
 
-
+  </Accordion>
+</AccordionsBlue>
 ---
