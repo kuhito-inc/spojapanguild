@@ -1,5 +1,6 @@
 import { createMDX } from 'fumadocs-mdx/next';
 import { PHASE_DEVELOPMENT_SERVER } from 'next/constants.js';
+import { securityHeadersConfig } from './lib/security-headers.mjs';
 
 const withMDX = createMDX();
 
@@ -12,6 +13,8 @@ const config = {
   images: {
     unoptimized: true,
   },
+  // 静的 GitHub Pages では効かないが、next start / 将来のサーバー配信向け。
+  headers: securityHeadersConfig(),
 };
 
 export default (phase) => withMDX({

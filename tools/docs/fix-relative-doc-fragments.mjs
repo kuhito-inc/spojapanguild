@@ -4,7 +4,7 @@
  *
  * Usage（リポジトリルート）: node tools/docs/fix-relative-doc-fragments.mjs [--dry-run]
  */
-import { execSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -74,15 +74,12 @@ function fileAbsToDocsUrlPath(absFile) {
 }
 
 function gitShowHead(relFromRepoRoot) {
-  try {
-    return execSync(`git show HEAD:${relFromRepoRoot}`, {
-      encoding: "utf8",
-      cwd: REPO,
-      stdio: ["pipe", "pipe", "pipe"],
-    });
-  } catch {
-    return null;
-  }
+  const result = spawnSync("git", ["show", `HEAD:${relFromRepoRoot}`], {
+    encoding: "utf8",
+    cwd: REPO,
+  });
+  if (result.status !== 0) return null;
+  return result.stdout;
 }
 
 function walkMdxFiles(dir, acc = []) {
