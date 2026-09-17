@@ -130,7 +130,7 @@ sudo systemctl enable --now prometheus-node-exporter.service
 
 ファイアウォール設定でPrometheusメトリクスポートをGrafana稼働サーバーのIP限定で開放します。
 ```bash
-sudo ufw allow from <Grafana稼働サーバーのIP> to any port 12798
+sudo ufw allow from <Grafana稼働サーバーのIP> to any port 12808
 ```
 ```bash
 sudo ufw allow from <Grafana稼働サーバーのIP> to any port 9100

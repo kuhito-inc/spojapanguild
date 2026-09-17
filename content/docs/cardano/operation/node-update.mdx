@@ -2,7 +2,7 @@
 title: "ノードアップデート"
 ---
 
-このガイドは ノードバージョン`11.1.1`に対応しています。  
+このガイドは ノードバージョン`11.1.2`に対応しています。  
 
 <LastUpdated />
 
@@ -12,13 +12,13 @@ title: "ノードアップデート"
 
 | OS | Node | CLI | GHC | Cabal | CNCLI |
 | :----------: | :----------: | :----------: | :----------: | :----------: | :----------: |
-| ubuntu 24.04.* | 11.1.1 | 11.2.3.0 | 9.6.7 | 3.12.1.0 | 6.7.0 |
+| ubuntu 24.04.* | 11.1.2 | 11.2.3.0 | 9.6.7 | 3.12.1.0 | 6.7.0 |
 
 **■アップデートパターンDB再構築有無**
 
 | バージョン | DB再構築有無 | 設定ファイル更新有無 | トポロジーファイル更新有無 |
 | :----------: | :----------: | :----------: | :----------: |
-| 11.0.1 → 11.1.1 | なし | 更新あり | 更新あり |
+| 11.0.1 → 11.1.2 | なし | 更新あり | 更新あり |
 
 </Callout>
 
@@ -34,6 +34,15 @@ title: "ノードアップデート"
 
 <AccordionsBlue type="single">
   <Accordion id="node-update-major-changes" title="主な変更点と新機能および検証結果">
+
+<Callout type="info" title="cardano-node 11.1.2">
+
+- Time Lock Scriptのメモリ使用量を最適化  
+- Block HeaderのProtocol Version minorを更新  
+- その他の主要コンポーネントに変更なし  
+- 11.1.1のSystem Testing・Benchmark結果を継承  
+
+</Callout>
 
 <Callout type="info" title="cardano-node 11.1.1">
 
@@ -60,7 +69,7 @@ title: "ノードアップデート"
 <Callout type="info" title="検証結果">
 
 ■検証環境
-PreProd-Testnet / cardano-node 11.1.1 / cardano-cli 11.2.3.0 / SJG-TOOL 4.2.0  
+PreProd-Testnet / cardano-node 11.1.2 / cardano-cli 11.2.3.0 / SJG-TOOL 5.0.0  
 
 | 検証項目 | 結果 |
 | :----------: | :----------: |
@@ -392,12 +401,12 @@ rm -rf $HOME/git/cardano-node-old/
 ```bash
 mkdir -p $HOME/git/cardano-node2
 cd $HOME/git/cardano-node2
-wget https://github.com/IntersectMBO/cardano-node/releases/download/11.1.1/cardano-node-11.1.1-linux-amd64.tar.gz
+wget https://github.com/IntersectMBO/cardano-node/releases/download/11.1.2/cardano-node-11.1.2-linux-amd64.tar.gz
 ```
 
 解凍
 ```bash
-tar zxvf cardano-node-11.1.1-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano-cli ./bin/snapshot-converter ./bin/cardano-tracer
+tar zxvf cardano-node-11.1.2-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano-cli ./bin/snapshot-converter ./bin/cardano-tracer
 ```
 
 **ノードの停止** 
@@ -426,11 +435,11 @@ cardano-cli version
 cardano-tracer --version
 ```
 ```yaml title="期待される表示例：" noCopy
-cardano-node 11.1.1 - linux-x86_64 - ghc-9.6
-git rev c2ebdc87dfe07706a83e52f219e712c60d1b0a56
+cardano-node 11.1.2 - linux-x86_64 - ghc-9.6
+git rev fef83fed01d7926f3de83b3b917be5a4a48768b5
 
 cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6
-git rev c2ebdc87dfe07706a83e52f219e712c60d1b0a56
+git rev fef83fed01d7926f3de83b3b917be5a4a48768b5
 
 0.5.0
 ```
@@ -473,7 +482,7 @@ cabal update
 
 ```bash
 git fetch --all --recurse-submodules --tags
-git checkout tags/11.1.1
+git checkout tags/11.1.2
 cabal configure --with-compiler=ghc-9.6.7
 ```
 
@@ -514,11 +523,11 @@ cardano-tracer --version
 ```
 
 ```yaml title="期待される表示例：" noCopy
-cardano-node 11.1.1 - linux-x86_64 - ghc-9.6  
-git rev c2ebdc87dfe07706a83e52f219e712c60d1b0a56  
+cardano-node 11.1.2 - linux-x86_64 - ghc-9.6  
+git rev fef83fed01d7926f3de83b3b917be5a4a48768b5  
 
 cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6  
-git rev c2ebdc87dfe07706a83e52f219e712c60d1b0a56  
+git rev fef83fed01d7926f3de83b3b917be5a4a48768b5  
 
 0.5.0
 ```
@@ -545,13 +554,13 @@ cp $NODE_HOME/${NODE_CONFIG}-byron-genesis.json $NODE_HOME/${NODE_CONFIG}-shelle
 設定ファイルをダウンロードします。
 ```bash
 cd $NODE_HOME
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
 
 
@@ -562,7 +571,7 @@ wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${N
 `peer-snapshot.json`のダウンロード
 ```bash
 cd $NODE_HOME
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
 ```
 
 </Tab>
@@ -835,7 +844,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": false,',
+    '      "trustable": true,',
     '      "hotValency": 2',
     '    }',
     '  ],',
@@ -978,7 +987,7 @@ cd ${NODE_HOME}/tracer
 ```
 
 ```bash
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.1/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
+wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
 ```
 
 **tracer-config.jsonの設定**
@@ -1236,121 +1245,7 @@ Active: active (running)
 </Tabs>
 
 
-### サーバー再起動 [#sec-16]
-
-**作業フォルダリネーム**
-
-以前のバージョンで使用していたバイナリフォルダをリネームし、バックアップとして保持します。  
-最新バージョンを構築したフォルダをcardano-nodeとして使用します。
-
-```bash
-cd $HOME/git
-mv cardano-node/ cardano-node-old/
-mv cardano-node2/ cardano-node/
-```
-
-サーバーの再起動
-```bash
-sudo reboot
-```
-
-SSH接続後、ノード同期状況の確認
-
-```bash
-sudo journalctl -u cardano-node -f
-```
-
-<Callout type="info" title="ノードログメッセージ確認">
-
-以下のメッセージがログに含まれている場合に同期状況を判断できます。
-
-| メッセージ | ステータス |
-| :---------- | :---------- |
-| `Chain extended, new tip: xxxxxxxx at slot xxxxxx`| チェーン同期成功 |
-| `GenesisReadFileError`| ジェネシスファイルエラー |
-| `InvalidYaml` | 設定ファイルエラー |
-| `Invalid option` | 起動オプションエラー |
-| `Invalid argument` | 起動コマンドエラー |
-| `Address in use` | ノード起動ポートが競合しています |
-
-</Callout>
-
-
-`cardano-tracer`が正常に起動していることを確認します。
-
-```bash
-sudo systemctl status cardano-tracer --no-pager
-```
-```yaml title="期待される表示例：" noCopy
-Active: active (running) 
-```
-
-Tracer Socketの確認
-```bash
-test -S ${CARDANO_TRACER_SOCKET_PATH} && echo "Tracer socket OK"
-```
-```yaml title="期待される表示例：" noCopy
-Tracer socket OK
-```
-`cardano-tracer`にCardano Nodeが接続していることを確認します。
-```bash
-curl -s http://127.0.0.1:12808/
-```
-> Node名が表示されれば、Cardano Nodeがcardano-tracerに正常に接続されています。
-
-```yaml title="期待される表示例：" noCopy
-<html><head><title>Prometheus metrics</title></head><body><ul><li><a href="/mainnet-bp">mainnet-bp</a></li></ul></body></html>
-```
-
-## 4. 関連ツール・サービスの更新 [#sec-17]
-
-<Tabs items={["全ノード"]}>
-  <Tab value="全ノード">
-
-**gLiveView更新**
-```bash
-sed -i $NODE_HOME/scripts/env \
-  -e '1,73s!UPDATE_CHECK="N"!UPDATE_CHECK="Y"!' \
-  -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
-  -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
-```
-
-**gliveの起動**
-```bash
-glive
-```
-
-更新メッセージが表示されたら`yes`を入力して`enter`  
-```yaml title="期待される表示例：" noCopy
-env script update(s) detected, do you want to download the latest version? (yes/no): yes
-```
-
-gLiveView.sh更新完了のメッセージが表示されたら再度`enter`  
-```yaml title="期待される表示例：" noCopy
-gLiveView.sh update successfully applied!  
-press any key to proceed ..
-```
-
-
-**更新フラグの切り替え**
-```bash
-sed -i $NODE_HOME/scripts/env \
-  -e '1,73s!UPDATE_CHECK="Y"!UPDATE_CHECK="N"!'
-```
-
-**gliveバージョン確認**
-```bash
-glive
-```
-```yaml title="期待される表示例：" noCopy
-Koios gLiveView v1.32.1
-```
-
-</Tab>
-</Tabs>
-
-
-### systemdサービスのログ設定を変更 [#sec-18]
+### systemdサービスのログ設定を変更 [#sec-16]
 
 `StandardOutput`、`StandardError`、`SyslogIdentifier`の設定を各systemdサービスから削除します。
 
@@ -1446,37 +1341,6 @@ systemdへ変更を反映します。
 sudo systemctl daemon-reload
 ```
 
-Cardano Nodeを再起動します。
-
-```bash
-sudo systemctl restart cardano-node.service
-```
-
-Cardano Nodeの状態を確認します。
-
-```bash
-systemctl status --no-pager cardano-node.service
-```
-
-<AccordionsBlue type="single">
-
-  <Accordion id="restart-dmq-node-after-systemd-update" title="DMQ Nodeを導入している場合">
-
-DMQ Nodeを導入している場合は、DMQ Nodeを再起動します。
-
-```bash
-sudo systemctl restart dmq-node.service
-```
-
-DMQ Nodeの状態を確認します。
-
-```bash
-systemctl status --no-pager dmq-node.service
-```
-
-  </Accordion>
-
-</AccordionsBlue>
 
 </Tab>
 
@@ -1540,6 +1404,125 @@ sudo systemctl daemon-reload
 </Tabs>
 
 
+### サーバー再起動 [#sec-17]
+
+**作業フォルダリネーム**
+
+以前のバージョンで使用していたバイナリフォルダをリネームし、バックアップとして保持します。  
+最新バージョンを構築したフォルダをcardano-nodeとして使用します。
+
+```bash
+cd $HOME/git
+mv cardano-node/ cardano-node-old/
+mv cardano-node2/ cardano-node/
+```
+
+サーバーの再起動
+```bash
+sudo reboot
+```
+
+SSH接続後、ノード同期状況の確認
+
+```bash
+journalctl -u cardano-node -f
+```
+> 同期までしばらくお待ちください
+
+<Callout type="info" title="ノードログメッセージ確認">
+
+以下のメッセージがログに含まれている場合に同期状況を判断できます。
+
+| メッセージ | ステータス |
+| :---------- | :---------- |
+| `GenesisReadFileError`| ジェネシスファイルエラー |
+| `InvalidYaml` | 設定ファイルエラー |
+| `Invalid option` | 起動オプションエラー |
+| `Invalid argument` | 起動コマンドエラー |
+| `Address in use` | ノード起動ポートが競合しています |
+
+</Callout>
+
+gliveでノード同期状況を確認します。
+```bash
+glive
+```
+
+
+`cardano-tracer`が正常に起動していることを確認します。
+
+```bash
+sudo systemctl status cardano-tracer --no-pager
+```
+```yaml title="期待される表示例：" noCopy
+Active: active (running) 
+```
+
+Tracer Socketの確認
+```bash
+test -S ${CARDANO_TRACER_SOCKET_PATH} && echo "Tracer socket OK"
+```
+```yaml title="期待される表示例：" noCopy
+Tracer socket OK
+```
+`cardano-tracer`にCardano Nodeが接続していることを確認します。
+```bash
+curl -s http://127.0.0.1:12808/
+```
+> Node名が表示されれば、Cardano Nodeがcardano-tracerに正常に接続されています。
+
+```yaml title="期待される表示例：" noCopy
+<html><head><title>Prometheus metrics</title></head><body><ul><li><a href="/mainnet-bp">mainnet-bp</a></li></ul></body></html>
+```
+
+## 4. 関連ツール・サービスの更新 [#sec-18]
+
+<Tabs items={["全ノード"]}>
+  <Tab value="全ノード">
+
+**gLiveView更新**
+```bash
+sed -i $NODE_HOME/scripts/env \
+  -e '1,73s!UPDATE_CHECK="N"!UPDATE_CHECK="Y"!' \
+  -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
+  -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
+```
+
+**gliveの起動**
+```bash
+glive
+```
+
+更新メッセージが表示されたら`yes`を入力して`enter`  
+```yaml title="期待される表示例：" noCopy
+env script update(s) detected, do you want to download the latest version? (yes/no): yes
+```
+
+gLiveView.sh更新完了のメッセージが表示されたら再度`enter`  
+```yaml title="期待される表示例：" noCopy
+gLiveView.sh update successfully applied!  
+press any key to proceed ..
+```
+
+
+**更新フラグの切り替え**
+```bash
+sed -i $NODE_HOME/scripts/env \
+  -e '1,73s!UPDATE_CHECK="Y"!UPDATE_CHECK="N"!'
+```
+
+**gliveバージョン確認**
+```bash
+glive
+```
+```yaml title="期待される表示例：" noCopy
+Koios gLiveView v1.32.1
+```
+
+</Tab>
+</Tabs>
+
+
 ### BP関連ツールの更新・確認 [#sec-19]
 
 <Tabs items={["BP"]}>
@@ -1566,6 +1549,26 @@ sudo systemctl daemon-reload
   </Accordion>
 </AccordionsYellow>
 
+#### `sjgtool`の更新 [#sec-20]
+
+配布リポジトリが変更されたため、既存の自動更新では最新版を取得できません。新しいURLから再取得してください。
+
+```bash
+cd $NODE_HOME/scripts
+wget https://raw.githubusercontent.com/kuhito-inc/sjg-tools/main/sjgtool.sh -O sjgtool.sh
+chmod 755 sjgtool.sh
+```
+
+起動してバージョンを確認します。
+
+```bash
+gtool
+```
+
+```yaml title="期待される表示例：" noCopy
+>> SPO JAPAN GUILD TOOL Version 5.0.0 <<
+```
+
 BPノードが完全に同期した後、サービス起動状態を確認します。
 
 - cnclilog  
@@ -1573,7 +1576,7 @@ BPノードが完全に同期した後、サービス起動状態を確認しま
 - validate  
 - blocknotify(SPO Block Notifyを導入している場合)
 
-#### `logMonitor`の更新 [#sec-20]
+#### `logMonitor`の更新 [#sec-21]
 
 `logMonitor`はCardano Nodeのログを監視し、ブロック生成に関する情報をCNCLIのblocklogへ反映するためのスクリプトです。
 
@@ -1588,7 +1591,7 @@ sudo systemctl stop cnode-logmonitor.service
 ```bash
 cd $NODE_HOME/scripts
 
-wget https://raw.githubusercontent.com/btbf/spojapanguild/master/scripts/logMonitor.sh -q -O ./logMonitor.sh
+wget https://raw.githubusercontent.com/kuhito-inc/sjg-tools/main/logMonitor.sh -q -O ./logMonitor.sh
 chmod 755 logMonitor.sh
 ```
 
@@ -1638,7 +1641,9 @@ logmonitor
 ```
 
 
-#### `blocknotify`の更新 [#sec-21]
+#### `blocknotify`の更新 [#sec-22]
+
+> 導入していない方は不要です。
 
 SPO BlockNotifyの停止
 
@@ -1709,9 +1714,9 @@ cnclilog
 </Tabs>
 
 
-## 5. Grafana Dashboard設定 [#sec-22]
+## 5. Grafana Dashboard設定 [#sec-23]
 
-### Dashboardのインポート [#sec-23]
+### Dashboardのインポート [#sec-24]
 
 <Tabs items={["BP"]}>
 
@@ -1739,7 +1744,7 @@ BPの`cnode`フォルダにある`spo-japan-guild-cardano-node-dashboard.json`�
 「**DS_PROMETHEUS**」→「**Prometheus**」を選択し、「**DS_YESOREYERAM-INFINITY-DATASOURCE**」→「**yesoreyeram-infinity-datasource**」を選択し、「**Import**」を選択します。  
 
 
-### Grafanaアラートの対象メトリクス変更 [#sec-24]
+### Grafanaアラートの対象メトリクス変更 [#sec-25]
 
 左ペインの「Alerting」→「Alert rules」→「Manage alert rules」→「SJG→ノード監視」→「BPリレー接続監視」のメトリクスを変更して保存します。  
 
@@ -1750,7 +1755,7 @@ cardano_node_metrics_peerSelection_ActivePeers_int{alias="block-producing-node"}
 ```
 へと変更してください。
 
-## 6. エアギャップアップデート [#sec-25]
+## 6. エアギャップアップデート [#sec-26]
 <Callout type="info" title="SFTP機能ソフト導入">
 
 R-loginの転送機能が遅いので、大容量ファイルをダウン・アップロードする場合は、SFTP接続可能なソフトを使用すると効率的です。（FileZilaなど）  
@@ -1818,7 +1823,7 @@ cardano-cli version
 **戻り値確認**
 ```yaml title="期待される表示例：" noCopy
 cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6  
-git rev c2ebdc87dfe07706a83e52f219e712c60d1b0a56
+git rev fef83fed01d7926f3de83b3b917be5a4a48768b5
 ```
 
 </Tab>
@@ -1964,7 +1969,7 @@ cardano-cli version
 **戻り値確認**
 ```yaml title="期待される表示例：" noCopy
 cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6  
-git rev c2ebdc87dfe07706a83e52f219e712c60d1b0a56
+git rev fef83fed01d7926f3de83b3b917be5a4a48768b5
 ```
 
 
