@@ -6,6 +6,25 @@ title: "ノードアップデート"
 
 <LastUpdated />
 
+<Callout type="warn" title="留意点">
+今回のアップデートでは大幅な変更があります。
+
+- ログシステム変更(cardano-tracer常駐)
+- Configファイル変更(cardano-tracer用)
+- Prometheus設定変更
+- GenesisModeへ切り替え
+- Topologyファイルアップデート
+- ブロックログ関連スクリプトアップデート
+- BlockNotifyアップデート
+- SJGTOOLアップデート
+- Grafanaダッシュボードアップデート
+
+{/* - 作業実施前にブロック生成スケジュールを確認してください。  
+- 今回のアップデートではDB更新があるため、ブロック生成が2時間以上無いことを確認してください。    
+- 複数行のコードをコードボックスのコピーボタンを使用してコマンドラインに貼り付ける場合は、最後の行が自動実行されないため確認の上`Enter`を押してコードを実行してください。 */} 
+
+</Callout>
+
 <Callout type="info" title="バージョン対応表">
 
 **<span style={{color: "red"}}>各依存関係もバージョンアップしてますのでよくお読みになって進めてください</span>**
@@ -21,16 +40,6 @@ title: "ノードアップデート"
 | 11.0.1 → 11.1.2 | なし | 更新あり | 更新あり |
 
 </Callout>
-
-
-<Callout type="warn" title="留意点">
-
-- 作業実施前にブロック生成スケジュールを確認してください。  
-{/* - 今回のアップデートではDB更新があるため、ブロック生成が2時間以上無いことを確認してください。    */}
-- 複数行のコードをコードボックスのコピーボタンを使用してコマンドラインに貼り付ける場合は、最後の行が自動実行されないため確認の上`Enter`を押してコードを実行してください。  
-
-</Callout>
-
 
 <AccordionsBlue type="single">
   <Accordion id="node-update-major-changes" title="主な変更点と新機能および検証結果">
@@ -375,17 +384,6 @@ cncli v6.8.0 <~~~> (x86_64-unknown-linux-gnu)
 </Callout>
 
 
-MainnetのネットワークIDを修正
-```bash
-sed -i 's/CARDANO_NODE_NETWORK_ID=mainnet/CARDANO_NODE_NETWORK_ID=764824073/g' ~/.bashrc
-source ~/.bashrc
-```
-```bash
-echo $CARDANO_NODE_NETWORK_ID
-```
-> `764824073`であること
-
-
 <Tabs items={["ビルド済みバイナリを使用する場合", "ソースコードからビルドする場合はこちら"]}>
 <Tab value="ビルド済みバイナリを使用する場合">
 
@@ -412,11 +410,6 @@ tar zxvf cardano-node-11.1.2-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano
 **ノードの停止** 
 ```bash
 sudo systemctl stop cardano-node
-```
-
-**Tracerの停止** 
-```bash
-sudo systemctl stop cardano-tracer
 ```
 
 ### バイナリインストール [#sec-7]
@@ -563,6 +556,7 @@ wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${N
 wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
 
+リレーのみで実行
 
 <Tabs items={["リレーのみ"]}>
 
@@ -712,7 +706,7 @@ Genesis Modeでは bootstrapPeers を使用せず、リレーは peerSnapshotFil
 BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
 
 
-<Callout type="error" title="リレー">
+<Callout type="error" title="リレーTopologyの変更">
 
 
 [5. ノード起動スクリプトの作成](/cardano/setup/node-setup#sec-15) で決めた**ノード用ポート**に合わせること。  
@@ -823,7 +817,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
 </Callout>
 
 
-<Callout type="error" title="BP">
+<Callout type="error" title="BP Topologyの変更">
 
 行末の「`＋`」で注釈を表示できます。
 
@@ -995,10 +989,11 @@ wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${N
 `tracer-config.json`のログ保存先、Unix SocketのPATH、Network Magicを環境に合わせて変更します。
 
 ```bash
+NETWORK_MAGIC=$(jq -r '.networkMagic' $NODE_HOME/{NODE_CONFIG}-shelley-genesis.json)
 sed -i \
   -e "s|\"logRoot\": \"\"|\"logRoot\": \"${NODE_HOME}/logs\"|" \
   -e "s|\"contents\": \"\"|\"contents\": \"${NODE_HOME}/tracer/socket\"|" \
-  -e "s|\"networkMagic\": 0|\"networkMagic\": ${CARDANO_NODE_NETWORK_ID}|" \
+  -e "s|\"networkMagic\": 0|\"networkMagic\": ${NETWORK_MAGIC}|" \
   ${NODE_CONFIG}-tracer-config.json
 ```
 
@@ -1051,7 +1046,7 @@ sudo systemctl enable --now cardano-tracer.service
 
 <Callout type="tip" title="💡">
 
-AWS等のクラウドサービスを使用している場合は、管理コンソールからFirewallの設定を行ってください。
+AWS等のVPS側でFirewallを使用している場合は、管理コンソールからFirewallの設定を行ってください。
 
 </Callout>
 
@@ -1789,7 +1784,7 @@ blocknotify
 $HOME/notify-venv/bin/python $NODE_HOME/scripts/block-notify/block_notify.py version
 ```
 ```yaml title="期待される表示例：" noCopy
-v2.5.0
+v2.6.0
 ```
 
 それぞれのサービスを起動して、正常に起動していることを確認してください。
