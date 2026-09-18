@@ -1916,16 +1916,6 @@ mkdir -p $HOME/git/cardano-node2
 ```
 > $HOME/git/cardano-node2/ に`cardano-cli`を格納します。  
 
-MainnetのネットワークIDを修正
-```bash
-sed -i 's/CARDANO_NODE_NETWORK_ID=mainnet/CARDANO_NODE_NETWORK_ID=764824073/g' ~/.bashrc
-source ~/.bashrc
-```
-```bash
-echo $CARDANO_NODE_NETWORK_ID
-```
-> `764824073`であること
-
 **`cardano-cli` バイナリの配置**
 ```bash
 sudo cp $(find $HOME/git/cardano-node2 -type f -name "cardano-cli") /usr/local/bin/cardano-cli
@@ -2003,16 +1993,6 @@ graph LR
 ```bash
 mkdir -p $HOME/git/cardano-node2
 ```
-
-MainnetのネットワークIDを修正
-```bash
-sed -i 's/CARDANO_NODE_NETWORK_ID=mainnet/CARDANO_NODE_NETWORK_ID=764824073/g' ~/.bashrc
-source ~/.bashrc
-```
-```bash
-echo $CARDANO_NODE_NETWORK_ID
-```
-> `764824073`であること
 
 **cardano-cliの配置**
 ```bash
