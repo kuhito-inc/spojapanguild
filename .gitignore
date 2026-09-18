@@ -31,3 +31,8 @@ next-env.d.ts
 .wrangler
 .dev.vars
 cloudflare-env.d.ts
+# local script configuration
+.env
+.env.*
+!.env.example
+

@@ -2,13 +2,13 @@
  * ` ``` ` だけのコードフェンス（言語未指定）に、本文から推論した言語タグを付与する。
  * 閉じの ``` は触らない。
  *
- * Usage: node scripts/infer-code-fence-lang.mjs [--dry-run]
+ * Usage: node tools/docs/infer-code-fence-lang.mjs [--dry-run]
  */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "content", "docs");
+const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "content", "docs");
 const DRY = process.argv.includes("--dry-run");
 
 function walkMdx(dir, acc = []) {

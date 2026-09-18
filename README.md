@@ -11,6 +11,21 @@ pnpm dev
 
 Open http://localhost:3000 with your browser to see the result.
 
+## Documentation links
+
+Use root-relative page URLs such as `/cardano/setup/node-setup#sec-15` in MDX.
+Published URLs have trailing slashes, so `./cardano/...` would resolve beneath
+the current page. Do not include `.md` or `/index` in page URLs.
+
+Keep existing explicit heading IDs (`[#sec-15]`, etc.) when moving or inserting
+headings. Give new headings a unique, descriptive ID rather than renumbering
+existing IDs. Check link text against the target heading when changing content:
+an existing ID can still point to the wrong section.
+
+Run `pnpm build` followed by `pnpm docs:check-links` before publishing. The latter
+checks the exported HTML for missing internal pages, anchors, local assets, and
+duplicate IDs. The deployment workflow runs this check before uploading the site.
+
 ## Explore
 
 In the project, you can see:

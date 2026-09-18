@@ -885,9 +885,6 @@ User=$(whoami)
 WorkingDirectory=${NODE_HOME}/scripts/block-notify
 ExecStart=/home/${USER}/notify-venv/bin/python -u ${NODE_HOME}/scripts/block-notify/block_notify.py
 Restart=on-failure
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=cnode-blocknotify
 
 [Install]
 WantedBy=cnode-cncli-sync.service
@@ -1122,10 +1119,12 @@ cat $HOME/sysctl-before-cardano-*.txt
 
 ## 6. ノード再インストール [#sec-23]
 
-<span style={{color: "red"}}>ソースコードからビルドした`cardano-node`/`cardano-cli`を使用していた場合、もしくはノードアップデートする場合に以下の手順を実行してください。</span>
+<span style={{color: "red"}}>ソースコードからビルドした`cardano-node`/`cardano-cli`を使用していた場合、もしくはノードアップデートする場合は、以下の手順で現行ノードへ更新してください。</span>
 <Callout type="info" title="ヒント">
 
-[1. 依存環境アップデート](/cardano/operation/node-update#sec-1) ~ [3. 依存関係作業](/cardano/operation/node-update#sec-11)  
+[ノードアップデート手順](/cardano/operation/node-update)の[1. 依存環境アップデート](/cardano/operation/node-update#sec-1)から[5. Grafana Dashboard設定](/cardano/operation/node-update#sec-22)まで、各章の対象条件に従って実施してください。Tracer設定に加え、関連ツール・サービスとGrafanaの更新も確認します。
+
+エアギャップの`cardano-cli`も更新する場合は、[6. エアギャップアップデート](/cardano/operation/node-update#sec-25)も実施してください。
 
 </Callout>
 

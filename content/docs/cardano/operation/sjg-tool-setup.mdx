@@ -2,7 +2,7 @@
 title: "SJGツール導入設定"
 ---
 
-最終更新日：2026/2/6 v4.1.2
+<LastUpdated version="v5.0.0" />
 
 <Callout type="info" title="主な機能">
 
@@ -25,7 +25,7 @@ BPサーバーで実行してください。
 **スクリプトのダウンロード**
 ```bash
 cd $NODE_HOME/scripts
-wget https://raw.githubusercontent.com/btbf/spojapanguild/master/scripts/sjgtool.sh -O sjgtool.sh
+wget https://raw.githubusercontent.com/kuhito-inc/sjg-tools/main/sjgtool.sh -O sjgtool.sh
 chmod 755 sjgtool.sh
 ```
 
@@ -50,14 +50,15 @@ sed -i $NODE_HOME/scripts/env \
 
 ~/cnode/scripts/envファイル内の以下の変数に対し、先頭の#を削除しご自身の環境に合わせてファイル名を設定してください。  
 
-WALLET_PAY_ADDR_FILENAME="payment.addr"  
-WALLET_STAKE_ADDR_FILENAME="stake.addr"  
-POOL_HOTKEY_VK_FILENAME="kes.vkey"  
-POOL_OPCERT_FILENAME="node.cert"  
-POOL_VRF_SK_FILENAME="vrf.skey"  
-POOL_OPCERT_COUNTER_FILENAME="node.counter"  
-POOL_OPCERT_FILENAME="node.cert  
-POOL_VRF_SK_FILENAME="vrf.skey
+WALLET_PAY_ADDR_FILENAME="payment.addr"
+WALLET_STAKE_ADDR_FILENAME="stake.addr"
+POOL_HOTKEY_VK_FILENAME="kes.vkey"
+POOL_HOTKEY_SK_FILENAME="kes.skey"
+POOL_COLDKEY_VK_FILENAME="node.vkey"
+POOL_COLDKEY_SK_FILENAME="node.skey"
+POOL_OPCERT_COUNTER_FILENAME="node.counter"
+POOL_OPCERT_FILENAME="node.cert"
+POOL_VRF_SK_FILENAME="vrf.skey"
 
 </Callout>
 
@@ -90,6 +91,8 @@ source $HOME/.bashrc
 
 | バージョン | 更新内容 | 追加作業 |
 | --- | --- | --- |
+| v5.0.0 | 配布リポジトリを `kuhito-inc/sjg-tools` へ移行 | - |
+| v4.2.0 | New Tracingシステムへの移行に伴う大幅改修 | - |
 | v4.1.2 | SPOガバナンスアクション投票のバグを修正 | - |
 | v4.1.1 | ガバナンスアクション投票のバグを修正 | - |
 | v4.1.0 | 投票可能なガバナンスアクションの自動表示<br />代替IPFSゲートウェイの追加<br />SPO投票理由メタデータ（任意URL / Blockfrost-IPFS）を追加 | - |

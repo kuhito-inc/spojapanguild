@@ -6,7 +6,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "content", "docs");
+const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "..", "content", "docs");
 
 function walkMdx(relDir, keys) {
   const abs = path.join(ROOT, relDir || ".");

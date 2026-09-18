@@ -4,7 +4,7 @@ title: "SPO BlockNotify設定"
 
 <Callout type="info" title="概要">
 
-最終更新日：2025/3/6  v2.5.0
+<LastUpdated version="v2.5.0" />
 
 * ブロックログで表示されるブロック生成結果を任意のソーシャルアプリへ通知します。   
 ![*](/images/block_notify/image.png)
@@ -337,9 +337,6 @@ User=$(whoami)
 WorkingDirectory=${NODE_HOME}/scripts/block-notify
 ExecStart=/home/${USER}/notify-venv/bin/python -u ${NODE_HOME}/scripts/block-notify/block_notify.py
 Restart=on-failure
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=cnode-blocknotify
 
 [Install]
 WantedBy=cnode-cncli-sync.service

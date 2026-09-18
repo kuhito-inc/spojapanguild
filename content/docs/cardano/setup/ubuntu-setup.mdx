@@ -87,6 +87,8 @@ grep -qxF 'set enable-bracketed-paste off' ~/.inputrc 2>/dev/null || echo 'set e
 ```
 > 設定反映のため、ターミナルから一度ログアウトして再ログインしてください。
 
+### デーモン再起動の自動化 [#automatic-service-restart]
+
 デーモン再起動を自動化します。
 ```bash
 echo "\$nrconf{restart} = 'a';" | sudo tee /etc/needrestart/conf.d/50local.conf
