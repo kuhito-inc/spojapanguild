@@ -12,7 +12,7 @@ title: "ノードアップデート"
 
 | OS | Node | CLI | GHC | Cabal | CNCLI |
 | :----------: | :----------: | :----------: | :----------: | :----------: | :----------: |
-| ubuntu 24.04.* | 11.1.2 | 11.2.3.0 | 9.6.7 | 3.12.1.0 | 6.7.0 |
+| ubuntu 24.04.* | 11.1.2 | 11.2.3.0 | 9.6.7 | 3.12.1.0 | 6.8.0 |
 
 **■アップデートパターンDB再構築有無**
 
@@ -326,11 +326,11 @@ CNCLIバージョン確認
 cncli --version
 ```
 ```yaml title="期待される表示例：" noCopy
-cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
+cncli v6.8.0 <~~~> (x86_64-unknown-linux-gnu)
 ```
 
 <AccordionsRed type="single">
-  <Accordion id="node-update-cncli-below-660" title="cncli v6.6.0以下だった場合">
+  <Accordion id="node-update-cncli-below-660" title="cncli v6.7.0以下だった場合">
 
 **CNCLIのアップデート**
 
@@ -353,7 +353,7 @@ rm $HOME/cncli-${cncli_release}-x86_64-unknown-linux-musl.tar.gz
 cncli --version
 ```
 ```yaml title="期待される表示例：" noCopy
-cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
+cncli v6.8.0 <~~~> (x86_64-unknown-linux-gnu)
 ```
 
   </Accordion>
@@ -1477,41 +1477,100 @@ curl -s http://127.0.0.1:12808/
 
 ## 4. 関連ツール・サービスの更新 [#sec-18]
 
-<Tabs items={["全ノード"]}>
-  <Tab value="全ノード">
+Guild Operators の `gLiveView.sh` と `env` を再取得し、構築時と同じ置換を適用します。  
+`UPDATE_CHECK` による自動更新は使わず、ファイルを置き換えてから `sed` で設定し直します。
 
-**gLiveView更新**
+<Callout type="warn" title="上書き時の注意">
+
+- 既存の `gLiveView.sh` / `env` は上書きされます。`env` に手作業で追加した設定がある場合は、置換後に再設定してください。
+- `logMonitor.sh` / `blocks.sh` / `sjgtool.sh` は Guild Operators ではなく、後述の sjg-tools 更新で取得します。
+
+</Callout>
+
+<Tabs items={["リレー", "BP"]}>
+<Tab value="リレー">
+
+スクリプトを再取得します。
 ```bash
-sed -i $NODE_HOME/scripts/env \
-  -e '1,73s!UPDATE_CHECK="N"!UPDATE_CHECK="Y"!' \
-  -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
-  -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
+cd $NODE_HOME/scripts
+curl -o gLiveView.sh https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/gLiveView.sh
+curl -o env https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/env
+chmod 755 gLiveView.sh
 ```
 
-**gliveの起動**
+ノードポートを確認します。
+```bash
+PORT=`grep "PORT=" $NODE_HOME/startRelayNode1.sh`
+b_PORT=${PORT#"PORT="}
+echo "リレーポートは${b_PORT}です"
+```
+
+`env` ファイル内の定義を修正します。
+```bash
+sed -i $NODE_HOME/scripts/env \
+    -e '1,73s!#CNODE_HOME="/opt/cardano/cnode"!CNODE_HOME="'${NODE_HOME}'"!' \
+    -e '1,73s!#CNODE_PORT=6000!CNODE_PORT='${b_PORT}'!' \
+    -e '1,73s!#UPDATE_CHECK="Y"!UPDATE_CHECK="N"!' \
+    -e '1,73s!#CONFIG="${CNODE_HOME}/files/config.json"!CONFIG="${CNODE_HOME}/'${NODE_CONFIG}'-config.json"!' \
+    -e '1,73s!#SOCKET="${CNODE_HOME}/sockets/node.socket"!SOCKET="${CNODE_HOME}/db/socket"!' \
+    -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
+    -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!'
+```
+
+`gLiveView` を起動してバージョンを確認します。
 ```bash
 glive
 ```
-
-更新メッセージが表示されたら`yes`を入力して`enter`  
 ```yaml title="期待される表示例：" noCopy
-env script update(s) detected, do you want to download the latest version? (yes/no): yes
+Koios gLiveView v1.32.1
 ```
 
-gLiveView.sh更新完了のメッセージが表示されたら再度`enter`  
-```yaml title="期待される表示例：" noCopy
-gLiveView.sh update successfully applied!  
-press any key to proceed ..
+</Tab>
+<Tab value="BP">
+
+スクリプトを再取得します。
+```bash
+cd $NODE_HOME/scripts
+curl -o gLiveView.sh https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/gLiveView.sh
+curl -o env https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/env
+chmod 755 gLiveView.sh
 ```
 
+ノードポートを確認します。
+```bash
+PORT=`grep "PORT=" $NODE_HOME/startBlockProducingNode.sh`
+b_PORT=${PORT#"PORT="}
+echo "BPポートは${b_PORT}です"
+```
 
-**更新フラグの切り替え**
+`env` ファイル内の定義を、ブロックログ用の設定を含めて修正します。
 ```bash
 sed -i $NODE_HOME/scripts/env \
-  -e '1,73s!UPDATE_CHECK="Y"!UPDATE_CHECK="N"!'
+  -e '1,73s!#CNODEBIN="${HOME}/.local/bin/cardano-node"!CNODEBIN="/usr/local/bin/cardano-node"!' \
+  -e '1,73s!#CCLI="${HOME}/.local/bin/cardano-cli"!CCLI="/usr/local/bin/cardano-cli"!' \
+  -e '1,73s!#CNCLI="${HOME}/.local/bin/cncli"!CNCLI="${HOME}/.cargo/bin/cncli"!' \
+  -e '1,73s!#CNODE_HOME="/opt/cardano/cnode"!CNODE_HOME="'${NODE_HOME}'"!' \
+  -e '1,73s!#CNODE_PORT=6000!CNODE_PORT='${b_PORT}'!' \
+  -e '1,73s!#UPDATE_CHECK="Y"!UPDATE_CHECK="N"!' \
+  -e '1,73s!#CONFIG="${CNODE_HOME}/files/config.json"!CONFIG="${CNODE_HOME}/'${NODE_CONFIG}'-config.json"!' \
+  -e '1,73s!#SOCKET="${CNODE_HOME}/sockets/node.socket"!SOCKET="${CNODE_HOME}/db/socket"!' \
+  -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
+  -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!' \
+  -e '1,73s!#BLOCKLOG_TZ="UTC"!BLOCKLOG_TZ="Asia/Tokyo"!' \
+  -e '1,73s!#ENABLE_KOIOS=Y!ENABLE_KOIOS=N!' \
+  -e '1,73s!#POOL_NAME=""!POOL_DIR=${CNODE_HOME}!' \
+  -e '1,116s!#WALLET_PAY_ADDR_FILENAME="payment.addr"!WALLET_PAY_ADDR_FILENAME="payment.addr"!' \
+  -e '1,116s!#WALLET_STAKE_ADDR_FILENAME="reward.addr"!WALLET_STAKE_ADDR_FILENAME="stake.addr"!' \
+  -e '1,116s!#POOL_HOTKEY_VK_FILENAME="hot.vkey"!POOL_HOTKEY_VK_FILENAME="kes.vkey"!' \
+  -e '1,116s!#POOL_HOTKEY_SK_FILENAME="hot.skey"!POOL_HOTKEY_SK_FILENAME="kes.skey"!' \
+  -e '1,116s!#POOL_COLDKEY_VK_FILENAME="cold.vkey"!POOL_COLDKEY_VK_FILENAME="node.vkey"!' \
+  -e '1,116s!#POOL_COLDKEY_SK_FILENAME="cold.skey"!POOL_COLDKEY_SK_FILENAME="node.skey"!' \
+  -e '1,116s!#POOL_OPCERT_COUNTER_FILENAME="cold.counter"!POOL_OPCERT_COUNTER_FILENAME="node.counter"!' \
+  -e '1,116s!#POOL_OPCERT_FILENAME="op.cert"!POOL_OPCERT_FILENAME="node.cert"!' \
+  -e '1,116s!#POOL_VRF_SK_FILENAME="vrf.skey"!POOL_VRF_SK_FILENAME="vrf.skey"!'
 ```
 
-**gliveバージョン確認**
+`gLiveView` を起動してバージョンを確認します。
 ```bash
 glive
 ```
@@ -1528,6 +1587,56 @@ Koios gLiveView v1.32.1
 <Tabs items={["BP"]}>
 
 <Tab value="BP">
+
+#### `cncli.sh` / `cntools.library` の更新 [#sec-20]
+
+`cncli.sh` と `cntools.library` を再取得し、構築時と同じ置換を適用します。
+
+CNCLI 関連サービスを停止します。
+```bash
+sudo systemctl stop cnode-cncli-sync.service cnode-cncli-validate.service cnode-cncli-leaderlog.service
+```
+
+スクリプトを再取得します。
+```bash
+cd $NODE_HOME/scripts
+wget https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/cncli.sh -O ./cncli.sh
+wget https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/cntools.library -O ./cntools.library
+chmod 755 cncli.sh
+```
+
+**プールIDの確認**
+```bash
+pool_hex=`cat $NODE_HOME/pool.id`
+pool_bech32=`cat $NODE_HOME/pool.id-bech32`
+printf "\nプールID(hex)は \e[32m${pool_hex}\e[m です\n\n"
+printf "\nプールID(bech32)は \e[32m${pool_bech32}\e[m です\n\n"
+```
+
+<strong><span style={{color: "red"}}>ご自身のプールID `2種類`が表示されていることを確認してください</span></strong>  
+プールIDが表示されていない場合は、[こちらの手順](/cardano/setup/stake-pool-register#sec-4)を実行してください。
+
+**cncli.shファイルの修正**
+```bash
+sed -i $NODE_HOME/scripts/cncli.sh \
+  -e '1,30s!#POOL_ID=""!POOL_ID="'${pool_hex}'"!' \
+  -e '1,30s!#POOL_ID_BECH32=""!POOL_ID_BECH32="'${pool_bech32}'"!' \
+  -e '1,30s!#POOL_VRF_SKEY=""!POOL_VRF_SKEY="${CNODE_HOME}/vrf.skey"!' \
+  -e '1,30s!#POOL_VRF_VKEY=""!POOL_VRF_VKEY="${CNODE_HOME}/vrf.vkey"!'
+```
+
+CNCLI 関連サービスを起動します。
+```bash
+sudo systemctl start cnode-cncli-sync.service cnode-cncli-validate.service cnode-cncli-leaderlog.service
+```
+
+同期状況を確認します。
+```bash
+cnclilog
+```
+```yaml title="期待される表示例：" noCopy
+INFO cncli::nodeclient::sync: block ******** of ********: 100.00% sync'd
+```
 
 <AccordionsYellow type="single">
   <Accordion id="node-update-blocknotify-missing" title="blocknotify（SPO Block Notify）未導入・未更新の場合">
@@ -1549,9 +1658,7 @@ Koios gLiveView v1.32.1
   </Accordion>
 </AccordionsYellow>
 
-#### `sjgtool`の更新 [#sec-20]
-
-配布リポジトリが変更されたため、既存の自動更新では最新版を取得できません。新しいURLから再取得してください。
+#### `sjgtool`の更新 [#sec-21]
 
 ```bash
 cd $NODE_HOME/scripts
@@ -1571,12 +1678,10 @@ gtool
 
 BPノードが完全に同期した後、サービス起動状態を確認します。
 
-- cnclilog  
 - leaderlog  
 - validate  
-- blocknotify(SPO Block Notifyを導入している場合)
 
-#### `logMonitor`の更新 [#sec-21]
+#### `logMonitor`の更新 [#sec-22]
 
 `logMonitor`はCardano Nodeのログを監視し、ブロック生成に関する情報をCNCLIのblocklogへ反映するためのスクリプトです。
 
@@ -1641,7 +1746,7 @@ logmonitor
 ```
 
 
-#### `blocknotify`の更新 [#sec-22]
+#### `blocknotify`の更新 [#sec-23]
 
 > 導入していない方は不要です。
 
@@ -1687,6 +1792,25 @@ $HOME/notify-venv/bin/python $NODE_HOME/scripts/block-notify/block_notify.py ver
 v2.5.0
 ```
 
+それぞれのサービスを起動して、正常に起動していることを確認してください。
+> すでに正常稼働していれば不要です。
+
+```bash
+cnclilog
+```
+```bash
+leaderlog
+```
+```bash
+validate
+```
+```bash
+logmonitor
+```
+```bash
+blocknotify
+```
+
 
 <AccordionsRed type="single">
   <Accordion id="node-update-cnclilog-missing-etav" title="cnclilogで`Missing eta_v for block xxxxxx` エラーが出る場合の対処法">
@@ -1714,9 +1838,9 @@ cnclilog
 </Tabs>
 
 
-## 5. Grafana Dashboard設定 [#sec-23]
+## 5. Grafana Dashboard設定 [#sec-24]
 
-### Dashboardのインポート [#sec-24]
+### Dashboardのインポート [#sec-25]
 
 <Tabs items={["BP"]}>
 
@@ -1744,7 +1868,7 @@ BPの`cnode`フォルダにある`spo-japan-guild-cardano-node-dashboard.json`�
 「**DS_PROMETHEUS**」→「**Prometheus**」を選択し、「**DS_YESOREYERAM-INFINITY-DATASOURCE**」→「**yesoreyeram-infinity-datasource**」を選択し、「**Import**」を選択します。  
 
 
-### Grafanaアラートの対象メトリクス変更 [#sec-25]
+### Grafanaアラートの対象メトリクス変更 [#sec-26]
 
 左ペインの「Alerting」→「Alert rules」→「Manage alert rules」→「SJG→ノード監視」→「BPリレー接続監視」のメトリクスを変更して保存します。  
 
@@ -1755,7 +1879,7 @@ cardano_node_metrics_peerSelection_ActivePeers_int{alias="block-producing-node"}
 ```
 へと変更してください。
 
-## 6. エアギャップアップデート [#sec-26]
+## 6. エアギャップアップデート [#sec-27]
 <Callout type="info" title="SFTP機能ソフト導入">
 
 R-loginの転送機能が遅いので、大容量ファイルをダウン・アップロードする場合は、SFTP接続可能なソフトを使用すると効率的です。（FileZilaなど）  
