@@ -7,7 +7,7 @@ title: "ノードアップデート"
 <LastUpdated />
 
 <Callout type="warn" title="留意点">
-今回のアップデートでは大幅な変更があります。
+`11.0.1`以前から`11.1.2`へのアップデートでは大幅な変更があります。
 
 - ログシステム変更(cardano-tracer常駐)
 - Configファイル変更(cardano-tracer用)
@@ -699,7 +699,7 @@ exit
 </Tabs>
 */}
 
-### トポロジーファイルの変更 [#sec-9]
+### トポロジーファイルの変更 [#sec-10]
 
 この手順では、`GenesisMode` を使用する構成を前提としています。  
 Genesis Modeでは bootstrapPeers を使用せず、リレーは peerSnapshotFile を使用してGenesis同期を行います。  
@@ -861,7 +861,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
 </Callout>
 
 
-### 構文チェックと再起動 [#sec-10]
+### 構文チェックと再起動 [#sec-11]
 
 ```bash
 jq . $NODE_HOME/${NODE_CONFIG}-topology.json
@@ -871,9 +871,9 @@ JSON がそのまま表示されれば問題ありません。
 `parse error` のときは `{}` `[]` `,` を確認してください。
 
 
-## 3. Tracer設定 [#sec-11]
+## 3. Tracer設定 [#sec-12]
 
-### ノード起動スクリプトの修正 [#sec-12]
+### ノード起動スクリプトの修正 [#sec-13]
 
 <Tabs items={["リレー", "BP"]}>
 <Tab value="リレー">
@@ -936,7 +936,7 @@ EOF
 </Tab>
 </Tabs>
 
-### cardano-tracerサービス設定 [#sec-13]
+### cardano-tracerサービス設定 [#sec-14]
 
 Tracer用のディレクトリとログ保存用のディレクトリを作成します。
 
@@ -1042,7 +1042,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now cardano-tracer.service
 ```
 
-### Firewallの設定 [#sec-14]
+### Firewallの設定 [#sec-15]
 
 <Callout type="tip" title="💡">
 
@@ -1101,144 +1101,6 @@ sudo ufw reload
 </Tab>
 
 </Tabs>
-
-### Prometheusの設定変更 [#sec-15]
-
-Cardano Nodeのmetricsを`cardano-tracer`経由で取得するため、Grafana稼働サーバーのPrometheus設定を変更します。
-
-従来はCardano Nodeの`12798`ポートから直接metricsを取得していましたが、`cardano-tracer`導入後は`12808`ポートから取得します。
-
-**Prometheusの設定ファイル作成**
-
-<Tabs items={["Grafana稼働サーバー"]}>
-
-<Tab value="Grafana稼働サーバー">
-
-以下の変数に各サーバーのIPアドレスまたはDNSを設定します。
-
-リレー2
-
-```bash
-relay2_ipv4_or_dns=
-```
-
-BP
-
-```bash
-bp_ipv4=
-```
-
-Node名を設定します。
-> 以下はそのまま実行してください。
-
-```bash
-NODE_NAME_RELAY_1=${NODE_CONFIG}-relay-1
-NODE_NAME_RELAY_2=${NODE_CONFIG}-relay-2
-NODE_NAME_BP=${NODE_CONFIG}-bp
-```
-
-> 設定するNode名は、各Cardano Nodeの`TraceOptionNodeName`と一致している必要があります。
-
-現在のPrometheus設定ファイルをバックアップします。
-
-```bash
-sudo cp /etc/prometheus/prometheus.yml /etc/prometheus/prometheus.yml.bak
-```
-
-Prometheusの設定ファイルを作成します。
-
-```bash
-cat > $HOME/prometheus.yml << EOF
-global:
-  scrape_interval: 15s
-
-  external_labels:
-    monitor: 'codelab-monitor'
-
-scrape_configs:
-  - job_name: 'prometheus'
-    static_configs:
-      - targets: ['localhost:9100']
-        labels:
-          alias: 'relaynode1'
-          type: 'system'
-
-      - targets: ['${relay2_ipv4_or_dns}:9100']
-        labels:
-          alias: 'relaynode2'
-          type: 'system'
-
-      - targets: ['${bp_ipv4}:9100']
-        labels:
-          alias: 'block-producing-node'
-          type: 'system'
-
-      - targets: ['localhost:12808']
-        labels:
-          alias: 'relaynode1'
-          type: 'cardano-node'
-          __metrics_path__: '/${NODE_NAME_RELAY_1}'
-
-      - targets: ['${relay2_ipv4_or_dns}:12808']
-        labels:
-          alias: 'relaynode2'
-          type: 'cardano-node'
-          __metrics_path__: '/${NODE_NAME_RELAY_2}'
-
-      - targets: ['${bp_ipv4}:12808']
-        labels:
-          alias: 'block-producing-node'
-          type: 'cardano-node'
-          __metrics_path__: '/${NODE_NAME_BP}'
-EOF
-```
-
-<Callout type="info" title="備考">
-
-`9100`は`prometheus-node-exporter`によるCPU、メモリ、ディスクなどのシステムmetricsです。
-
-`12808`は`cardano-tracer`が公開するCardano Nodeのmetricsです。
-
-</Callout>
-
-Prometheus設定ファイルの構文を確認します。
-
-```bash
-sudo promtool check config $HOME/prometheus.yml
-```
-
-構文エラーがない場合は、以下のように表示されます。
-
-```yaml title="正常時の表示例：" noCopy
-Checking /home/$USER/prometheus.yml
-SUCCESS: /home/$USER/prometheus.yml is valid prometheus config file syntax
-```
-
-Prometheus設定ファイルを配置します。
-
-```bash
-sudo mv $HOME/prometheus.yml /etc/prometheus/prometheus.yml
-```
-
-Prometheusを再起動します。
-
-```bash
-sudo systemctl restart prometheus.service
-```
-
-Prometheusが正常に起動していることを確認します。
-
-```bash
-sudo systemctl status prometheus.service --no-pager
-```
-```yaml title="期待される表示例：" noCopy
-Active: active (running) 
-```
-
-</Tab>
-
-</Tabs>
-
 
 ### systemdサービスのログ設定を変更 [#sec-16]
 
@@ -1833,13 +1695,152 @@ cnclilog
 </Tabs>
 
 
-## 5. Grafana Dashboard設定 [#sec-24]
+## 5. 監視環境の再構築 [#sec-24]
 
-### Dashboardのインポート [#sec-25]
+### Prometheusの設定変更 [#sec-25]
+
+Cardano Nodeのmetricsを`cardano-tracer`経由で取得するため、Grafana稼働サーバーのPrometheus設定を変更します。
+
+従来はCardano Nodeの`12798`ポートから直接metricsを取得していましたが、`cardano-tracer`導入後は`12808`ポートから取得します。
+
+**Prometheusの設定ファイル作成**
+
+<Tabs items={["Grafana稼働サーバー"]}>
+
+<Tab value="Grafana稼働サーバー">
+
+以下のコマンドはGrafana稼働サーバー(例.リレー1)で実行してください
+
+リレー2のIPアドレスまたはDNSを`=`の後に入力して実行してください
+
+```bash
+relay2_ipv4_or_dns=
+```
+
+BPのIPアドレスを`=`の後に入力して実行してください
+
+```bash
+bp_ipv4=
+```
+
+Node名を設定します。
+> 以下はそのまま実行してください。
+
+```bash
+NODE_NAME_RELAY_1=${NODE_CONFIG}-relay-1
+NODE_NAME_RELAY_2=${NODE_CONFIG}-relay-2
+NODE_NAME_BP=${NODE_CONFIG}-bp
+```
+
+> 設定するNode名は、各Cardano Nodeの`TraceOptionNodeName`と一致している必要があります。
+
+現在のPrometheus設定ファイルをバックアップします。
+
+```bash
+sudo cp /etc/prometheus/prometheus.yml /etc/prometheus/prometheus.yml.bak
+```
+
+Prometheusの設定ファイルを作成します。
+
+```bash
+cat > $HOME/prometheus.yml << EOF
+global:
+  scrape_interval: 15s
+
+  external_labels:
+    monitor: 'codelab-monitor'
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9100']
+        labels:
+          alias: 'relaynode1'
+          type: 'system'
+
+      - targets: ['${relay2_ipv4_or_dns}:9100']
+        labels:
+          alias: 'relaynode2'
+          type: 'system'
+
+      - targets: ['${bp_ipv4}:9100']
+        labels:
+          alias: 'block-producing-node'
+          type: 'system'
+
+      - targets: ['localhost:12808']
+        labels:
+          alias: 'relaynode1'
+          type: 'cardano-node'
+          __metrics_path__: '/${NODE_NAME_RELAY_1}'
+
+      - targets: ['${relay2_ipv4_or_dns}:12808']
+        labels:
+          alias: 'relaynode2'
+          type: 'cardano-node'
+          __metrics_path__: '/${NODE_NAME_RELAY_2}'
+
+      - targets: ['${bp_ipv4}:12808']
+        labels:
+          alias: 'block-producing-node'
+          type: 'cardano-node'
+          __metrics_path__: '/${NODE_NAME_BP}'
+EOF
+```
+
+<Callout type="info" title="備考">
+
+`9100`は`prometheus-node-exporter`によるCPU、メモリ、ディスクなどのシステムmetricsです。
+
+`12808`は`cardano-tracer`が公開するCardano Nodeのmetricsです。
+
+</Callout>
+
+Prometheus設定ファイルの構文を確認します。
+
+```bash
+sudo promtool check config $HOME/prometheus.yml
+```
+
+構文エラーがない場合は、以下のように表示されます。
+
+```yaml title="正常時の表示例：" noCopy
+Checking /home/$USER/prometheus.yml
+SUCCESS: /home/$USER/prometheus.yml is valid prometheus config file syntax
+```
+
+Prometheus設定ファイルを配置します。
+
+```bash
+sudo mv $HOME/prometheus.yml /etc/prometheus/prometheus.yml
+```
+
+Prometheusを再起動します。
+
+```bash
+sudo systemctl restart prometheus.service
+```
+
+Prometheusが正常に起動していることを確認します。
+
+```bash
+sudo systemctl status prometheus.service --no-pager
+```
+```yaml title="期待される表示例：" noCopy
+Active: active (running) 
+```
+
+</Tab>
+
+</Tabs>
+
+### Dashboardのインポート [#sec-26]
 
 <Tabs items={["BP"]}>
 
 <Tab value="BP">
+
+BPで実行してください
 
 Grafanaパネル用のJSONファイルをダウンロードします。
 ```bash
@@ -1854,16 +1855,16 @@ sed -i \
 </Tab>
 </Tabs>
 
-BPの`cnode`フォルダにある`spo-japan-guild-cardano-node-dashboard.json`をローカルPCにダウンロードします。
+1. BPの`cnode`フォルダにある`spo-japan-guild-cardano-node-dashboard.json`をローカルPCにダウンロードします。
 
-左ペインの「**Dashboards**」→「**New**」→「**Import dashboard**」を選択します。
+2. 左ペインの「**Dashboards**」→「**New**」→「**Import dashboard**」を選択します。
 
-「**Import via dashboard JSON model**」を選択し、ダウンロードした`spo-japan-guild-cardano-node-dashboard.json`を指定します。
+3. 「**Import via dashboard JSON model**」を選択し、ダウンロードした`spo-japan-guild-cardano-node-dashboard.json`を指定します。
 
-「**DS_PROMETHEUS**」→「**Prometheus**」を選択し、「**DS_YESOREYERAM-INFINITY-DATASOURCE**」→「**yesoreyeram-infinity-datasource**」を選択し、「**Import**」を選択します。  
+4. 「**DS_PROMETHEUS**」→「**Prometheus**」を選択し、「**DS_YESOREYERAM-INFINITY-DATASOURCE**」→「**yesoreyeram-infinity-datasource**」を選択し、「**Import**」を選択します。  
 
 
-### Grafanaアラートの対象メトリクス変更 [#sec-26]
+### Grafanaアラートの対象メトリクス変更 [#sec-27]
 
 左ペインの「Alerting」→「Alert rules」→「Manage alert rules」→「SJG→ノード監視」→「BPリレー接続監視」のメトリクスを変更して保存します。  
 
@@ -1874,7 +1875,7 @@ cardano_node_metrics_peerSelection_ActivePeers_int{alias="block-producing-node"}
 ```
 へと変更してください。
 
-## 6. エアギャップアップデート [#sec-27]
+## 6. エアギャップアップデート [#sec-28]
 <Callout type="info" title="SFTP機能ソフト導入">
 
 R-loginの転送機能が遅いので、大容量ファイルをダウン・アップロードする場合は、SFTP接続可能なソフトを使用すると効率的です。（FileZilaなど）  
