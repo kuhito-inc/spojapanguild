@@ -12,14 +12,27 @@ title: "Grafanaアラート設定"
 
 ## 1. 事前確認 [#sec-1]
 
-- grafana version 12.4.1以上
+- grafana version 13.2.2以上
 - Grafana [SJG最新ダッシュボード](/cardano/setup/monitoring-setup#sec-6)適用済み
 
 ### Grafanaバージョン確認 [#sec-2]
 
+<Tabs items={["Grafana稼働サーバー"]}>
+
+<Tab value="Grafana稼働サーバー">
+
 ```bash
-grafana-cli --version
+grafana server -v
 ```
+
+```yaml title="期待される表示例：" noCopy
+Version 13.2.2
+```
+
+</Tab>
+
+</Tabs>
+
 
 ### システムパッケージの更新 [#sec-3]
 ```bash
@@ -38,12 +51,16 @@ sudo apt update && sudo apt upgrade -y
 
 ## 3. 通知テンプレート設定 [#sec-5]
 
-- 左ペインの「`Alerting`」→「`Contact points`」を選択し、「`Notification Templates`」タブの「`Add notification template group`」を選択
+- 左上部の３本の横線マークを選択し、「`Alerting`」→「`Notification configuration`」→「`Templates`」タブを選択し、右側にある「`+ New notification template`」を選択
 ![](/images/grafana-alert/grafana-alert-settings_1.png)
 
-- 任意のテンプレート名「`SJG`」を入力
-- 以下の内容を「`Template group`」に入力
-- 「`Save`」を選択
+「`New notification template group`」ページに遷移するので、「`Template group name *`」に
+
+任意のテンプレート名を入力します。
+```
+SJG
+```
+- 以下の内容を「`Template group`」に入力します。
 ```bash
 {{ define "myalert" }}{{ range .Annotations.SortedPairs }}{{ if ne .Name "datasource_uid" }}{{ if ne .Name "grafana_state_reason" }}{{ if ne .Name "ref_id" }}{{ if ne .Name "description" }}{{ .Name }}: {{ .Value }}{{ end }}{{ end }}{{ end }}{{ end }}{{ end }}{{ end }}
 
@@ -58,21 +75,29 @@ sudo apt update && sudo apt upgrade -y
 {{ end }}
 {{ end }}
 ```
+
+画面右側にある「`Save`」を選択します。
 ![](/images/grafana-alert/grafana-alert-settings_2.png)
+![](/images/grafana-alert/grafana-alert-settings_3.png)
+
 
 ## 4. 通知先設定 [#sec-6]
 - 「`Contact Points`」タブを選択
-- 「`Create contact point`」を選択
-![](/images/grafana-alert/grafana-alert-settings_3.png)
+- 「`+ New contact point`」を選択
+![](/images/grafana-alert/grafana-alert-settings_4.png)
 
-- 「`Create contact point`」→「`Name *`」に任意の通知名「`Self-Alert`」を入力
-- 「`Integration`」→「通知先(Discord,Telegram,Slack等)」を選択し、情報を入力
+- 「`Create contact point`」→「`Name *`」に任意の通知名を入力します。
+```
+Self-Alert
+```
+
+- 「`Integration`」から通知先(Discord,Telegram,Slack等)」を選択し、情報を入力します。
 > ここではDiscordを選択しています。
 - [2. 通知アプリの設定](/cardano/setup/blocknotify-setup#sec-2)で取得した通知アプリごとのトークンIDやWebhookURLを入力
 > LINEはAPIの仕様変更に伴い選択肢から除外されています。
-- 「`Optional * settings`」→「`Message Content`」→「`Edit Message Content`」→「`Select notification template`」→「`Choose notification template`」欄から、「`mymessage`」を選択し、「`Save`」
-- 「`Save contact point`」を選択
-![](/images/grafana-alert/grafana-alert-settings_4.png)
+- 「`Optional * settings`」→「`Message Content`」→「`Edit Message Content`」→「`Select notification template`」→「`Choose notification template`」欄から、「`mymessage`」を選択し、右下の「`Save`」を選択します。
+- その後、画面左下の「`Save contact point`」を選択します。
+![](/images/grafana-alert/grafana-alert-settings_5.png)
 
 <Callout type="info" title="通知先ごとのタグ入力欄表記について">
 
@@ -90,24 +115,23 @@ sudo apt update && sudo apt upgrade -y
 </Callout>
 
 
-
-- 左ペインの「`Alerting`」→「`Notification policies`」を選択
+- 「`Notification policies`」タブを選択
 - 「`Default policy`」→「`More`」→「`Edit`」を選択
-![](/images/grafana-alert/grafana-alert-settings_5.png)
+![](/images/grafana-alert/grafana-alert-settings_6.png)
 
 - 「`Default contact point`」→「`Self-Alert`」を選択
 - 「`Group by`」に「`grafana_folder`」と「`alertname`」を指定
 - 「`Timing options`」→「`Group interval`」→「`1m`」を設定
 - 「`Repeat interval`」→「`10m`」に設定
 - 「`Update default policy`」を選択
-![](/images/grafana-alert/grafana-alert-settings_6.png)
+![](/images/grafana-alert/grafana-alert-settings_7.png)
 
 ## 5. アラートルールの作成 [#sec-7]
 
 通知の基準となるアラートルールを作成します。  
 
-- 左ペインの「`Alerting`」→「`Alert rules`」→「`New alert rule`」の順に選択します。
-![](/images/grafana-alert/grafana-alert-settings_7.png)
+- 左上部の３本の横線マークを選択し、「`Alerting`」→「`Alert rules`」→画面中央の「`New alert rule`」の順に選択します。
+![](/images/grafana-alert/grafana-alert-settings_8.png)
 
 ### ノードスロット監視 [#sec-8]
 
@@ -121,45 +145,64 @@ sudo apt update && sudo apt upgrade -y
 </Callout>
 
 
-- 「`1. Enter alert rule name`」→以下のような任意のルール名
+- 「`1. Enter alert rule name`」→「`Name`」に任意のルール名を入力します。
 ```bash
 Relay1-スロット監視
 ```
 - 「`2. Define query and alert condition`」→「`Metrics Browser`」を選択
-- 「`1. Select a metric`」→以下を入力し、選択
+- 「`1. Select a metric`」→以下を入力し、表示されたMetricを選択します。
 ```bash
 cardano_node_metrics_slotInEpoch_int
 ```
-- 「`2. Select labels to search in`」→「`alias`」を入力し、選択
 - 「`3. Select (multiple) values for your labels`」→「`relaynode1`」を選択
 - 「`Use query`」を選択
-![](/images/grafana-alert/grafana-alert-settings_8.png)
+![](/images/grafana-alert/grafana-alert-settings_9.png)
 
 - 「`Expressions`」→「`Threshold`」→「`C`」のゴミ箱マークを選択
 - 「`Add expression`」→「`Classic condition (legacy)`」を選択
 - 「`Conditions`」→「`last() / A / HAS NO VALUE`」選択
-- 「`Set "B" as alert condition`」をクリックし、「`Alert condition`」の表示に変更
-![](/images/grafana-alert/grafana-alert-settings_9.png)
-
-- 「`3. Add folder and labels`」→「`New folder`」を選択し、「`SJG`」を入力して「`Create`」
-- 「`4. Set evaluation behavior`」→「`New evaluation group`」を選択し、「`Evaluation group name`」に「`ノード監視`」、「`Evaluation interval`」に「`10s`」を選択して「`Create`」
-- 「`Pending period`」→「`20s`」を選択
-- 「`Configure no data and error handling`」を展開し、「`Alert state if no data or all values are null`」→「`Alerting`」を選択
-- 「`Alert state if execution error or timeout`」→「`Alerting`」を選択
+- 「`Set "B" as alert condition`」を選択し、「`✅ Alert condition`」の表示に変更
 ![](/images/grafana-alert/grafana-alert-settings_10.png)
+
+- 「`3. Add folder and labels`」→「`+ New folder`」を選択し、「`Folder name`」に任意名を入力して「`Create`」
+```
+SJG
+```
+![](/images/grafana-alert/grafana-alert-settings_11.png)
+
+- 「`4. Set evaluation behavior`」→「`New evaluation group`」を選択し、  
+
+「`Evaluation group name`」に
+```
+ノード監視
+```
+「`Evaluation interval`」に
+```
+10s
+```
+
+を選択して「`Create`」
+
+- 「`Pending period`」→「`20s`」を選択
+- 「`Configure no data and error handling`」を展開し、  
+
+「`Alert state if no data or all values are null`」→「`Alerting`」を選択  
+
+「`Alert state if execution error or timeout`」→「`Alerting`」を選択
+![](/images/grafana-alert/grafana-alert-settings_12.png)
 
 - 「`5. Configure notifications`」→「`Contact point`」→「`Self-Alert`」を選択
 - 「`6. Configure notification message`」→「`Add custom annotation`」を選択
-- 「`Custom annotation name and content`」→「`...name`」→以下を入力
+- 「`Custom annotation name and content`」→「`~~name...`」→以下を入力
 ```bash
 検知内容
 ```
-- 「`Custom annotation name and content`」→「`...content`」→以下を入力
+- 「`Custom annotation name and content`」→「`~~content...`」→以下を入力
 ```bash
 Relay1のスロットを取得出来ませんでした。ノード起動状態を確認してください。
 ```
 - 「`Save`」を選択
-![](/images/grafana-alert/grafana-alert-settings_11.png)
+![](/images/grafana-alert/grafana-alert-settings_13.png)
 
 <Callout type="info" title="ヒント">
 
@@ -169,7 +212,8 @@ Relay1のスロットを取得出来ませんでした。ノード起動状態�
 
 
 上記で作成したルールをコピーします。
-![](/images/grafana-alert/grafana-alert-settings_12.png)
+「`Alert rules`」から`SJG`→`ノード監視`→`Relay1-スロット監視`→`Edit`→`Duplicate`を選択します。
+![](/images/grafana-alert/grafana-alert-settings_14.png)
 
 - 「`1. Enter alert rule name`」を書き換えます。
 - 「`2. Define query and alert condition`」→「`Metrics Browser`」を書き換えます。
@@ -181,13 +225,13 @@ cardano_node_metrics_slotInEpoch_int{alias="relaynode2"}
 cardano_node_metrics_slotInEpoch_int{alias="block-producing-node"}
 ```
 
-- 「`Custom annotation name and content`」→「`...content`」の検知内容を書き換えます。
+- 「`6. Configure notification message`」→「`Custom annotation name and content`」→「`...content`」の検知内容を書き換えます。
 - 「`Save`」を選択
 
 
 ### BP→リレー接続監視 [#sec-9]
 上記で作成したルールをコピーします。
-![](/images/grafana-alert/grafana-alert-settings_12.png)
+![](/images/grafana-alert/grafana-alert-settings_14.png)
 
 - 「`1. Enter alert rule name`」→以下のような任意のルール名に書き換えます。
 ```bash
@@ -198,19 +242,25 @@ BPリレー接続監視
 ```bash
 cardano_node_metrics_peerSelection_ActivePeers_int
 ```
-- 「`2. Select labels to search in`」→「`alias`」を入力し、選択
 - 「`3. Select (multiple) values for your labels`」→「`block-producing-node`」を選択
 - 「`Use query`」を選択
-- 「`Conditions`」→「`last()` / `A` / `IS BELOW`」→「`1`」を入力
-- 「`Configure no data and error handling`」を展開し、「`Alert state if no data or all values are null`」→「`Alerting`」を選択
-- 「`Alert state if execution error or timeout`」→「`Alerting`」を選択
-- 「`Custom annotation name and content`」→「`...content`」→「`BPからリレーへの接続が確認できません。接続状況を確認してください。`」を入力
-- 「`Save`」を選択
+- 「`Expressions`」→「`Classic condition (legacy)`」→「`last()` / `A` / `IS BELOW`」→「`1`」を入力
+- 「`Configure no data and error handling`」を展開し、
+
+「`Alert state if no data or all values are null`」→「`Alerting`」を選択  
+「`Alert state if execution error or timeout`」→「`Alerting`」を選択
+
+- 「`6. Configure notification message`」→「`Custom annotation name and content`」→「`...content`」→
+
+```
+BPからリレーへの接続が確認できません。接続状況を確認してください。
+```
+を入力し、「`Save`」を選択
 
 
 ### チェーン密度監視 [#sec-10]
 上記で作成したルールをコピーします。
-![](/images/grafana-alert/grafana-alert-settings_12.png)
+![](/images/grafana-alert/grafana-alert-settings_14.png)
 
 - 「`1. Enter alert rule name`」→以下のような任意のルール名に書き換えます。
 ```bash
@@ -220,10 +270,13 @@ cardano_node_metrics_peerSelection_ActivePeers_int
 ```bash
 cardano_node_metrics_density_real{alias="relaynode1"} * 100
 ```
-- 「`Conditions`」→「`last()` / `A` / `IS BELOW`」→「`4.5`」を入力
-- 「`Configure no data and error handling`」を展開し、「`Alert state if no data or all values are null`」→「`Normal`」を選択
-- 「`Alert state if execution error or timeout`」→「`Normal`」を選択
-- 「`Custom annotation name and content`」→「`...content`」→以下を入力
+- 「`Expressions`」→「`Classic condition (legacy)`」→「`last()` / `A` / `IS BELOW`」→「`4.5`」を入力
+- 「`4. Set evaluation behavior`」→「`Configure no data and error handling`」を展開し、  
+
+「`Alert state if no data or all values are null`」→「`Normal`」を選択  
+「`Alert state if execution error or timeout`」→「`Normal`」を選択
+
+- 「`6. Configure notification message`」→「`Custom annotation name and content`」→「`...content`」→以下を入力
 ```bash
 チェーン密度が4.5％を下回っています。これはカルダノチェーン全体の問題です。
 ```
@@ -232,7 +285,7 @@ cardano_node_metrics_density_real{alias="relaynode1"} * 100
 
 ### ノードタイム監視 [#sec-11]
 上記で作成したルールをコピーします。
-![](/images/grafana-alert/grafana-alert-settings_12.png)
+![](/images/grafana-alert/grafana-alert-settings_14.png)
 
 - 「`1. Enter alert rule name`」→以下のような任意のルール名に書き換えます。
 ```bash
@@ -242,10 +295,13 @@ Relay1-ノードタイム監視
 ```bash
 node_timex_maxerror_seconds{alias="relaynode1"} * 1000
 ```
-- 「`Conditions`」→「`last()` / `A` / `IS ABOVE`」→「`100`」を入力
-- 「`Configure no data and error handling`」を展開し、「`Alert state if no data or all values are null`」→「`Normal`」を選択
-- 「`Alert state if execution error or timeout`」→「`Normal`」を選択
-- 「`Custom annotation name and content`」→「`...content`」→以下を入力
+- 「`Expressions`」→「`Classic condition (legacy)`」→「`last()` / `A` / `IS ABOVE`」→「`100`」を入力
+- 「`4. Set evaluation behavior`」→「`Configure no data and error handling`」を展開し、  
+
+「`Alert state if no data or all values are null`」→「`Normal`」を選択  
+「`Alert state if execution error or timeout`」→「`Normal`」を選択
+
+- 「`6. Configure notification message`」→「`Custom annotation name and content`」→「`...content`」→以下を入力
 ```bash
 Relay1のノードタイムが100msを超えています。Chronyを再起動してください。
 ```
@@ -259,7 +315,7 @@ Relay1のノードタイムが100msを超えています。Chronyを再起動し
 
 
 上記で作成したルールをコピーします。
-![](/images/grafana-alert/grafana-alert-settings_12.png)
+![](/images/grafana-alert/grafana-alert-settings_14.png)
 
 - 「`1. Enter alert rule name`」を書き換えます。
 - 「`2. Define query and alert condition`」→「`Metrics Browser`」を書き換えます。
@@ -271,13 +327,13 @@ node_timex_maxerror_seconds{alias="block-producing-node"} * 1000
 node_timex_maxerror_seconds{alias="relaynode2"} * 1000
 ```
 
-- 「`Custom annotation name and content`」→「`...content`」の検知内容を書き換えます。
+- 「`6. Configure notification message`」→「`Custom annotation name and content`」→「`...content`」の検知内容を書き換えます。
 - 「`Save`」を選択
 
 
 ### KES残り日数監視 [#sec-12]
 上記で作成したルールをコピーします。
-![](/images/grafana-alert/grafana-alert-settings_12.png)
+![](/images/grafana-alert/grafana-alert-settings_14.png)
 
 - 「`1. Enter alert rule name`」→以下のような任意のルール名に書き換えます。
 ```bash
@@ -287,10 +343,13 @@ BP-KES残り日数監視
 ```bash
 (cardano_node_metrics_remainingKESPeriods_int * 1.5)
 ```
-- 「`Conditions`」→「`last()` / `A` / `IS BELOW`」→「`10`」を入力
-- 「`Configure no data and error handling`」を展開し、「`Alert state if no data or all values are null`」→「`Normal`」を選択
-- 「`Alert state if execution error or timeout`」→「`Normal`」を選択
-- 「`Custom annotation name and content`」→「`...content`」→以下を入力
+- 「`Expressions`」→「`Classic condition (legacy)`」→「`last()` / `A` / `IS BELOW`」→「`10`」を入力
+- 「`4. Set evaluation behavior`」→「`Configure no data and error handling`」を展開し、  
+
+「`Alert state if no data or all values are null`」→「`Normal`」を選択  
+「`Alert state if execution error or timeout`」→「`Normal`」を選択  
+
+- 「`6. Configure notification message`」→「`Custom annotation name and content`」→「`...content`」→以下を入力
 ```bash
 KESキーの期限が迫っています。ブロック生成予定のないタイミングでKESキーを更新してください。
 ```
@@ -299,8 +358,7 @@ KESキーの期限が迫っています。ブロック生成予定のないタ�
 
 ### ディスク使用率監視 [#sec-13]
 上記で作成したルールをコピーします。
-![](/images/grafana-alert/grafana-alert-settings_12.png)
-
+![](/images/grafana-alert/grafana-alert-settings_14.png)
 
 - 「`1. Enter alert rule name`」→以下のような任意のルール名に書き換えます。
 ```bash
@@ -310,11 +368,14 @@ Relay1-ディスク使用率監視
 ```bash
 1 - (node_filesystem_avail_bytes{alias="relaynode1",mountpoint="/"} / node_filesystem_size_bytes{alias="relaynode1",mountpoint="/"})
 ```
-- 「`Conditions`」→「`last()` / `A` / `IS ABOVE`」→「`0.9`」を入力
+- 「`Expressions`」→「`Classic condition (legacy)`」→「`last()` / `A` / `IS ABOVE`」→「`0.9`」を入力
 
-- 「`Configure no data and error handling`」を展開し、「`Alert state if no data or all values are null`」→「`Normal`」を選択
-- 「`Alert state if execution error or timeout`」→「`Normal`」を選択
-- 「`Custom annotation name and content`」→「`...content`」→以下を入力
+- 「`4. Set evaluation behavior`」→「`Configure no data and error handling`」を展開し、  
+
+「`Alert state if no data or all values are null`」→「`Normal`」を選択  
+「`Alert state if execution error or timeout`」→「`Normal`」を選択
+
+- 「`6. Configure notification message`」→「`Custom annotation name and content`」→「`...content`」→以下を入力
 ```bash
 Relay1のディスク使用率が90%を超えています。100%に達する前に契約サーバーのアップグレードなどを行う必要があります。
 ```
@@ -328,7 +389,7 @@ Relay1のディスク使用率が90%を超えています。100%に達する前�
 
 
 上記で作成したルールをコピーします。
-![](/images/grafana-alert/grafana-alert-settings_12.png)
+![](/images/grafana-alert/grafana-alert-settings_14.png)
 
 - 「`1. Enter alert rule name`」を書き換えます。
 - 「`2. Define query and alert condition`」→「`Metrics Browser`」を書き換えます。
@@ -340,7 +401,7 @@ Relay1のディスク使用率が90%を超えています。100%に達する前�
 1 - (node_filesystem_avail_bytes{alias="relaynode2",mountpoint="/"} / node_filesystem_size_bytes{alias="relaynode2",mountpoint="/"})
 ```
 
-- 「`Custom annotation name and content`」→「`...content`」の検知内容を書き換えます。
+- 「`6. Configure notification message`」→「`Custom annotation name and content`」→「`...content`」の検知内容を書き換えます。
 - 「`Save`」を選択
 
 

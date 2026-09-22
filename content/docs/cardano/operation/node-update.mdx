@@ -17,6 +17,7 @@ title: "ノードアップデート"
 - ブロックログ関連スクリプトアップデート
 - BlockNotifyアップデート
 - SJGTOOLアップデート
+- Grafana本体のアップデート（13.2.2）
 - Grafanaダッシュボードアップデート
 
 {/* - 作業実施前にブロック生成スケジュールを確認してください。  
@@ -1697,7 +1698,134 @@ cnclilog
 
 ## 5. 監視環境の再構築 [#sec-24]
 
-### Prometheusの設定変更 [#sec-25]
+### Grafanaのアップデート [#sec-25]
+
+Grafana稼働サーバー（例：リレー1）で、Grafanaを最新メジャーリリースの`13.2.2`へアップデートします。  
+
+<Tabs items={["Grafana稼働サーバー"]}>
+
+<Tab value="Grafana稼働サーバー">
+
+**現在のバージョン確認**
+
+12.xの場合:
+
+```bash
+grafana-server -v
+```
+
+13.xの場合:
+
+```bash
+grafana server -v
+```
+
+既に`13.2.2`以上であれば、この節の以降の手順は不要です。  
+次の[Prometheusの設定変更](/cardano/operation/node-update#sec-26)へ進んでください。
+
+**APTリポジトリの確認と復旧**
+
+```bash
+apt-cache policy grafana
+```
+> `Version table:`が`/var/lib/dpkg/status`のみ、または`https://apt.grafana.com`が表示されない場合は、リポジトリを再登録します。
+
+```bash
+sudo rm -f /usr/share/keyrings/grafana.key /etc/apt/keyrings/grafana.gpg
+```
+
+```bash
+sudo mkdir -p /etc/apt/keyrings
+```
+
+```bash
+wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null
+```
+
+```bash
+sudo chmod 644 /etc/apt/keyrings/grafana.gpg
+```
+
+```bash
+echo 'deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main' | sudo tee /etc/apt/sources.list.d/grafana.list
+```
+
+不要な旧Grafanaリポジトリ設定ファイルを削除します。
+
+```bash
+sudo mv /etc/apt/sources.list.d/grafana.list.distUpgrade /etc/apt/sources.list.d/grafana.list.distUpgrade.disabled 2>/dev/null
+```
+
+```bash
+sudo apt update
+```
+
+```bash
+apt-cache policy grafana
+```
+
+```yaml title="期待される表示例：" noCopy
+grafana:
+  Installed: 12.4.0
+  Candidate: 13.2.2
+  Version table:
+     13.2.2 500
+        500 https://apt.grafana.com stable/main amd64 Packages
+```
+> `Candidate`が`13.2.2`であり、出典が`https://apt.grafana.com`であることを確認してください。
+
+**Grafanaの更新**
+
+```bash
+sudo apt install -y grafana
+```
+
+```bash
+sudo grafana cli plugins update-all
+```
+
+Infinity datasourceを最新版に更新します。未導入の場合はインストールします。
+
+```bash
+sudo grafana cli plugins install yesoreyeram-infinity-datasource
+```
+
+```bash
+sudo systemctl daemon-reload
+```
+
+```bash
+sudo systemctl enable --now grafana-server.service
+```
+
+```bash
+sudo systemctl restart grafana-server.service
+```
+
+```bash
+sudo systemctl --no-pager status grafana-server.service
+```
+
+`Active: active (running)`であることを確認します。
+
+**バージョン確認**
+
+```bash
+grafana server -v
+```
+
+```yaml title="期待される表示例：" noCopy
+Version 13.2.2
+```
+
+ブラウザからGrafanaへログインし、既存ダッシュボードが表示されることを確認してください。
+> すでに表示されている場合は、ブラウザをリロードしてください。
+
+</Tab>
+
+</Tabs>
+
+### Prometheusの設定変更 [#sec-26]
 
 Cardano Nodeのmetricsを`cardano-tracer`経由で取得するため、Grafana稼働サーバーのPrometheus設定を変更します。
 
@@ -1834,7 +1962,7 @@ Active: active (running)
 
 </Tabs>
 
-### Dashboardのインポート [#sec-26]
+### Dashboardのインポート [#sec-27]
 
 <Tabs items={["BP"]}>
 
@@ -1864,7 +1992,7 @@ sed -i \
 4. 「**DS_PROMETHEUS**」→「**Prometheus**」を選択し、「**DS_YESOREYERAM-INFINITY-DATASOURCE**」→「**yesoreyeram-infinity-datasource**」を選択し、「**Import**」を選択します。  
 
 
-### Grafanaアラートの対象メトリクス変更 [#sec-27]
+### Grafanaアラートの対象メトリクス変更 [#sec-28]
 
 左ペインの「Alerting」→「Alert rules」→「Manage alert rules」→「SJG→ノード監視」→「BPリレー接続監視」のメトリクスを変更して保存します。  
 
@@ -1875,7 +2003,7 @@ cardano_node_metrics_peerSelection_ActivePeers_int{alias="block-producing-node"}
 ```
 へと変更してください。
 
-## 6. エアギャップアップデート [#sec-28]
+## 6. エアギャップアップデート [#sec-29]
 <Callout type="info" title="SFTP機能ソフト導入">
 
 R-loginの転送機能が遅いので、大容量ファイルをダウン・アップロードする場合は、SFTP接続可能なソフトを使用すると効率的です。（FileZilaなど）  
@@ -1975,7 +2103,7 @@ libsodium.so.23
 </Tab>
 </Tabs>
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 USBを用いて`cardano-cli`、`libsecp256k1.so.2`、`libsodium.so.23`をエアギャップの$HOME/git/cardano-node2に移動します。
 ```mermaid

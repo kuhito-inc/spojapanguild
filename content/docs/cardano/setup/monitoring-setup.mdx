@@ -163,7 +163,7 @@ sudo apt install -y prometheus-node-exporter
 <Tab value="Grafana稼働サーバー">
 
 ```bash
-sudo apt-get install -y apt-transport-https gnupg
+sudo apt install -y apt-transport-https gnupg
 ```
 
 ```bash
@@ -385,7 +385,7 @@ sudo mv $HOME/prometheus.yml /etc/prometheus/prometheus.yml
 **Grafanaプラグインのインストール**
 
 ```bash
-sudo grafana-cli plugins install yesoreyeram-infinity-datasource
+sudo grafana cli plugins install yesoreyeram-infinity-datasource
 ```
 
 > GrafanaダッシュボードでJSONデータを取得するため、Infinity datasourceプラグインをインストールします。
@@ -433,7 +433,7 @@ sudo systemctl --no-pager status grafana-server.service prometheus.service prome
 `Grafana`、`Prometheus`、`node_exporter`のバージョンを確認します。
 
 ```bash
-grafana-server -v
+grafana server -v
 prometheus --version
 prometheus-node-exporter --version
 ```
@@ -455,7 +455,7 @@ prometheus-node-exporter --version
 それぞれ以下のような形式で表示されれば正常です。
 
 ```yaml title="表示例：" noCopy
-Version 12.4.1
+Version 13.2.2
 prometheus, version 2.45.3+ds
 node_exporter, version 1.7.0
 ```

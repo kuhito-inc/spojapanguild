@@ -250,7 +250,7 @@ cardano-cli latest stake-pool metadata-hash --pool-metadata-file poolMetaData.js
 
 ## 2. プール登録証明書の作成 [#sec-2]
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 BPにある`vrf.vkey`と`poolMetaDataHash.txt`と`metadata-url.txt`をエアギャップのcnodeディレクトリにコピーしてください。
 ```mermaid
@@ -459,7 +459,7 @@ cardano-cli latest stake-address stake-delegation-certificate \
 </Tab>
 </Tabs>
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 エアギャップの`pool.cert`と`deleg.cert`をBPのcnodeディレクトリにコピーしてください。
 ```mermaid
@@ -617,7 +617,7 @@ cardano-cli latest transaction build-raw \
 </Tab>
 </Tabs>
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 BPの`tx.raw`をエアギャップのcnodeディレクトリにコピーします。
 
@@ -648,7 +648,7 @@ cardano-cli latest transaction sign \
 </Tab>
 </Tabs>
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 エアギャップの`tx.signed`をBPのcnodeディレクトリにコピーします。
 ```mermaid
@@ -692,7 +692,7 @@ chmod a-rwx $HOME/cold-keys
 </Tab>
 </Tabs>
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 エアギャップの`pool.id-bech32`と`pool.id`をBPのcnodeディレクトリにコピーします。
 ```mermaid
