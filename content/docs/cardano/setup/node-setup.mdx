@@ -464,10 +464,11 @@ wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${N
 `tracer-config.json`のログ保存先、Unix SocketのPATH、Network Magicを環境に合わせて変更します。
 
 ```bash
+NETWORK_MAGIC=$(jq -r '.networkMagic' $NODE_HOME/${NODE_CONFIG}-shelley-genesis.json)
 sed -i \
   -e "s|\"logRoot\": \"\"|\"logRoot\": \"${NODE_HOME}/logs\"|" \
   -e "s|\"contents\": \"\"|\"contents\": \"${NODE_HOME}/tracer/socket\"|" \
-  -e "s|\"networkMagic\": 0|\"networkMagic\": ${CARDANO_NODE_NETWORK_ID}|" \
+  -e "s|\"networkMagic\": 0|\"networkMagic\": ${NETWORK_MAGIC}|" \
   ${NODE_CONFIG}-tracer-config.json
 ```
 

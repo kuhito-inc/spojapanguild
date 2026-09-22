@@ -990,7 +990,7 @@ wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${N
 `tracer-config.json`のログ保存先、Unix SocketのPATH、Network Magicを環境に合わせて変更します。
 
 ```bash
-NETWORK_MAGIC=$(jq -r '.networkMagic' $NODE_HOME/{NODE_CONFIG}-shelley-genesis.json)
+NETWORK_MAGIC=$(jq -r '.networkMagic' $NODE_HOME/${NODE_CONFIG}-shelley-genesis.json)
 sed -i \
   -e "s|\"logRoot\": \"\"|\"logRoot\": \"${NODE_HOME}/logs\"|" \
   -e "s|\"contents\": \"\"|\"contents\": \"${NODE_HOME}/tracer/socket\"|" \
@@ -1761,7 +1761,7 @@ sudo apt update
 ```
 
 ```bash
-apt-cache policy grafana
+apt-cache policy grafana | head -n 10
 ```
 
 ```yaml title="期待される表示例：" noCopy
