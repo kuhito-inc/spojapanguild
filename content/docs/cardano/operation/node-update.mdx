@@ -1301,10 +1301,18 @@ journalctl -u cardano-node -f
 
 </Callout>
 
+<Callout type="idea" title="TraceMempoolについて">
+
+以前のバージョンではTraceMempoolオプションを無効(false)にすることでCPUリソースを抑えるのに効果的でしたが、新Tracerへ移行したv11.xではTXの検証機能が改善されたことで、この問題はすでに解決されています。そのため、現バージョンではgLiveViewでMempoolの数値を確認できるようになりました。
+
+</Callout>
+
 gliveでノード同期状況を確認します。
 ```bash
 glive
 ```
+
+![gLiveView](/images/glive-view-mempool.png)
 
 
 `cardano-tracer`が正常に起動していることを確認します。
