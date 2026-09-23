@@ -81,29 +81,6 @@ cardano-cli latest query protocol-parameters \
 ```
 > バックアップ及び更新、確認
 
-## TraceMempoolをTrueからFalseにする [#sec-11]
-```bash
-cd $NODE_HOME
-sed -i ${NODE_CONFIG}-config.json \
-    -e "s/TraceMempool\": true/TraceMempool\": false/g"
-```
-- ノード再起動し設定を反映する
-```bash
-sudo systemctl reload-or-restart cardano-node
-```
-
-## TraceMempoolをFalseからTrueにする [#sec-12]
-
-```bash
-cd $NODE_HOME
-sed -i ${NODE_CONFIG}-config.json \
-    -e "s/TraceMempool\": false/TraceMempool\": true/g"
-```
-- ノード再起動し設定を反映する
-```bash
-sudo systemctl reload-or-restart cardano-node
-```
-
 ## 既存のスワップファイル削除 [#sec-13]
 ```bash
 cd $HOME

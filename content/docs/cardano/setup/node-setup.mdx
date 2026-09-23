@@ -752,7 +752,7 @@ sudo systemctl enable --now cardano-node
 
 システム起動後にログモニターを表示します。
 ```bash
-journalctl -u cardano-node -f
+journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
 ```
 > コマンド入力に戻る場合は「`Ctrl+C`」（この場合ノードは終了しません）
 
@@ -762,7 +762,7 @@ journalctl -u cardano-node -f
 
 スクリプトへのパスを通し、任意の単語で起動出来るようにします。
 ```bash
-echo alias cnode='"journalctl -u cardano-node -f"' >> $HOME/.bashrc
+echo alias cnode='"journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered ."' >> $HOME/.bashrc
 echo alias cnstart='"sudo systemctl start cardano-node"' >> $HOME/.bashrc
 echo alias cnrestart='"sudo systemctl reload-or-restart cardano-node"' >> $HOME/.bashrc
 echo alias cnstop='"sudo systemctl stop cardano-node"' >> $HOME/.bashrc

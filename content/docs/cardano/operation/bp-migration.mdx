@@ -192,7 +192,7 @@ sudo systemctl start cardano-node
 ```
 ノードログ確認
 ```bash
-journalctl --unit=cardano-node --follow
+journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
 ```
 
 </Tab>
@@ -352,18 +352,6 @@ sudo shutdown -h now
 
 </Tab>
 </Tabs>
-
-### Tracemempool無効化 [#sec-22]
-
-Txの増加が確認できたらTracemempoolを無効にします。
-
-<Tabs items={["新BP"]}>
-<Tab value="新BP">
-
-```bash
-sed -i $NODE_HOME/${NODE_CONFIG}-config.json \
-    -e "s/TraceMempool\": true/TraceMempool\": false/g"
-```
 
 </Tab>
 </Tabs>

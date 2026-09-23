@@ -10,6 +10,7 @@ title: "ノードアップデート"
 `11.0.1`以前から`11.1.2`へのアップデートでは大幅な変更があります。
 
 - ログシステム変更(cardano-tracer常駐)
+- stdoutログ形式をJSONに変更
 - Configファイル変更(cardano-tracer用)
 - Prometheus設定変更
 - GenesisModeへ切り替え
@@ -957,9 +958,10 @@ find ${NODE_HOME}/logs -maxdepth 1 -type f -name 'node-*.json' \
   mv ${NODE_HOME}/logs/node.json ${NODE_HOME}/logs/archive/
 ```
 
-TracerがCardano Nodeからtraceを受信するUnix SocketのPATHを環境変数へ設定します。
+環境変数設定
 ```bash
 grep -q '^export CARDANO_TRACER_SOCKET_PATH=' $HOME/.bashrc || echo "export CARDANO_TRACER_SOCKET_PATH=\"${NODE_HOME}/tracer/socket\"" >> $HOME/.bashrc
+sed -i 's#journalctl -u cardano-node -f#journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .#g' "$HOME/.bashrc"
 source $HOME/.bashrc
 ```
 
@@ -1283,7 +1285,7 @@ sudo reboot
 SSH接続後、ノード同期状況の確認
 
 ```bash
-journalctl -u cardano-node -f
+journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
 ```
 > 同期までしばらくお待ちください
 
