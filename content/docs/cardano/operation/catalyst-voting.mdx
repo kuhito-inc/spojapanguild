@@ -29,7 +29,7 @@ title: "カタリスト有権者登録"
 
 ```bash
 cd $HOME/git
-wget  https://github.com/IntersectMBO/bech32/archive/refs/tags/$(curl -s https://api.github.com/repos/IntersectMBO/bech32/releases/latest | jq -r .tag_name).tar.gz
+wget -4  https://github.com/IntersectMBO/bech32/archive/refs/tags/$(curl -s https://api.github.com/repos/IntersectMBO/bech32/releases/latest | jq -r .tag_name).tar.gz
 tar -xf $(curl -s https://api.github.com/repos/IntersectMBO/bech32/releases/latest | jq -r .tag_name).tar.gz
 mv bech32-$(curl -s https://api.github.com/repos/IntersectMBO/bech32/releases/latest | jq -r .tag_name | tr -d v) bech32
 rm $(curl -s https://api.github.com/repos/IntersectMBO/bech32/releases/latest | jq -r .tag_name).tar.gz
@@ -82,7 +82,7 @@ bech32 -v
 
 ```bash
 cd $HOME/git
-wget https://github.com/gitmachtl/cardano-signer/releases/download/$(curl -s https://api.github.com/repos/gitmachtl/cardano-signer/releases/latest | jq -r .tag_name)/cardano-signer-$(curl -s https://api.github.com/repos/gitmachtl/cardano-signer/releases/latest | jq -r .tag_name | tr -d v)_linux-x64.tar.gz
+wget -4 https://github.com/gitmachtl/cardano-signer/releases/download/$(curl -s https://api.github.com/repos/gitmachtl/cardano-signer/releases/latest | jq -r .tag_name)/cardano-signer-$(curl -s https://api.github.com/repos/gitmachtl/cardano-signer/releases/latest | jq -r .tag_name | tr -d v)_linux-x64.tar.gz
 tar -xf cardano-signer-$(curl -s https://api.github.com/repos/gitmachtl/cardano-signer/releases/latest | jq -r .tag_name | tr -d v)_linux-x64.tar.gz
 ```
 

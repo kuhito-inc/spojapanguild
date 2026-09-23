@@ -33,8 +33,8 @@ echo "RELEASE=${RELEASE}"
 ```bash
 mkdir -p $HOME/git
 cd $HOME/git
-wget -O cardano-node-leios-x86_64-linux.tar.gz https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.tar.gz
-wget -O cardano-node-leios-x86_64-linux.sha256 https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.sha256
+wget -4 -O cardano-node-leios-x86_64-linux.tar.gz https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.tar.gz
+wget -4 -O cardano-node-leios-x86_64-linux.sha256 https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.sha256
 ```
 
 チェックサムを検証します。
@@ -81,13 +81,13 @@ rm -rf db
 
 設定ファイルダウンロード
 ```bash
-wget https://book.play.dev.cardano.org/environments-pre/leios/config.json -O config.json
-wget https://book.play.dev.cardano.org/environments-pre/leios/peer-snapshot.json -O peer-snapshot.json
-wget https://book.play.dev.cardano.org/environments-pre/leios/byron-genesis.json -O byron-genesis.json
-wget https://book.play.dev.cardano.org/environments-pre/leios/shelley-genesis.json -O shelley-genesis.json
-wget https://book.play.dev.cardano.org/environments-pre/leios/alonzo-genesis.json -O alonzo-genesis.json
-wget https://book.play.dev.cardano.org/environments-pre/leios/conway-genesis.json -O conway-genesis.json
-wget https://book.play.dev.cardano.org/environments-pre/leios/dijkstra-genesis.json -O dijkstra-genesis.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/config.json -O config.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/peer-snapshot.json -O peer-snapshot.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/byron-genesis.json -O byron-genesis.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/shelley-genesis.json -O shelley-genesis.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/alonzo-genesis.json -O alonzo-genesis.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/conway-genesis.json -O conway-genesis.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/dijkstra-genesis.json -O dijkstra-genesis.json
 ```
 
 スナップショットダウンロード

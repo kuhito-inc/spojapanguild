@@ -400,7 +400,7 @@ rm -rf $HOME/git/cardano-node-old/
 ```bash
 mkdir -p $HOME/git/cardano-node2
 cd $HOME/git/cardano-node2
-wget https://github.com/IntersectMBO/cardano-node/releases/download/11.1.2/cardano-node-11.1.2-linux-amd64.tar.gz
+wget -4 https://github.com/IntersectMBO/cardano-node/releases/download/11.1.2/cardano-node-11.1.2-linux-amd64.tar.gz
 ```
 
 解凍
@@ -548,13 +548,13 @@ cp $NODE_HOME/${NODE_CONFIG}-byron-genesis.json $NODE_HOME/${NODE_CONFIG}-shelle
 設定ファイルをダウンロードします。
 ```bash
 cd $NODE_HOME
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
+wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
+wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
+wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
+wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
+wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
 
 リレーのみで実行
@@ -566,7 +566,7 @@ wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${N
 `peer-snapshot.json`のダウンロード
 ```bash
 cd $NODE_HOME
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
+wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
 ```
 
 </Tab>
@@ -630,7 +630,7 @@ mainnet-relay-1 または mainnet-relay-2 または mainnet-bp
 ```bash
 cd $HOME/git
 mithril_release="$(curl -s https://api.github.com/repos/IntersectMBO/mithril/releases/latest | jq -r '.tag_name')"
-wget https://github.com/IntersectMBO/mithril/releases/download/${mithril_release}/mithril-${mithril_release}-linux-x64.tar.gz -O mithril.tar.gz
+wget -4 https://github.com/IntersectMBO/mithril/releases/download/${mithril_release}/mithril-${mithril_release}-linux-x64.tar.gz -O mithril.tar.gz
 ```
 
 設定
@@ -666,8 +666,8 @@ tmux new -s mithril
 変数セット
 ```bash
 export AGGREGATOR_ENDPOINT=https://aggregator.release-mainnet.api.mithril.network/aggregator
-export GENESIS_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/genesis.vkey)
-export ANCILLARY_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/ancillary.vkey)
+export GENESIS_VERIFICATION_KEY=$(wget -4 -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/genesis.vkey)
+export ANCILLARY_VERIFICATION_KEY=$(wget -4 -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/ancillary.vkey)
 export SNAPSHOT_DIGEST=latest
 ```
 
@@ -982,7 +982,7 @@ cd ${NODE_HOME}/tracer
 ```
 
 ```bash
-wget --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
+wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
 ```
 
 **tracer-config.jsonの設定**
@@ -1458,8 +1458,8 @@ sudo systemctl stop cnode-cncli-sync.service cnode-cncli-validate.service cnode-
 スクリプトを再取得します。
 ```bash
 cd $NODE_HOME/scripts
-wget https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/cncli.sh -O ./cncli.sh
-wget https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/cntools.library -O ./cntools.library
+wget -4 https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/cncli.sh -O ./cncli.sh
+wget -4 https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/cntools.library -O ./cntools.library
 chmod 755 cncli.sh
 ```
 
@@ -1520,7 +1520,7 @@ INFO cncli::nodeclient::sync: block ******** of ********: 100.00% sync'd
 
 ```bash
 cd $NODE_HOME/scripts
-wget https://raw.githubusercontent.com/kuhito-inc/sjg-tools/main/sjgtool.sh -O sjgtool.sh
+wget -4 https://raw.githubusercontent.com/kuhito-inc/sjg-tools/main/sjgtool.sh -O sjgtool.sh
 chmod 755 sjgtool.sh
 ```
 
@@ -1554,7 +1554,7 @@ sudo systemctl stop cnode-logmonitor.service
 ```bash
 cd $NODE_HOME/scripts
 
-wget https://raw.githubusercontent.com/kuhito-inc/sjg-tools/main/logMonitor.sh -q -O ./logMonitor.sh
+wget -4 https://raw.githubusercontent.com/kuhito-inc/sjg-tools/main/logMonitor.sh -q -O ./logMonitor.sh
 chmod 755 logMonitor.sh
 ```
 
@@ -1618,7 +1618,7 @@ sudo systemctl stop cnode-blocknotify.service
 
 ```bash
 bn_release="$(curl -s https://api.github.com/repos/btbf/block-notify/releases/latest | jq -r '.tag_name')"
-wget https://raw.githubusercontent.com/btbf/block-notify/refs/tags/${bn_release}/block_notify.py -O $NODE_HOME/scripts/block-notify/block_notify.py
+wget -4 https://raw.githubusercontent.com/btbf/block-notify/refs/tags/${bn_release}/block_notify.py -O $NODE_HOME/scripts/block-notify/block_notify.py
 ```
 
 設定ファイルの更新
@@ -1739,7 +1739,7 @@ sudo mkdir -p /etc/apt/keyrings
 ```
 
 ```bash
-wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null
+wget -4 -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null
 ```
 
 ```bash

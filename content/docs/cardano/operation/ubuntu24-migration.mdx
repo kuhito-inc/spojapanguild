@@ -713,7 +713,7 @@ sudo mkdir -p /etc/apt/keyrings
 ```
 
 ```bash
-wget -q -O - https://apt.grafana.com/gpg.key \
+wget -4 -q -O - https://apt.grafana.com/gpg.key \
 | gpg --dearmor \
 | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null
 ```
@@ -758,7 +758,7 @@ sudo apt update && sudo apt upgrade -y
 <Tab value="リレーの場合">
 
 ```bash
-sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
+sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget -4 libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
 ```
 
 デーモン再起動自動化
@@ -794,7 +794,7 @@ rm -rf ghc-8.*
 <Tab value="BPの場合">
 
 ```bash
-sudo apt install bc curl htop nano needrestart protobuf-compiler python3-pip python3-venv python3-full rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
+sudo apt install bc curl htop nano needrestart protobuf-compiler python3-pip python3-venv python3-full rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget -4 libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
 ```
 
 **Python依存関係エラーの対処**

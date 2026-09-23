@@ -29,7 +29,7 @@ sudo apt update && sudo apt upgrade -y
 ```bash
 cd $HOME/git
 mithril_release="$(curl -s https://api.github.com/repos/IntersectMBO/mithril/releases/latest | jq -r '.tag_name')"
-wget https://github.com/IntersectMBO/mithril/releases/download/${mithril_release}/mithril-${mithril_release}-linux-x64.tar.gz -O mithril.tar.gz
+wget -4 https://github.com/IntersectMBO/mithril/releases/download/${mithril_release}/mithril-${mithril_release}-linux-x64.tar.gz -O mithril.tar.gz
 ```
 
 設定
@@ -67,8 +67,8 @@ tmux new -s mithril
 
 ```bash
 export AGGREGATOR_ENDPOINT=https://aggregator.release-mainnet.api.mithril.network/aggregator
-export GENESIS_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/genesis.vkey)
-export ANCILLARY_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/ancillary.vkey)
+export GENESIS_VERIFICATION_KEY=$(wget -4 -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/genesis.vkey)
+export ANCILLARY_VERIFICATION_KEY=$(wget -4 -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/ancillary.vkey)
 export SNAPSHOT_DIGEST=latest
 ```
 
