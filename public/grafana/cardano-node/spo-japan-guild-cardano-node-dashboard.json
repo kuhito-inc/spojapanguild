@@ -3347,7 +3347,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "cardano_node_metrics_slotsMissedNum_int",
+          "expr": "cardano_node_metrics_slotsMissed_int",
           "format": "time_series",
           "instant": false,
           "interval": "",
