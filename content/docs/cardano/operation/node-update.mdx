@@ -975,6 +975,15 @@ echo ${CARDANO_TRACER_SOCKET_PATH}
 /home/<USER>/cnode/tracer/socket
 ```
 
+```bash
+cat $HOME/.bashrc | grep "alias cnode"
+```
+
+以下のように表示されることを確認します。
+```yaml title="期待される表示例：" noCopy
+alias cnode="journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered ."
+```
+
 **tracer-config.jsonの取得**
 
 Tracer用の設定ファイルを取得します。
@@ -1285,8 +1294,12 @@ sudo reboot
 SSH接続後、ノード同期状況の確認
 
 ```bash
-journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
+cnode
 ```
+
+色付きログになっていることを確認してください
+![gLiveView](/images/node-log-json.png)
+
 > 同期までしばらくお待ちください
 
 <Callout type="info" title="ノードログメッセージ確認">
