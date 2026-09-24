@@ -78,8 +78,6 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 
 ### 手順 [#sec-5]
 
-<Callout type="error" title="リレー">
-
 [5. ノード起動スクリプトの作成](/cardano/setup/node-setup#sec-15) で決めた**ノード用ポート**に合わせること。  
 行末の「`＋`」で注釈を表示できます。
 
@@ -99,7 +97,7 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 1',
     '    },',
     '    {',
@@ -110,7 +108,7 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
     '        }',
     '      ],',
     '      "advertise": true,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 1',
     '    }',
     '  ],',
@@ -148,7 +146,7 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 1',
     '    },',
     '    {',
@@ -159,7 +157,7 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
     '        }',
     '      ],',
     '      "advertise": true,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 1',
     '    }',
     '  ],',
@@ -201,7 +199,7 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 2',
     '    }',
     '  ],',
@@ -223,9 +221,6 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 </Tab>
 
 </Tabs>
-
-
-</Callout>
 
 ### 構文チェックと再起動 [#sec-6]
 
