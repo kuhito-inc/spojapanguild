@@ -549,13 +549,29 @@ cp $NODE_HOME/${NODE_CONFIG}-byron-genesis.json $NODE_HOME/${NODE_CONFIG}-shelle
 設定ファイルをダウンロードします。
 ```bash
 cd $NODE_HOME
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+WGET_OPTS=(-4 --no-use-server-timestamps --tries=5 --waitretry=3 --connect-timeout=10 --read-timeout=30)
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+```
+
+ファイル確認
+```
+for f in "${NODE_CONFIG}"-{byron-genesis,shelley-genesis,alonzo-genesis,conway-genesis,config,topology,checkpoints}.json; do jq empty "$f" >/dev/null 2>&1 && echo "OK  $f" || echo "NG  $f"; done
+```
+
+```yaml title="期待される表示例：" noCopy
+OK  mainnet-byron-genesis.json
+OK  mainnet-shelley-genesis.json
+OK  mainnet-alonzo-genesis.json
+OK  mainnet-conway-genesis.json
+OK  mainnet-config.json
+OK  mainnet-topology.json
+OK  mainnet-checkpoints.json
 ```
 
 リレーのみで実行
@@ -567,7 +583,7 @@ wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/
 `peer-snapshot.json`のダウンロード
 ```bash
 cd $NODE_HOME
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
 ```
 
 </Tab>
@@ -975,6 +991,7 @@ echo ${CARDANO_TRACER_SOCKET_PATH}
 /home/<USER>/cnode/tracer/socket
 ```
 
+cnodeコマンド確認
 ```bash
 cat $HOME/.bashrc | grep "alias cnode"
 ```
@@ -993,7 +1010,8 @@ cd ${NODE_HOME}/tracer
 ```
 
 ```bash
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
+WGET_OPTS=(-4 --no-use-server-timestamps --tries=5 --waitretry=3 --connect-timeout=10 --read-timeout=30)
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
 ```
 
 **tracer-config.jsonの設定**
