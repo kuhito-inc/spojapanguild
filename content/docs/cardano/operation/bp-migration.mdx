@@ -192,7 +192,7 @@ sudo systemctl start cardano-node
 ```
 ノードログ確認
 ```bash
-journalctl --unit=cardano-node --follow
+journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
 ```
 
 </Tab>
@@ -353,7 +353,6 @@ sudo shutdown -h now
 
 </Tab>
 </Tabs>
-
 
 ### Mithril-Signer再セットアップ [#sec-22]
 

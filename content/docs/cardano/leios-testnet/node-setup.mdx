@@ -253,7 +253,7 @@ sudo systemctl enable --now cardano-node
 
 ログを確認します。
 ```bash
-journalctl -u cardano-node -f
+journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
 ```
 
 同期状況を確認します。
@@ -280,7 +280,7 @@ cardano-cli query tip
 便利なエイリアス設定
 
 ```bash
-echo "alias cnode='journalctl -u cardano-node -f'" >> $HOME/.bashrc
+echo "alias cnode='journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .'" >> $HOME/.bashrc
 echo "alias cnstart='sudo systemctl start cardano-node'" >> $HOME/.bashrc
 echo "alias cnstop='sudo systemctl stop cardano-node'" >> $HOME/.bashrc
 echo "alias cnrestart='sudo systemctl restart cardano-node'" >> $HOME/.bashrc

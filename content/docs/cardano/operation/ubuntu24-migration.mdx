@@ -781,7 +781,7 @@ sudo systemctl enable --now cardano-node
 
 ノード同期状況の確認
 ```bash
-sudo journalctl -u cardano-node -f
+sudo journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
 ```
 
 コンパイル済みHaskellパッケージ削除
@@ -925,7 +925,7 @@ sudo systemctl enable --now cardano-node
 
 ノード同期状況の確認
 ```bash
-sudo journalctl -u cardano-node -f
+sudo journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
 ```
 
 コンパイル済みHaskellパッケージ削除

@@ -350,13 +350,13 @@ cd $NODE_HOME
 
 ファイルをダウンロードします。
 ```bash
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
 
 <Tabs items={["リレーのみ"]}>
@@ -365,7 +365,7 @@ wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/
 
 `peer-snapshot.json`のダウンロード
 ```bash
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
 ```
 
 </Tab>
@@ -456,7 +456,7 @@ cd ${NODE_HOME}/tracer
 ```
 
 ```bash
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
 ```
 
 ### tracer-config.jsonの設定 [#sec-12]
@@ -752,7 +752,7 @@ sudo systemctl enable --now cardano-node
 
 システム起動後にログモニターを表示します。
 ```bash
-journalctl -u cardano-node -f
+journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
 ```
 > コマンド入力に戻る場合は「`Ctrl+C`」（この場合ノードは終了しません）
 
@@ -762,7 +762,7 @@ journalctl -u cardano-node -f
 
 スクリプトへのパスを通し、任意の単語で起動出来るようにします。
 ```bash
-echo alias cnode='"journalctl -u cardano-node -f"' >> $HOME/.bashrc
+echo alias cnode='"journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered ."' >> $HOME/.bashrc
 echo alias cnstart='"sudo systemctl start cardano-node"' >> $HOME/.bashrc
 echo alias cnrestart='"sudo systemctl reload-or-restart cardano-node"' >> $HOME/.bashrc
 echo alias cnstop='"sudo systemctl stop cardano-node"' >> $HOME/.bashrc

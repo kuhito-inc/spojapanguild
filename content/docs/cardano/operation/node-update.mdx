@@ -10,6 +10,7 @@ title: "ノードアップデート"
 `11.0.1`以前から`11.1.2`へのアップデートでは大幅な変更があります。
 
 - ログシステム変更(cardano-tracer常駐)
+- stdoutログ形式をJSONに変更
 - Configファイル変更(cardano-tracer用)
 - Prometheus設定変更
 - GenesisModeへ切り替え
@@ -548,13 +549,29 @@ cp $NODE_HOME/${NODE_CONFIG}-byron-genesis.json $NODE_HOME/${NODE_CONFIG}-shelle
 設定ファイルをダウンロードします。
 ```bash
 cd $NODE_HOME
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+WGET_OPTS=(-4 --no-use-server-timestamps --tries=5 --waitretry=3 --connect-timeout=10 --read-timeout=30)
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+```
+
+ファイル確認
+```
+for f in "${NODE_CONFIG}"-{byron-genesis,shelley-genesis,alonzo-genesis,conway-genesis,config,topology,checkpoints}.json; do jq empty "$f" >/dev/null 2>&1 && echo "OK  $f" || echo "NG  $f"; done
+```
+
+```yaml title="期待される表示例：" noCopy
+OK  mainnet-byron-genesis.json
+OK  mainnet-shelley-genesis.json
+OK  mainnet-alonzo-genesis.json
+OK  mainnet-conway-genesis.json
+OK  mainnet-config.json
+OK  mainnet-topology.json
+OK  mainnet-checkpoints.json
 ```
 
 リレーのみで実行
@@ -566,7 +583,7 @@ wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/
 `peer-snapshot.json`のダウンロード
 ```bash
 cd $NODE_HOME
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
 ```
 
 </Tab>
@@ -713,7 +730,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
 [5. ノード起動スクリプトの作成](/cardano/setup/node-setup#sec-15) で決めた**ノード用ポート**に合わせること。  
 行末の「`＋`」で注釈を表示できます。
 
-<Tabs items={["リレー1", "リレー2"]}>
+<Tabs items={["リレー1", "リレー2", "BP"]}>
 <Tab value="リレー1">
 
 <AnnotatedCode
@@ -729,7 +746,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": false,',
+    '      "trustable": true,',
     '      "hotValency": 1',
     '    },',
     '    {',
@@ -740,7 +757,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
     '        }',
     '      ],',
     '      "advertise": true,',
-    '      "trustable": false,',
+    '      "trustable": true,',
     '      "hotValency": 1',
     '    }',
     '  ],',
@@ -778,7 +795,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": false,',
+    '      "trustable": true,',
     '      "hotValency": 1',
     '    },',
     '    {',
@@ -789,7 +806,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
     '        }',
     '      ],',
     '      "advertise": true,',
-    '      "trustable": false,',
+    '      "trustable": true,',
     '      "hotValency": 1',
     '    }',
     '  ],',
@@ -812,16 +829,8 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
 />
 
 </Tab>
-</Tabs>
 
-
-</Callout>
-
-
-<Callout type="error" title="BP Topologyの変更">
-
-行末の「`＋`」で注釈を表示できます。
-
+<Tab value="BP">
 <AnnotatedCode
   code={[
     'cat > ${NODE_HOME}/${NODE_CONFIG}-topology.json << EOF',
@@ -858,6 +867,8 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
     21: '`-1` を指定してLedger Peersを使用しないようにします。',
   }}
 />
+</Tab>
+</Tabs>
 
 </Callout>
 
@@ -957,9 +968,10 @@ find ${NODE_HOME}/logs -maxdepth 1 -type f -name 'node-*.json' \
   mv ${NODE_HOME}/logs/node.json ${NODE_HOME}/logs/archive/
 ```
 
-TracerがCardano Nodeからtraceを受信するUnix SocketのPATHを環境変数へ設定します。
+環境変数設定
 ```bash
 grep -q '^export CARDANO_TRACER_SOCKET_PATH=' $HOME/.bashrc || echo "export CARDANO_TRACER_SOCKET_PATH=\"${NODE_HOME}/tracer/socket\"" >> $HOME/.bashrc
+sed -i 's#journalctl -u cardano-node -f#journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .#g' "$HOME/.bashrc"
 source $HOME/.bashrc
 ```
 
@@ -973,6 +985,16 @@ echo ${CARDANO_TRACER_SOCKET_PATH}
 /home/<USER>/cnode/tracer/socket
 ```
 
+cnodeコマンド確認
+```bash
+cat $HOME/.bashrc | grep "alias cnode"
+```
+
+以下のように表示されることを確認します。
+```yaml title="期待される表示例：" noCopy
+alias cnode="journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered ."
+```
+
 **tracer-config.jsonの取得**
 
 Tracer用の設定ファイルを取得します。
@@ -982,7 +1004,8 @@ cd ${NODE_HOME}/tracer
 ```
 
 ```bash
-wget -4 --no-use-server-timestamps https://spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
+WGET_OPTS=(-4 --no-use-server-timestamps --tries=5 --waitretry=3 --connect-timeout=10 --read-timeout=30)
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
 ```
 
 **tracer-config.jsonの設定**
@@ -1283,8 +1306,12 @@ sudo reboot
 SSH接続後、ノード同期状況の確認
 
 ```bash
-journalctl -u cardano-node -f
+cnode
 ```
+
+色付きログになっていることを確認してください
+![gLiveView](/images/node-log-json.png)
+
 > 同期までしばらくお待ちください
 
 <Callout type="info" title="ノードログメッセージ確認">

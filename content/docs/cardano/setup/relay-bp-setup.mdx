@@ -80,26 +80,10 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 
 <Callout type="error" title="リレー">
 
-
-<Callout type="warn" title="クラウドのセキュリティグループでファイアウォールを開けている場合">
-
-
-`ufw` は使わず、コンソールで**リレー用ポート（例: 6000）のインバウンド**を許可してください。
-
-</Callout>
-
-
-```bash
-sudo ufw allow 6000/tcp
-```
-```bash
-sudo ufw reload
-```
-
 [5. ノード起動スクリプトの作成](/cardano/setup/node-setup#sec-15) で決めた**ノード用ポート**に合わせること。  
 行末の「`＋`」で注釈を表示できます。
 
-<Tabs items={["リレー1", "リレー2"]}>
+<Tabs items={["リレー1", "リレー2" ,"BP"]}>
 <Tab value="リレー1">
 
 <AnnotatedCode
@@ -115,7 +99,7 @@ sudo ufw reload
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": false,',
+    '      "trustable": true,',
     '      "hotValency": 1',
     '    },',
     '    {',
@@ -126,7 +110,7 @@ sudo ufw reload
     '        }',
     '      ],',
     '      "advertise": true,',
-    '      "trustable": false,',
+    '      "trustable": true,',
     '      "hotValency": 1',
     '    }',
     '  ],',
@@ -164,7 +148,7 @@ sudo ufw reload
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": false,',
+    '      "trustable": true,',
     '      "hotValency": 1',
     '    },',
     '    {',
@@ -175,7 +159,7 @@ sudo ufw reload
     '        }',
     '      ],',
     '      "advertise": true,',
-    '      "trustable": false,',
+    '      "trustable": true,',
     '      "hotValency": 1',
     '    }',
     '  ],',
@@ -198,42 +182,8 @@ sudo ufw reload
 />
 
 </Tab>
-</Tabs>
 
-
-</Callout>
-
-
-<Callout type="error" title="BP">
-
-<Callout type="warn" title="クラウドのセキュリティグループでファイアウォールを開けている場合">
-
-
-`ufw` は使わず、コンソールで**BP用ポートのインバウンド**を許可してください。
-
-</Callout>
-
-
-```bash
-PORT=`grep "PORT=" $NODE_HOME/startBlockProducingNode.sh`
-b_PORT=${PORT#"PORT="}
-echo "BPポートは ${b_PORT} です"
-```
-
-```bash
-sudo ufw allow from <リレーサーバー1のIP> to any port ${b_PORT}
-```
-
-```bash
-sudo ufw allow from <リレーサーバー2のIP> to any port ${b_PORT}
-```
-
-```bash
-sudo ufw reload
-```
-
-行末の「`＋`」で注釈を表示できます。
-
+<Tab value="BP">
 <AnnotatedCode
   code={[
     'cat > ${NODE_HOME}/${NODE_CONFIG}-topology.json << EOF',
@@ -270,9 +220,12 @@ sudo ufw reload
     21: '`-1` を指定してLedger Peersを使用しないようにします。',
   }}
 />
+</Tab>
+
+</Tabs>
+
 
 </Callout>
-
 
 ### 構文チェックと再起動 [#sec-6]
 
