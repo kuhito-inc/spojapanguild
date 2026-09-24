@@ -184,26 +184,8 @@ DNS運用の場合は不要ですが、IP運用の方は、[運用証明書(pool
 ---
 ## 5. 補足 [#sec-9]
 
-### Tracemempool無効化 [#sec-10]
 
-<Tabs items={["新リレー"]}>
-<Tab value="新リレー">
-
-Txの増加が確認できたらTracemempoolを無効にします。
-```bash
-sed -i $NODE_HOME/${NODE_CONFIG}-config.json \
-    -e "s/TraceMempool\": true/TraceMempool\": false/g"
-```
-
-ノード再起動
-```bash
-sudo systemctl reload-or-restart cardano-node
-```
-
-</Tab>
-</Tabs>
-
-旧リレーストップ
+旧リレーを停止してサービスを解除します。
 <Tabs items={["旧リレー"]}>
 <Tab value="旧リレー">
 
@@ -218,7 +200,8 @@ sudo systemctl disable cardano-node
 </Tab>
 </Tabs>
 
-BPファイアウォールから旧リレーIP削除
+
+BPのファイアウォール設定から旧リレーIPを削除します。
 <Tabs items={["BP"]}>
 <Tab value="BP">
 
@@ -239,11 +222,11 @@ AWSやVSPによっては管理画面でセキュリティ設定(ファイアウ�
 </Callout>
 
 
-### 旧リレーRSYNC設定済の場合 [#sec-11]
+### 旧リレーRSYNC設定済の場合 [#sec-10]
 1. `rsyncd.conf` `rsync_ed25519.pub`を旧リレーのcnodeから新リレーのcnodeへ移動してください。
 2. 転送元サーバーの`~/.ssh/config`の旧リレーIPを新リレーIPに変更してください。
 
-### Mithril-Signer再セットアップ [#sec-12]
+### Mithril-Signer再セットアップ [#sec-11]
 
 旧サーバーでMithril-Signer-Relayを実行していた場合は、新サーバーでも再セットアップしてください。  
 [Mithril Signerノードの設定、更新](/cardano/operation/mithril-signer-node-setup-and-updates)
