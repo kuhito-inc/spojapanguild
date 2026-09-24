@@ -1638,8 +1638,26 @@ Active: active (running)
 logmonitor
 ```
 
+#### `blocks`の更新 [#sec-23]
 
-#### `blocknotify`の更新 [#sec-23]
+```bash
+cd $NODE_HOME/scripts
+wget -4 https://raw.githubusercontent.com/kuhito-inc/sjg-tools/main/blocks.sh -O blocks.sh
+chmod 755 blocks.sh
+```
+
+起動してバージョンを確認します。
+
+```bash
+blocks
+```
+
+```yaml title="期待される表示例：" noCopy
+ブロックログ @ Developed by Guild Operators & Customized by BTBF v2.0.1
+```
+
+
+#### `blocknotify`の更新 [#sec-24]
 
 > 導入していない方は不要です。
 
@@ -1731,9 +1749,9 @@ cnclilog
 </Tabs>
 
 
-## 5. 監視環境の再構築 [#sec-24]
+## 5. 監視環境の再構築 [#sec-25]
 
-### Grafanaのアップデート [#sec-25]
+### Grafanaのアップデート [#sec-26]
 
 Grafana稼働サーバー（例：リレー1）で、Grafanaを最新メジャーリリースの`13.2.2`へアップデートします。  
 
@@ -1756,7 +1774,7 @@ grafana server -v
 ```
 
 既に`13.2.2`以上であれば、この節の以降の手順は不要です。  
-次の[Prometheusの設定変更](/cardano/operation/node-update#sec-26)へ進んでください。
+次の[Prometheusの設定変更](/cardano/operation/node-update#sec-27)へ進んでください。
 
 **APTリポジトリの確認と復旧**
 
@@ -1860,7 +1878,7 @@ Version 13.2.2
 
 </Tabs>
 
-### Prometheusの設定変更 [#sec-26]
+### Prometheusの設定変更 [#sec-27]
 
 Cardano Nodeのmetricsを`cardano-tracer`経由で取得するため、Grafana稼働サーバーのPrometheus設定を変更します。
 
@@ -1997,7 +2015,7 @@ Active: active (running)
 
 </Tabs>
 
-### Dashboardのインポート [#sec-27]
+### Dashboardのインポート [#sec-28]
 
 <Tabs items={["BP"]}>
 
@@ -2027,7 +2045,7 @@ sed -i \
 4. 「**DS_PROMETHEUS**」→「**Prometheus**」を選択し、「**DS_YESOREYERAM-INFINITY-DATASOURCE**」→「**yesoreyeram-infinity-datasource**」を選択し、「**Import**」を選択します。  
 
 
-### Grafanaアラートの対象メトリクス変更 [#sec-28]
+### Grafanaアラートの対象メトリクス変更 [#sec-29]
 
 左ペインの「Alerting」→「Alert rules」→「Manage alert rules」→「SJG→ノード監視」→「BPリレー接続監視」のメトリクスを変更して保存します。  
 
@@ -2038,7 +2056,7 @@ cardano_node_metrics_peerSelection_ActivePeers_int{alias="block-producing-node"}
 ```
 へと変更してください。
 
-## 6. エアギャップアップデート [#sec-29]
+## 6. エアギャップアップデート [#sec-30]
 <Callout type="info" title="SFTP機能ソフト導入">
 
 R-loginの転送機能が遅いので、大容量ファイルをダウン・アップロードする場合は、SFTP接続可能なソフトを使用すると効率的です。（FileZilaなど）  
