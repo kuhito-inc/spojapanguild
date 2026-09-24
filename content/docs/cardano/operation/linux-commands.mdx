@@ -81,14 +81,14 @@ cardano-cli latest query protocol-parameters \
 ```
 > バックアップ及び更新、確認
 
-## 既存のスワップファイル削除 [#sec-13]
+## 既存のスワップファイル削除 [#sec-11]
 ```bash
 cd $HOME
 sudo swapoff /swapfile
 sudo rm /swapfile
 ```
 
-## スワップファイル作成 [#sec-14]
+## スワップファイル作成 [#sec-12]
 ```bash
 sudo systemctl stop cardano-node
 ```
@@ -111,14 +111,14 @@ sudo reboot
 ```
 > 8GBのスワップを設定するコマンド
 
-## SSH接続 [#sec-15]
+## SSH接続 [#sec-13]
 ```bash
 ssh -i /Users/ローカルユーザ名/ローカル格納先/id_rsa 接続先ユーザ名@接続先IP -p ポート番号
 ```
 
-## systemd活用コマンド [#sec-16]
+## systemd活用コマンド [#sec-14]
 
-#### 🗄 ログのフィルタリング [#sec-17]
+#### 🗄 ログのフィルタリング [#sec-15]
 
 昨日のログ
 ```bash

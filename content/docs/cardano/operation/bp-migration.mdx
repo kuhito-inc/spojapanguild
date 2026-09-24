@@ -339,6 +339,7 @@ GrafanaにBPのメトリクス(KESなど)が表示されているか確認
 </Tabs>
 
 ---
+
 ## 6. 最終作業 [#sec-20]
 
 ### 旧BPシャットダウン [#sec-21]
@@ -353,12 +354,7 @@ sudo shutdown -h now
 </Tab>
 </Tabs>
 
-ノード再起動
-```bash
-sudo systemctl reload-or-restart cardano-node
-```
-
-### Mithril-Signer再セットアップ [#sec-23]
+### Mithril-Signer再セットアップ [#sec-22]
 
 旧サーバーでMithril-Signer-Relayを実行していた場合は、新サーバーでも再セットアップしてください。  
 [Mithril Signerノードの設定、更新](/cardano/operation/mithril-signer-node-setup-and-updates)
