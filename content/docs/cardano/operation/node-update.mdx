@@ -561,8 +561,19 @@ wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${N
 
 ファイル確認
 ```
-for f in "${NODE_CONFIG}"-{byron-genesis,shelley-genesis,alonzo-genesis,conway-genesis,config,topology,checkpoints}.json; do jq empty "$f" >/dev/null 2>&1 && echo "OK  $f" || echo "NG  $f"; done
+for f in "${NODE_CONFIG}"-{byron-genesis,shelley-genesis,alonzo-genesis,conway-genesis,config,topology,checkpoints}.json; do
+  if jq -e -s 'length == 1 and (.[0] | type == "object")' "$f" >/dev/null 2>&1; then
+    echo "OK  $f"
+  else
+    echo "NG  $f"
+  fi
+done
 ```
+<Callout type="warn" title="上書き時の注意">
+
+すべてのファイルが「OK」になることを確認してください。「NG」がある場合は、後続の手順には進まずに該当ファイルを再ダウンロードして確認し直してください。
+
+</Callout>
 
 ```yaml title="期待される表示例：" noCopy
 OK  mainnet-byron-genesis.json
@@ -724,9 +735,6 @@ Genesis Modeでは bootstrapPeers を使用せず、リレーは peerSnapshotFil
 BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
 
 
-<Callout type="error" title="リレーTopologyの変更">
-
-
 [5. ノード起動スクリプトの作成](/cardano/setup/node-setup#sec-15) で決めた**ノード用ポート**に合わせること。  
 行末の「`＋`」で注釈を表示できます。
 
@@ -746,7 +754,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 1',
     '    },',
     '    {',
@@ -757,7 +765,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
     '        }',
     '      ],',
     '      "advertise": true,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 1',
     '    }',
     '  ],',
@@ -795,7 +803,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 1',
     '    },',
     '    {',
@@ -806,7 +814,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
     '        }',
     '      ],',
     '      "advertise": true,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 1',
     '    }',
     '  ],',
@@ -848,7 +856,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 2',
     '    }',
     '  ],',
@@ -869,9 +877,6 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
 />
 </Tab>
 </Tabs>
-
-</Callout>
-
 
 ### 構文チェックと再起動 [#sec-11]
 
