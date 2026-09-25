@@ -13,6 +13,7 @@
     "docs:infer-fence-lang": "node tools/docs/infer-code-fence-lang.mjs",
     "start": "next start",
     "test": "pnpm run types:check",
+    "test:topology": "node --test tools/topology-generator.test.mjs",
     "types:check": "next typegen && fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },
