@@ -619,20 +619,6 @@ EOF
 </Tab>
 </Tabs>
 
-### トポロジーファイルの設定 [#topology-generator]
-
-Genesis Mode 構成のトポロジーを生成します。接続先のポートは、各ノードの起動スクリプトで設定した値に合わせてください。
-リレー用では、ダウンロードした Peer Snapshot ファイルの絶対パスを指定します。BP用では Peer Snapshot を使用しません。
-
-<TopologyGenerator />
-
-生成したファイル作成コマンドを対象ノードで実行するか、ダウンロードした JSON を `${NODE_HOME}/${NODE_CONFIG}-topology.json` に配置してください。
-起動前に構文を確認します。
-
-```bash
-jq . "${NODE_HOME}/${NODE_CONFIG}-topology.json"
-```
-
 ## 6. ノード起動 [#sec-16]
 
 起動スクリプトに実行権限を付与し、ブロックチェーンの同期を開始します。 

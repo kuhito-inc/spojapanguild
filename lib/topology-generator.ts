@@ -18,6 +18,9 @@ type Root = {
   advertise: boolean;
 };
 
+export const DEFAULT_SNAPSHOT_PATH = '$NODE_HOME/${NODE_CONFIG}-peer-snapshot.json';
+const environmentVariable = /\$(?:\{[A-Za-z_][A-Za-z0-9_]*\}|[A-Za-z_][A-Za-z0-9_]*)/g;
+
 function isIPv4(address: string): boolean {
   const parts = address.split('.');
   return parts.length === 4 && parts.every((part) => /^(0|[1-9]\d{0,2})$/.test(part) && Number(part) <= 255);
@@ -87,8 +90,10 @@ export function generateTopology(input: TopologyInput) {
     errors.relays = '自リレーを1台以上追加してください。';
   }
   const snapshotPath = input.snapshotPath.trim();
-  if (input.mode === 'relay' && (!snapshotPath.startsWith('/') || snapshotPath.endsWith('/') || /[$\x00-\x1f\x7f]/.test(snapshotPath))) {
-    errors.snapshotPath = '環境変数を含まない、ファイルの絶対パスを入力してください。';
+  const pathWithoutVariables = snapshotPath.replace(environmentVariable, 'ENV');
+  const hasAbsolutePrefix = snapshotPath.startsWith('/') || /^\$(?:\{[A-Za-z_][A-Za-z0-9_]*\}|[A-Za-z_][A-Za-z0-9_]*)(?:\/|$)/.test(snapshotPath);
+  if (input.mode === 'relay' && (!hasAbsolutePrefix || snapshotPath.endsWith('/') || /[$\x00-\x1f\x7f]/.test(pathWithoutVariables))) {
+    errors.snapshotPath = '絶対パス、または $NODE_HOME などの環境変数を使ったファイルパスを入力してください。';
   }
   if (Object.keys(errors).length) return { errors, json: null };
 
@@ -115,6 +120,9 @@ export function generateTopology(input: TopologyInput) {
 }
 
 export function topologyCommand(json: string): string {
-  // Quoting the delimiter keeps all JSON data literal, including shell metacharacters.
-  return 'cat > "${NODE_HOME:?}/${NODE_CONFIG:?}-topology.json" <<\'TOPOLOGY_JSON\'\n' + json + '\nTOPOLOGY_JSON';
+  // Expand simple environment references at execution time; keep other shell syntax literal.
+  // Double JSON backslashes so the unquoted heredoc preserves JSON escaping.
+  const body = json.replace(/\$(?:\{[A-Za-z_][A-Za-z0-9_]*\}|[A-Za-z_][A-Za-z0-9_]*)|[\\`$]/g,
+    (token) => token.length > 1 ? token : '\\' + token);
+  return 'cat > "${NODE_HOME}/${NODE_CONFIG}-topology.json" <<TOPOLOGY_JSON\n' + body + '\nTOPOLOGY_JSON';
 }

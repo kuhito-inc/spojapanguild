@@ -30,15 +30,16 @@ export default async function Page(props: PageProps<'/[...slug]'>) {
   const page = source.getPage(resolvePageSlug(params.slug));
   if (!page) notFound();
 
-  const MDX = page.data.body;
+  const content = await page.data.load();
+  const MDX = content.body;
   const lastModified =
-    'lastModified' in page.data && page.data.lastModified
-      ? new Date(page.data.lastModified as string | Date)
+    content.lastModified
+      ? new Date(content.lastModified)
       : null;
 
   return (
     <DocsPage
-      toc={page.data.toc}
+      toc={content.toc}
       full={page.data.full}
       tableOfContent={{ style: 'clerk' }}
       tableOfContentPopover={{ style: 'clerk' }}

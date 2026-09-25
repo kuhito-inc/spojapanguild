@@ -9,7 +9,7 @@ import ts from 'typescript';
 // Load the pure TypeScript module without adding a test-runner dependency.
 const source = readFileSync(new URL('../lib/topology-generator.ts', import.meta.url), 'utf8');
 const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.ESNext, target: ts.ScriptTarget.ES2022 } });
-const { generateTopology, topologyCommand, validAddress } = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputText).toString('base64')}`);
+const { DEFAULT_SNAPSHOT_PATH, generateTopology, topologyCommand, validAddress } = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputText).toString('base64')}`);
 
 const peer = (id, address, advertise = true) => ({ id, address, port: '6000', advertise });
 const fixture = () => ({
@@ -104,11 +104,39 @@ test('duplicates across roots and equivalent DNS/IPv6 spellings block output', (
   }
 });
 
-test('snapshot paths require a literal absolute filename', () => {
-  for (const snapshotPath of ['', '$NODE_HOME/mainnet.json', '/home/$USER/mainnet.json', 'relative.json', '/home/cardano/', '/tmp/file\n.json']) {
+test('snapshot paths require an absolute path or valid environment references', () => {
+  for (const snapshotPath of ['', 'relative.json', '/home/cardano/', '/tmp/file\n.json', '${NODE_HOME/mainnet.json', '/tmp/$(whoami).json', '${NODE_HOME:-/tmp}/snapshot.json']) {
     const result = generateTopology({ ...fixture(), snapshotPath });
     assert.equal(result.json, null);
     assert.ok(result.errors.snapshotPath);
+  }
+});
+
+test('snapshot paths retain environment references in the generated command', () => {
+  assert.equal(DEFAULT_SNAPSHOT_PATH, '$NODE_HOME/${NODE_CONFIG}-peer-snapshot.json');
+  for (const snapshotPath of [DEFAULT_SNAPSHOT_PATH, '${NODE_HOME}/$NODE_CONFIG-peer-snapshot.json', '$HOME/cnode/${NODE_CONFIG}-peer-snapshot.json', '/home/$USER/mainnet.json']) {
+    const input = { ...fixture(), snapshotPath };
+    assert.equal(generate(input).peerSnapshotFile, snapshotPath);
+    assert.ok(topologyCommand(generateTopology(input).json).includes(snapshotPath));
+  }
+});
+
+test('default snapshot path expands on the target node for each network', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'topology env test-'));
+  try {
+    for (const network of ['mainnet', 'preprod', 'preview']) {
+      const { json } = generateTopology({ ...fixture(), snapshotPath: DEFAULT_SNAPSHOT_PATH });
+      const command = topologyCommand(json);
+      assert.ok(command.startsWith('cat > "${NODE_HOME}/${NODE_CONFIG}-topology.json" <<TOPOLOGY_JSON\n'));
+      execFileSync('bash', ['--noprofile', '--norc', '-c', command], {
+        env: { PATH: process.env.PATH, BASH_ENV: '/dev/null', NODE_HOME: directory, NODE_CONFIG: network },
+      });
+      const saved = JSON.parse(readFileSync(join(directory, `${network}-topology.json`), 'utf8'));
+      assert.equal(saved.peerSnapshotFile, `${directory}/${network}-peer-snapshot.json`);
+      assert.deepEqual(saved.localRoots, JSON.parse(json).localRoots);
+    }
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
   }
 });
 
@@ -116,7 +144,7 @@ test('generated command writes identical JSON without expanding shell content', 
   const directory = mkdtempSync(join(tmpdir(), 'topology-test-'));
   try {
     const input = fixture();
-    input.snapshotPath = '/tmp/`printf SHOULD_NOT_RUN`/snapshot.json';
+    input.snapshotPath = '/tmp/`printf SHOULD_NOT_RUN`/a"b\\c.json';
     const { json } = generateTopology(input);
     assert.ok(json);
     execFileSync('bash', ['--noprofile', '--norc', '-c', topologyCommand(json)], {
