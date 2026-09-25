@@ -14,13 +14,20 @@ title: "ノードアップデート"
 - Configファイル変更(cardano-tracer用)
 - Prometheus設定変更
 - GenesisModeへ切り替え
-- Topologyファイルアップデート
+- Topologyファイルアップデート(生成フォーム新設)
 - ブロックログ関連スクリプトアップデート
 - BlockNotifyアップデート
 - SJGTOOLアップデート
 - blocks.shアップデート
 - Grafana本体のアップデート（13.2.2）
 - Grafanaダッシュボードアップデート
+
+**<span style={{color: "red"}}>以下も必ずお読みください</span>**
+<span style={{color: "yellow"}}>
+- 今回のアップデートは多くの変更を含むためリレー・BPを行き来する作業があります。そのためすべてのノードを同日にアップデートすることを推奨します。
+- アップデート作業中のトラブル対応を見越してまとまった作業時間を確保すると共に、ブロック生成タイミングまで数時間の余裕があることを確認してください。
+- 文章をしっかりと読み、流れ作業でコマンドを実行しないでください！！リレーとBPで実行コマンドが異なる箇所が多くあります。
+</span>
 
 {/* - 作業実施前にブロック生成スケジュールを確認してください。  
 - 今回のアップデートではDB更新があるため、ブロック生成が2時間以上無いことを確認してください。    
@@ -29,8 +36,6 @@ title: "ノードアップデート"
 </Callout>
 
 <Callout type="info" title="バージョン対応表">
-
-**<span style={{color: "red"}}>各依存関係もバージョンアップしてますのでよくお読みになって進めてください</span>**
 
 | OS | Node | CLI | GHC | Cabal | CNCLI |
 | :----------: | :----------: | :----------: | :----------: | :----------: | :----------: |
@@ -95,10 +100,23 @@ PreProd-Testnet / cardano-node 11.1.2 / cardano-cli 11.2.3.0 / SJG-TOOL 5.0.0
 
 </Callout>
 
-
   </Accordion>
 </AccordionsBlue>
 
+## 0. 事前準備
+
+すべてのノードアップデートが終わるまでGrafana通知を一時的にオフにしてください
+1. Grafanaログイン
+2. 左メニュー「Alert」→「Silences」→「Add Silence」
+3. 項目を編集する
+  - Duration：`1d` (日付は自動的に変わるので変更しないでください)
+  - Label：`alertname`
+  - Operator：`=~`
+  - Value：`.+`  
+
+![gLiveView](/images/stop-grafana-alert.png)
+
+4. Save silence
 
 ## 1. 依存環境アップデート [#sec-1]
 
