@@ -2,7 +2,7 @@
 title: "プール廃止処理"
 ---
 
-<Callout type="warn" title="プール廃止の流れ">
+<Callout type="info" title="プール廃止の流れ">
 
 
 ```mermaid
@@ -88,7 +88,7 @@ cardano-cli latest stake-pool deregistration-certificate \
 </Tab>
 </Tabs>
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 エアギャップの`pool.dereg`をBPのcnodeディレクトリにコピー
 
@@ -226,7 +226,7 @@ cardano-cli latest transaction build-raw \
 </Tab>
 </Tabs>
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 BPの`tx.raw`をエアギャップのcnodeディレクトリにコピー
 
@@ -263,7 +263,7 @@ chmod a-rwx $HOME/cold-keys
 
 
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 
 エアギャップの`tx.signed` を BPのcnodeディレクトリにコピーします。
@@ -293,7 +293,7 @@ cardano-cli latest transaction submit \
 
 ### リタイア確認 [#sec-2]
 
-- KOIOS APIを使用してリタイア処理ステータスを確認できます。
+- KOIOS APIを使用して、ステークプールのリタイア状況とリタイアエポックを確認します。
 
 <Tabs items={["BP"]}>
 <Tab value="BP">
@@ -306,24 +306,29 @@ EOS
 ```
 
 ```yaml title="期待される表示例：" noCopy
-#戻り値サンプル
-"retired" # "retiring"でリタイア処理待ち "retired"でリタイア済み 
-309 #リタイアエポック
+"retired"
+309
 ```
+> 1行目はプールのリタイア状況です。  
+> `retiring`：リタイア予定  
+> `retired`：リタイア済み  
+> 
+> 2行目はリタイアエポックです。  
+> 上記の例では、Epoch 309でリタイアしたことを示します。
 
 </Tab>
 </Tabs>
 
 ## 2. 登録料返還確認 [#sec-3]
 
-<Callout type="warn" title="注意">
+<Callout type="error" title="注意">
 
-以降の処理は、プールのリタイア処理が完了してから実施してください
+以降の処理は、プールのリタイア処理が完了してから実施してください。
 
 </Callout>
 
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 
 エアギャップの`stake.addr` を BPのcnodeディレクトリにコピーします。
@@ -353,12 +358,51 @@ cardano-cli latest query stake-address-info \
 
 > rewardAccountBalance: の値を確認
 
-## 3. stake.addrから引き出し [#sec-4]
 
-[stake.addrからpayment.addrへ送金する方法](/cardano/operation/withdrawal#sec-2)  
+## 3. ガバナンス参加状況の確認 [#sec-4]
+
+現在の仕様では、ガバナンスに参加していない場合、プール報酬を引き出すことができません。  
+ガバナンス参加状況をコマンドで確認するか、sjgtoolで確認してからガバナンスに参加してください。
+
+<Tabs items={["コマンド", "sjgtool"]}>
+<Tab value="コマンド">
+
+BPで以下のコマンドを実行してください。
+
+1. ガバナンスに参加しているかを確認します。
+```bash
+curl -s -X POST "https://api.koios.rest/api/v1/account_info" -H "Accept: application/json" -H "Content-Type: application/json" -d "{\"_stake_addresses\":[\"$(cat "$NODE_HOME/stake.addr")\"]}" | jq -r '.[].delegated_drep'
+```
+> `null` の場合は委任していません。  
+
+2. [委任代表者（DRep）への委任](/cardano/operation/delegating-to-a-drep)を確認して、`自動棄権`または`DRep指定`を選択してガバナンスに参加してください。
+
+</Tab>
+<Tab value="sjgtool">
+
+BPで以下のコマンドを実行してください。
+
+sjgtoolを導入している場合は、sjgtoolからDRepへの委任状況を確認できます。
+
+1. sjgtoolを起動します。
+```bash
+gtool
+```
+
+2. `[6] ガバナンス(投票・委任)` を選択します。
+
+3. `プールステークアドレスのDRep委任状況`を確認し、委任していない場合はそのまま続けて`[2] DRep委任`を選択し、`自動棄権`または`DRep指定`を選択してガバナンスに参加してください。
+
+</Tab>
+</Tabs>
 
 
-## 4. ステークキーの解除 [#sec-5]
+## 4. stake.addrから引き出し [#sec-5]
+
+[stake.addrからpayment.addrへ送金する方法](/cardano/operation/withdrawal#sec-2)を実施してください。
+
+
+## 5. ステークキーの解除 [#sec-6]
 
 <Callout type="error" title="注意">
 
@@ -386,7 +430,7 @@ cardano-cli latest stake-address deregistration-certificate \
 </Tab>
 </Tabs>
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 
 エアギャップの`stake-dereg.cert` を BPのcnodeディレクトリにコピーします。
@@ -538,7 +582,7 @@ cardano-cli latest transaction build-raw \
 </Tab>
 </Tabs>
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 BPの`tx.raw` をエアギャップのcnodeディレクトリにコピーします。
 ```mermaid
@@ -568,7 +612,7 @@ cardano-cli latest transaction sign \
 </Tab>
 </Tabs>
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 エアギャップの`tx.signed` をBPのcnodeディレクトリにコピーします。
 ```mermaid
@@ -590,10 +634,9 @@ cardano-cli latest transaction submit \
 </Tab>
 </Tabs>
 
-## 5. 全額引き出し（payment.addr） [#sec-6]
+## 6. 全額引き出し（payment.addr） [#sec-7]
 
 まずは、最新のスロット番号を取得し **invalid-hereafter** パラメータを正しく設定します。
-
 
 <Tabs items={["BP"]}>
 <Tab value="BP">
@@ -607,10 +650,13 @@ echo Current Slot: $currentSlot
 </Tab>
 </Tabs>
 
-**送金先のアドレスの設定**
+**送金先アドレスの設定**
 
 <Tabs items={["BP"]}>
 <Tab value="BP">
+
+変数`destinationAddress`の`送金先アドレス`を、実際の送金先アドレスに置き換えてから実行してください。
+> 例：`destinationAddress=addr1...`
 
 ```bash
 destinationAddress=送金先アドレス
@@ -742,7 +788,7 @@ cardano-cli latest transaction build-raw \
 </Tab>
 </Tabs>
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 
 BPの`tx.raw` をエアギャップのcnodeディレクトリにコピーします。
@@ -774,7 +820,7 @@ cardano-cli latest transaction sign \
 
 **tx.signed** をBPのcnodeディレクトリにコピーします。
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 
 エアギャップの`tx.signed` をBPのcnodeディレクトリにコピーします。

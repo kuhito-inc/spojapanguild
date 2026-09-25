@@ -4,7 +4,7 @@ title: "SPO BlockNotify設定"
 
 <Callout type="info" title="概要">
 
-最終更新日：2025/3/6  v2.5.0
+<LastUpdated version="v2.6.0" />
 
 * ブロックログで表示されるブロック生成結果を任意のソーシャルアプリへ通知します。   
 ![*](/images/block_notify/image.png)
@@ -35,6 +35,7 @@ title: "SPO BlockNotify設定"
 
 | バージョン | 更新内容 |
 | --- | --- |
+| 2.6.0 | cardano-tracer対応、ブロック確認URLをCardanoScanへ変更、missed通知バグの修正
 | 2.5.0 | LINE Messaging API対応 |
 | 2.3.0 | 通知にブロックサイズを表示、スペイン語・フランス語・ポルトガル語を追加 |
 | 2.2.2 | 任意のPrometheusポートを設定可能、データベース接続の最適化 |
@@ -108,7 +109,7 @@ OK
 
 ```bash
 bn_release="$(curl -s https://api.github.com/repos/btbf/block-notify/releases/latest | jq -r '.tag_name')"
-wget https://github.com/btbf/block-notify/archive/refs/tags/${bn_release}.tar.gz -P $NODE_HOME/scripts
+wget -4 https://github.com/btbf/block-notify/archive/refs/tags/${bn_release}.tar.gz -P $NODE_HOME/scripts
 cd $NODE_HOME/scripts
 tar zxvf ${bn_release}.tar.gz block-notify-${bn_release}/block_notify.py block-notify-${bn_release}/config.ini block-notify-${bn_release}/i18n/ 
 mv block-notify-${bn_release} block-notify
@@ -337,9 +338,6 @@ User=$(whoami)
 WorkingDirectory=${NODE_HOME}/scripts/block-notify
 ExecStart=/home/${USER}/notify-venv/bin/python -u ${NODE_HOME}/scripts/block-notify/block_notify.py
 Restart=on-failure
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=cnode-blocknotify
 
 [Install]
 WantedBy=cnode-cncli-sync.service
@@ -401,7 +399,7 @@ sudo systemctl stop cnode-blocknotify.service
 アップデートファイルのダウンロード
 ```bash
 bn_release="$(curl -s https://api.github.com/repos/btbf/block-notify/releases/latest | jq -r '.tag_name')"
-wget https://github.com/btbf/block-notify/archive/refs/tags/${bn_release}.tar.gz -P $NODE_HOME/scripts
+wget -4 https://github.com/btbf/block-notify/archive/refs/tags/${bn_release}.tar.gz -P $NODE_HOME/scripts
 cd $NODE_HOME/scripts
 tar zxvf ${bn_release}.tar.gz block-notify-${bn_release}/block_notify.py block-notify-${bn_release}/i18n
 cp block-notify-${bn_release}/block_notify.py block-notify/block_notify.py

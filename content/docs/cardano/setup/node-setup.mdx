@@ -6,7 +6,7 @@ title: "ノードセットアップ"
 
 | Node | CLI | GHC | Cabal | CNCLI |
 | :----------: | :----------: | :----------: | :----------: | :----------: |
-| 11.0.1 | 11.0.0.0 | 9.6.7 | 3.12.1.0 | 6.7.0 |
+| 11.1.2 | 11.2.3.0 | 9.6.7 | 3.12.1.0 | 6.8.0 |
 
 </Callout>
 
@@ -21,7 +21,7 @@ sudo apt update && sudo apt upgrade -y
 
 依存関係をインストールします。
 ```bash
-sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
+sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget -4 libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
 ```
 
 新しい`TMUX`セッションを開きます。
@@ -238,7 +238,7 @@ cd $HOME/git
 git clone https://github.com/IntersectMBO/cardano-node.git
 cd cardano-node
 git fetch --all --recurse-submodules --tags
-git checkout tags/11.0.1
+git checkout tags/11.1.2
 ```
 
 Cabalのビルドオプションを構成します。
@@ -257,30 +257,29 @@ cabal build all cardano-cli
 > サーバスペックによって、ビルド完了までに数分から数時間かかる場合があります。
 
 
-**cardano-cli**ファイルと **cardano-node**ファイルをbinディレクトリにコピーします。
+**cardano-node**、**cardano-cli**、**cardano-tracer**バイナリをbinディレクトリにコピーします。
 
 ```bash
 cd $HOME/git/cardano-node
-sudo cp $(./scripts/bin-path.sh cardano-cli) /usr/local/bin/cardano-cli
+sudo cp -p "$(./scripts/bin-path.sh cardano-node)" "$(./scripts/bin-path.sh cardano-cli)" "$(./scripts/bin-path.sh cardano-tracer)" /usr/local/bin/
 ```
 
-```bash
-sudo cp $(./scripts/bin-path.sh cardano-node) /usr/local/bin/cardano-node
-```
-
-**cardano-cli** と **cardano-node**のバージョンが最新Gitタグバージョンであることを確認してください。
+**cardano-node**、**cardano-cli**、**cardano-tracer**のバージョンが最新Gitタグバージョンであることを確認してください。
 
 ```bash
 cardano-node version
 cardano-cli version
+cardano-tracer --version
 ```
 
 ```yaml title="期待される表示例：" noCopy
-cardano-node 11.0.1 - linux-x86_64 - ghc-9.6
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
+cardano-node 11.1.2 - linux-x86_64 - ghc-9.6  
+git rev fef83fed01d7926f3de83b3b917be5a4a48768b5  
 
-cardano-cli 11.0.0.0 - linux-x86_64 - ghc-9.6
-git rev 97036a66bcf8c89f687ae57a048eecc0389977ef
+cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6  
+git rev fef83fed01d7926f3de83b3b917be5a4a48768b5  
+
+0.5.0
 ```
 
 `TMUX`セッションを閉じます。
@@ -351,14 +350,28 @@ cd $NODE_HOME
 
 ファイルをダウンロードします。
 ```bash
-wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
-wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
-wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
-wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
-wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
-wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
-wget --no-use-server-timestamps -q https://spojapanguild.net/node_config/11.0.1/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
+
+<Tabs items={["リレーのみ"]}>
+
+<Tab value="リレーのみ">
+
+`peer-snapshot.json`のダウンロード
+```bash
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
+```
+
+</Tab>
+
+</Tabs>
+
 
 環境変数を設定します。
 ```bash
@@ -366,7 +379,182 @@ echo export CARDANO_NODE_SOCKET_PATH="$NODE_HOME/db/socket" >> $HOME/.bashrc
 source $HOME/.bashrc
 ```
 
-## 4. ノード起動スクリプトの作成 [#sec-8]
+`config.json`の`TraceOptionNodeName`を、各ノードを識別するためのNode名に変更します。
+
+<Tabs items={["リレー1", "リレー2", "BP"]}>
+
+<Tab value="リレー1">
+
+`TraceOptionNodeName`を`${NODE_CONFIG}-relay-1`に変更します。
+
+```bash
+sed -i "s/\"TraceOptionNodeName\": \"\"/\"TraceOptionNodeName\": \"${NODE_CONFIG}-relay-1\"/" ${NODE_CONFIG}-config.json
+```
+
+</Tab>
+
+<Tab value="リレー2">
+
+`TraceOptionNodeName`を`${NODE_CONFIG}-relay-2`に変更します。
+
+```bash
+sed -i "s/\"TraceOptionNodeName\": \"\"/\"TraceOptionNodeName\": \"${NODE_CONFIG}-relay-2\"/" ${NODE_CONFIG}-config.json
+```
+
+</Tab>
+
+<Tab value="BP">
+
+`TraceOptionNodeName`を`${NODE_CONFIG}-bp`に変更します。
+
+```bash
+sed -i "s/\"TraceOptionNodeName\": \"\"/\"TraceOptionNodeName\": \"${NODE_CONFIG}-bp\"/" ${NODE_CONFIG}-config.json
+```
+
+</Tab>
+
+</Tabs>
+
+設定したNode名を確認します。
+
+```bash
+jq -r '.TraceOptionNodeName' $NODE_HOME/${NODE_CONFIG}-config.json
+```
+
+
+## 4. cardano-tracerの設定 [#sec-8]
+
+Cardano Nodeから転送されるtrace（ログ）およびmetricsを受信するため、各Cardano Node稼働サーバーで`cardano-tracer`を設定します。
+
+<Tabs items={["全ノード"]}>
+
+<Tab value="全ノード">
+
+### cardano-tracerの確認 [#sec-9]
+
+`cardano-tracer`がインストールされていることを確認します。
+
+```bash
+cardano-tracer --version
+```
+
+### Tracer用ディレクトリの作成 [#sec-10]
+
+Tracer用のディレクトリとログ保存用のディレクトリを作成します。
+
+```bash
+mkdir -p ${NODE_HOME}/tracer
+mkdir -p ${NODE_HOME}/logs
+```
+
+### tracer-config.jsonの取得 [#sec-11]
+
+Tracer用の設定ファイルを取得します。
+
+```bash
+cd ${NODE_HOME}/tracer
+```
+
+```bash
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
+```
+
+### tracer-config.jsonの設定 [#sec-12]
+
+`tracer-config.json`のログ保存先、Unix SocketのPATH、Network Magicを環境に合わせて変更します。
+
+```bash
+NETWORK_MAGIC=$(jq -r '.networkMagic' $NODE_HOME/${NODE_CONFIG}-shelley-genesis.json)
+sed -i \
+  -e "s|\"logRoot\": \"\"|\"logRoot\": \"${NODE_HOME}/logs\"|" \
+  -e "s|\"contents\": \"\"|\"contents\": \"${NODE_HOME}/tracer/socket\"|" \
+  -e "s|\"networkMagic\": 0|\"networkMagic\": ${NETWORK_MAGIC}|" \
+  ${NODE_CONFIG}-tracer-config.json
+```
+
+
+### cardano-tracerのsystemd service作成 [#sec-13]
+
+`cardano-tracer`のsystemd serviceファイルを作成します。
+
+```bash
+cat > ${NODE_HOME}/tracer/cardano-tracer.service << EOF
+[Unit]
+Description=Cardano Tracer Service
+Wants=network-online.target
+After=network-online.target
+Before=cardano-node.service
+StartLimitIntervalSec=0
+
+[Service]
+User=${USER}
+Type=simple
+WorkingDirectory=${NODE_HOME}
+ExecStart=/usr/local/bin/cardano-tracer --config ${NODE_HOME}/tracer/${NODE_CONFIG}-tracer-config.json
+Restart=always
+RestartSec=5
+LimitNOFILE=32768
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
+systemdへ配置します。
+
+```bash
+sudo cp ${NODE_HOME}/tracer/cardano-tracer.service /etc/systemd/system/cardano-tracer.service
+```
+
+権限を設定します。
+
+```bash
+sudo chmod 644 /etc/systemd/system/cardano-tracer.service
+```
+
+systemdへ設定を反映します。
+
+```bash
+sudo systemctl daemon-reload
+```
+
+Tracerをサーバー起動時に自動起動し、起動します。
+
+```bash
+sudo systemctl enable --now cardano-tracer.service
+```
+
+### cardano-tracerの動作確認 [#sec-14]
+
+`cardano-tracer`が正常に起動していることを確認します。
+
+```bash
+sudo systemctl status cardano-tracer --no-pager
+```
+```yaml title="期待される表示例：" noCopy
+active (running)
+```
+
+Tracer用のUnix Socketが作成されていることを確認します。
+
+```bash
+ls -la ${NODE_HOME}/tracer/
+```
+> `socket`が表示されれば問題ありません。
+
+TracerがPrometheus用の`12808`ポートをListenしていることを確認します。
+
+```bash
+sudo ss -lntp | grep ':12808'
+```
+> `cardano-tracer`が`0.0.0.0:12808`でListenしていることを確認します。
+
+</Tab>
+
+</Tabs>
+
+
+## 5. ノード起動スクリプトの作成 [#sec-15]
 
 起動スクリプトには、ディレクトリ、ポート番号、DBパス、構成ファイルパス、トポロジーファイルパスなど、Cardanoノードを実行するために必要な変数が含まれています。
 
@@ -389,7 +577,8 @@ TOPOLOGY=\${DIRECTORY}/${NODE_CONFIG}-topology.json
 DB_PATH=\${DIRECTORY}/db
 SOCKET_PATH=\${DIRECTORY}/db/socket
 CONFIG=\${DIRECTORY}/${NODE_CONFIG}-config.json
-/usr/local/bin/cardano-node run +RTS -N --disable-delayed-os-memory-return -I0.1 -Iw300 -A16m -F1.5 -H2500M -RTS --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG}
+TRACER_SOCKET_PATH=\${DIRECTORY}/tracer/socket
+/usr/local/bin/cardano-node run +RTS -N --disable-delayed-os-memory-return -I0.1 -Iw300 -A16m -F1.5 -H2500M -RTS --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG} --tracer-socket-path-connect \${TRACER_SOCKET_PATH}
 EOF
 ```
 
@@ -422,14 +611,15 @@ TOPOLOGY=\${DIRECTORY}/${NODE_CONFIG}-topology.json
 DB_PATH=\${DIRECTORY}/db
 SOCKET_PATH=\${DIRECTORY}/db/socket
 CONFIG=\${DIRECTORY}/${NODE_CONFIG}-config.json
-/usr/local/bin/cardano-node run +RTS -N --disable-delayed-os-memory-return -I0.1 -Iw300 -A16m -F1.5 -H2500M -RTS --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG}
+TRACER_SOCKET_PATH=\${DIRECTORY}/tracer/socket
+/usr/local/bin/cardano-node run +RTS -N --disable-delayed-os-memory-return -I0.1 -Iw300 -A16m -F1.5 -H2500M -RTS --topology \${TOPOLOGY} --database-path \${DB_PATH} --socket-path \${SOCKET_PATH} --host-addr \${HOSTADDR} --port \${PORT} --config \${CONFIG} --tracer-socket-path-connect \${TRACER_SOCKET_PATH}
 EOF
 ```
 
 </Tab>
 </Tabs>
 
-## 5. ノード起動 [#sec-9]
+## 6. ノード起動 [#sec-16]
 
 起動スクリプトに実行権限を付与し、ブロックチェーンの同期を開始します。 
 > リレーから実施してください。
@@ -465,7 +655,7 @@ chmod +x startBlockProducingNode.sh
 Ctrl+C
 ```
 
-## 6. 自動起動の設定(systemd) [#sec-10]
+## 7. 自動起動の設定(systemd) [#sec-17]
 
 先程のスクリプトだけでは、ターミナル画面を閉じるとノードが終了してしまうので、スクリプトをサービスとして登録し、自動起動するように設定します。
 
@@ -504,9 +694,6 @@ TimeoutStopSec=300
 LimitNOFILE=32768
 Restart=always
 RestartSec=5
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=cardano-node
 
 [Install]
 WantedBy	= multi-user.target
@@ -538,9 +725,6 @@ TimeoutStopSec=300
 LimitNOFILE=32768
 Restart=always
 RestartSec=5
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=cardano-node
 
 [Install]
 WantedBy    = multi-user.target
@@ -568,16 +752,17 @@ sudo systemctl enable --now cardano-node
 
 システム起動後にログモニターを表示します。
 ```bash
-journalctl -u cardano-node -f
+journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
 ```
 > コマンド入力に戻る場合は「`Ctrl+C`」（この場合ノードは終了しません）
 
-### 便利なエイリアス設定 [#sec-11]
+### 便利なエイリアス設定 [#sec-18]
+
 <Callout type="info" title="エイリアス設定">
 
 スクリプトへのパスを通し、任意の単語で起動出来るようにします。
 ```bash
-echo alias cnode='"journalctl -u cardano-node -f"' >> $HOME/.bashrc
+echo alias cnode='"journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered ."' >> $HOME/.bashrc
 echo alias cnstart='"sudo systemctl start cardano-node"' >> $HOME/.bashrc
 echo alias cnrestart='"sudo systemctl reload-or-restart cardano-node"' >> $HOME/.bashrc
 echo alias cnstop='"sudo systemctl stop cardano-node"' >> $HOME/.bashrc
@@ -598,7 +783,7 @@ cnstop ・・・ノード停止
 
 
 
-## 7. gLiveViewのインストール [#sec-12]
+## 8. gLiveViewのインストール [#sec-19]
 
 `cardano-node`はログが流れる画面だけでは何が表示されているのかよくわかりません。  
 それを視覚的に確認できるツールが`gLiveView`です。
@@ -616,8 +801,8 @@ sudo apt install bc tcptraceroute -y
 
 `gLiveView`のバイナリファイルをダウンロードします。
 ```bash
-curl -s -o gLiveView.sh https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/gLiveView.sh
-curl -s -o env https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/env
+curl -o gLiveView.sh https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/gLiveView.sh
+curl -o env https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/env
 chmod 755 gLiveView.sh
 ```
 
@@ -692,12 +877,12 @@ source $HOME/.bashrc
 </Callout>
 
 
-## 8. エアギャップのセットアップ [#sec-13]
+## 9. エアギャップのセットアップ [#sec-20]
 
-### cardano-cli バイナリをコピー [#sec-14]
-リレーサーバーで[バイナリファイルをコピー](/cardano/operation/node-update#sec-15)を実施します。
+### cardano-cli バイナリをコピー [#sec-21]
+リレーサーバーで[バイナリファイルをコピー](/cardano/operation/node-update#sec-30)を実施します。
 
-### 環境変数を設定 [#sec-15]
+### 環境変数を設定 [#sec-22]
 ```bash
 echo 'export NODE_HOME="$HOME/cnode"' >> ~/.bashrc
 echo 'export NODE_NETWORK="--mainnet"' >> ~/.bashrc
@@ -742,7 +927,7 @@ mkdir -p ${NODE_HOME}
 </AccordionsBlue>
 
 
-### 環境変数の反映確認 [#sec-16]
+### 環境変数の反映確認 [#sec-23]
 ```bash
 echo "NODE_HOME=${NODE_HOME}"
 echo "NODE_NETWORK=${NODE_NETWORK}"

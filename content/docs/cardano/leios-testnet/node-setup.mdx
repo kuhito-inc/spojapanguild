@@ -33,7 +33,7 @@ sudo apt update && sudo apt upgrade -y
 
 必要なパッケージをインストールします。
 ```bash
-sudo apt install curl jq git wget -y
+sudo apt install curl jq git wget -4 -y
 ```
 
 
@@ -69,8 +69,8 @@ Leios のリリースはすべて **Pre-release** として公開されている
 ```bash
 mkdir -p $HOME/git
 cd $HOME/git
-wget https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.tar.gz
-wget https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.sha256
+wget -4 https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.tar.gz
+wget -4 https://github.com/input-output-hk/ouroboros-leios/releases/download/${RELEASE}/cardano-node-leios-x86_64-linux.sha256
 ```
 
 チェックサムを検証します。
@@ -128,14 +128,14 @@ mkdir -p "$NODE_HOME"
 
 ```bash
 cd $NODE_HOME
-wget https://book.play.dev.cardano.org/environments-pre/leios/config.json -O config.json
-wget https://book.play.dev.cardano.org/environments-pre/leios/topology.json -O topology.json
-wget https://book.play.dev.cardano.org/environments-pre/leios/peer-snapshot.json -O peer-snapshot.json
-wget https://book.play.dev.cardano.org/environments-pre/leios/byron-genesis.json -O byron-genesis.json
-wget https://book.play.dev.cardano.org/environments-pre/leios/shelley-genesis.json -O shelley-genesis.json
-wget https://book.play.dev.cardano.org/environments-pre/leios/alonzo-genesis.json -O alonzo-genesis.json
-wget https://book.play.dev.cardano.org/environments-pre/leios/conway-genesis.json -O conway-genesis.json
-wget https://book.play.dev.cardano.org/environments-pre/leios/dijkstra-genesis.json -O dijkstra-genesis.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/config.json -O config.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/topology.json -O topology.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/peer-snapshot.json -O peer-snapshot.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/byron-genesis.json -O byron-genesis.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/shelley-genesis.json -O shelley-genesis.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/alonzo-genesis.json -O alonzo-genesis.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/conway-genesis.json -O conway-genesis.json
+wget -4 https://book.play.dev.cardano.org/environments-pre/leios/dijkstra-genesis.json -O dijkstra-genesis.json
 ```
 
 ## 5. DBスナップショットの復元 [#sec-5]
@@ -253,7 +253,7 @@ sudo systemctl enable --now cardano-node
 
 ログを確認します。
 ```bash
-journalctl -u cardano-node -f
+journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
 ```
 
 同期状況を確認します。
@@ -280,7 +280,7 @@ cardano-cli query tip
 便利なエイリアス設定
 
 ```bash
-echo "alias cnode='journalctl -u cardano-node -f'" >> $HOME/.bashrc
+echo "alias cnode='journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .'" >> $HOME/.bashrc
 echo "alias cnstart='sudo systemctl start cardano-node'" >> $HOME/.bashrc
 echo "alias cnstop='sudo systemctl stop cardano-node'" >> $HOME/.bashrc
 echo "alias cnrestart='sudo systemctl restart cardano-node'" >> $HOME/.bashrc

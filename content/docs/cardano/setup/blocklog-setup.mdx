@@ -149,30 +149,53 @@ rm $HOME/cncli-${cncli_release}-x86_64-unknown-linux-gnu.tar.gz
 cncli --version
 ```
 ```yaml title="期待される表示例：" noCopy
-cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
+cncli v6.8.0 <~~~> (x86_64-unknown-linux-gnu)
 ```
 
 ## 3. sqlite3のインストール [#sec-3]
+
 ```bash
 sudo apt install sqlite3
 ```
+
 ```bash
 sqlite3 --version
 ```
+
 ```yaml title="期待される表示例：" noCopy
 3.45.1 2024-01-30 16:01:20 e876e51a0ed5c5b3126f52e532044363a014bc594cfefa87ffb5b82257ccalt1 (64-bit)
 ```
+
 > `3.31.1`以上のバージョンがインストールされていれば問題ありません。
+
+**SQLiteのタイムアウト設定**
+
+データベースへの同時アクセスによるロックエラーを防ぐため、SQLiteのタイムアウトを設定します。
+
+```bash
+grep -qxF '.timeout 5000' "$HOME/.sqliterc" 2>/dev/null || printf '.timeout 5000\n' >> "$HOME/.sqliterc"
+```
+
+設定を確認します。
+
+```bash
+sqlite3 ':memory:' 'PRAGMA busy_timeout;'
+```
+
+```yaml title="期待される表示例：" noCopy
+-- Loading resources from /home/ユーザー名/.sqliterc
+5000
+```
 
 
 ## 4. 依存ファイルのダウンロード [#sec-4]
 
 ```bash
 cd $NODE_HOME/scripts
-wget https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/cncli.sh -O ./cncli.sh
-wget https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/cntools.library -O ./cntools.library
-wget https://raw.githubusercontent.com/btbf/spojapanguild/master/scripts/blocks.sh -O ./blocks.sh 
-wget https://raw.githubusercontent.com/btbf/spojapanguild/master/scripts/logMonitor.sh -q -O ./logMonitor.sh
+wget -4 https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/cncli.sh -O ./cncli.sh
+wget -4 https://raw.githubusercontent.com/cardano-community/guild-operators/master/scripts/cnode-helper-scripts/cntools.library -O ./cntools.library
+wget -4 https://raw.githubusercontent.com/kuhito-inc/sjg-tools/main/blocks.sh -O ./blocks.sh 
+wget -4 https://raw.githubusercontent.com/kuhito-inc/sjg-tools/main/logMonitor.sh -q -O ./logMonitor.sh
 ```
 
 **パーミッション変更**
@@ -201,6 +224,7 @@ sed -i $NODE_HOME/scripts/env \
   -e '1,73s!#PROM_HOST=127.0.0.1!PROM_HOST=127.0.0.1!' \
   -e '1,73s!#PROM_PORT=12798!PROM_PORT=12798!' \
   -e '1,73s!#BLOCKLOG_TZ="UTC"!BLOCKLOG_TZ="Asia/Tokyo"!' \
+  -e '1,73s!#ENABLE_KOIOS=Y!ENABLE_KOIOS=N!' \
   -e '1,73s!#POOL_NAME=""!POOL_DIR=${CNODE_HOME}!' \
   -e '1,116s!#WALLET_PAY_ADDR_FILENAME="payment.addr"!WALLET_PAY_ADDR_FILENAME="payment.addr"!' \
   -e '1,116s!#WALLET_STAKE_ADDR_FILENAME="reward.addr"!WALLET_STAKE_ADDR_FILENAME="stake.addr"!' \
@@ -263,9 +287,6 @@ ExecStart=/bin/bash -l -c "exec ${NODE_HOME}/scripts/cncli.sh sync"
 ExecStop=/bin/bash -l -c "exec kill -2 \$(ps -ef | grep [c]ncli.sync.*.${NODE_HOME}/ | tr -s ' ' | cut -d ' ' -f2) &>/dev/null"
 KillSignal=SIGINT
 SuccessExitStatus=143
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=cnode-cncli-sync
 TimeoutStopSec=5
 KillMode=mixed
 
@@ -295,9 +316,6 @@ WorkingDirectory=${NODE_HOME}/scripts
 ExecStartPre=/bin/sleep 5
 ExecStart=/bin/bash -l -c "exec ${NODE_HOME}/scripts/cncli.sh validate"
 SuccessExitStatus=143
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=cnode-cncli-validate
 TimeoutStopSec=5
 KillMode=mixed
 
@@ -326,9 +344,6 @@ User=$(whoami)
 WorkingDirectory=${NODE_HOME}
 ExecStart=/bin/bash -l -c "exec ${NODE_HOME}/scripts/cncli.sh leaderlog"
 SuccessExitStatus=143
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=cnode-cncli-leaderlog
 TimeoutStopSec=5
 KillMode=mixed
 
@@ -359,9 +374,6 @@ ExecStart=/bin/bash -l -c "exec ${NODE_HOME}/scripts/logMonitor.sh"
 ExecStop=/bin/bash -l -c "exec kill -2 \$(ps -ef | grep -m1 ${NODE_HOME}/scripts/logMonitor.sh | tr -s ' ' | cut -d ' ' -f2) &>/dev/null"
 KillSignal=SIGINT
 SuccessExitStatus=143
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=cnode-logmonitor
 TimeoutStopSec=5
 KillMode=mixed
 
@@ -493,7 +505,7 @@ logmonitor
 
 ```yaml title="期待される表示例：" noCopy
 ~~ LOG MONITOR STARTED ~~
-monitoring ./logs/node.json for traces
+monitoring /home/ユーザー名/cnode/logs/ノード名/node.json for traces
 ```
 
 </Callout>
@@ -622,7 +634,7 @@ rm $HOME/cncli-${cncli_release}-x86_64-unknown-linux-gnu.tar.gz
 cncli --version
 ```
 ```yaml title="期待される表示例：" noCopy
-cncli v6.7.0 <8162cfb> (x86_64-unknown-linux-gnu)
+cncli v6.8.0 <~~~> (x86_64-unknown-linux-gnu)
 ```
 
 **ノード再起動**

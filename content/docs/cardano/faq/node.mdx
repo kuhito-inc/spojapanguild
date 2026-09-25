@@ -8,7 +8,7 @@ title: "よくある質問：ノード関連"
 
 ノードの起動ログを確認し、エラーが出ていないか確認してください。
 ```bash
-journalctl --unit=cardano-node --follow
+journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
 ```
 <Callout type="warn" title="注意">
 

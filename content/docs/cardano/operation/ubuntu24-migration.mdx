@@ -713,7 +713,7 @@ sudo mkdir -p /etc/apt/keyrings
 ```
 
 ```bash
-wget -q -O - https://apt.grafana.com/gpg.key \
+wget -4 -q -O - https://apt.grafana.com/gpg.key \
 | gpg --dearmor \
 | sudo tee /etc/apt/keyrings/grafana.gpg > /dev/null
 ```
@@ -758,7 +758,7 @@ sudo apt update && sudo apt upgrade -y
 <Tab value="リレーの場合">
 
 ```bash
-sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
+sudo apt install bc curl htop nano needrestart protobuf-compiler rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget -4 libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
 ```
 
 デーモン再起動自動化
@@ -781,7 +781,7 @@ sudo systemctl enable --now cardano-node
 
 ノード同期状況の確認
 ```bash
-sudo journalctl -u cardano-node -f
+sudo journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
 ```
 
 コンパイル済みHaskellパッケージ削除
@@ -794,7 +794,7 @@ rm -rf ghc-8.*
 <Tab value="BPの場合">
 
 ```bash
-sudo apt install bc curl htop nano needrestart protobuf-compiler python3-pip python3-venv python3-full rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
+sudo apt install bc curl htop nano needrestart protobuf-compiler python3-pip python3-venv python3-full rsync ufw zstd automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libncurses-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget -4 libtool autoconf liblmdb-dev liburing-dev libsnappy-dev -y
 ```
 
 **Python依存関係エラーの対処**
@@ -885,9 +885,6 @@ User=$(whoami)
 WorkingDirectory=${NODE_HOME}/scripts/block-notify
 ExecStart=/home/${USER}/notify-venv/bin/python -u ${NODE_HOME}/scripts/block-notify/block_notify.py
 Restart=on-failure
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=cnode-blocknotify
 
 [Install]
 WantedBy=cnode-cncli-sync.service
@@ -928,7 +925,7 @@ sudo systemctl enable --now cardano-node
 
 ノード同期状況の確認
 ```bash
-sudo journalctl -u cardano-node -f
+sudo journalctl -q -u cardano-node -f -o cat | jq -cC --unbuffered .
 ```
 
 コンパイル済みHaskellパッケージ削除
@@ -1122,10 +1119,14 @@ cat $HOME/sysctl-before-cardano-*.txt
 
 ## 6. ノード再インストール [#sec-23]
 
-<span style={{color: "red"}}>ソースコードからビルドした`cardano-node`/`cardano-cli`を使用していた場合、もしくはノードアップデートする場合に以下の手順を実行してください。</span>
+<span style={{color: "red"}}>ソースコードからビルドした`cardano-node`/`cardano-cli`を使用していた場合、もしくはノードアップデートする場合は、以下の手順で現行ノードへ更新してください。</span>
 <Callout type="info" title="ヒント">
 
-[1. 依存環境アップデート](/cardano/operation/node-update#sec-1) ~ [3. 依存関係作業](/cardano/operation/node-update#sec-11)  
+[ノードセットアップ](/cardano/setup/node-setup)の[1. 依存関係インストール](/cardano/setup/node-setup#sec-1)から実施してください。Tracer設定に加え、関連ツール・サービスも確認します。
+
+Grafanaを使用している場合は、[監視環境の構築](/cardano/setup/monitoring-setup)の[5. Grafanaダッシュボードの設定](/cardano/setup/monitoring-setup#sec-6)まで実施してください。
+
+エアギャップの`cardano-cli`も更新する場合は、[エアギャップのセットアップ](/cardano/setup/node-setup#sec-20)も実施してください。
 
 </Callout>
 

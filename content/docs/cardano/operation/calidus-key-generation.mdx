@@ -23,7 +23,7 @@ title: "Calidusキー生成"
 ```bash
 signer_release="$(curl -s https://api.github.com/repos/gitmachtl/cardano-signer/releases/latest | jq -r '.tag_name' | sed -e "s/^.\{1\}//")"
 cd $HOME/git
-wget -q https://github.com/gitmachtl/cardano-signer/releases/download/v${signer_release}/cardano-signer-${signer_release}_linux-x64.tar.gz
+wget -4 -q https://github.com/gitmachtl/cardano-signer/releases/download/v${signer_release}/cardano-signer-${signer_release}_linux-x64.tar.gz
 ```
 ```bash
 tar -xzvf cardano-signer-${signer_release}_linux-x64.tar.gz
@@ -57,7 +57,7 @@ cardano-signer --version
 
 ### エアギャップ [#sec-3]
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 BPの`$HOME/git`にある`cardano-signer`をエアギャップの`$HOME/git`にコピーします。
 ```mermaid
@@ -260,7 +260,7 @@ currentSlot=$currentSlot
 EOF
 ```
 
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 BPの`$NODE_HOME`にある`wallet_balance.sh`と`params.json`をエアギャップのcnodeディレクトリにコピーします。
 ```mermaid
@@ -372,7 +372,7 @@ cardano-cli latest transaction sign \
 </Tabs>
 
 **tx.signed** をBPのcnodeディレクトリにコピーします。
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 エアギャップの`tx.signed` をBPのcnodeディレクトリにコピーします。
 ```mermaid
@@ -429,7 +429,7 @@ mkdir -p $NODE_HOME/calidus
 </Tabs>
 
 エアギャップの`myCalidusKey.skey` をBPのcnode/calidusディレクトリにコピーします。
-<Callout type="warn" title="ファイル転送">
+<Callout type="info" title="ファイル転送">
 
 エアギャップの`myCalidusKey.skey`をBPのcnode/calidusディレクトリにコピーします。
 ```mermaid

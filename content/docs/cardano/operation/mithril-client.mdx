@@ -7,7 +7,7 @@ title: "DB同期（Mithril)"
 - このマニュアルではMithril-Clientを使用したcardano-node DB同期ブートストラップを実行します。
 - ノード初回起動時のDB同期時間を約2日から約30分以内にまで短縮できます。
 - Mithrilプロトコルはまだベータバージョンのため、ご自身の責任で実施してください。
-- この作業は [1. 依存関係インストール](/cardano/setup/node-setup#sec-1) ~ [7. gLiveViewのインストール](/cardano/setup/node-setup#sec-12)まで実施してから行って下さい。
+- この作業は [1. 依存関係インストール](/cardano/setup/node-setup#sec-1) ~ [8. gLiveViewのインストール](/cardano/setup/node-setup#sec-19)まで実施してから行って下さい。
 - スナップショットノードバージョンとサーバーノードバージョンが異なる場合、DB再構築処理が入る場合がありDB同期までに数時間かかります。
 
 </Callout>
@@ -29,7 +29,7 @@ sudo apt update && sudo apt upgrade -y
 ```bash
 cd $HOME/git
 mithril_release="$(curl -s https://api.github.com/repos/IntersectMBO/mithril/releases/latest | jq -r '.tag_name')"
-wget https://github.com/IntersectMBO/mithril/releases/download/${mithril_release}/mithril-${mithril_release}-linux-x64.tar.gz -O mithril.tar.gz
+wget -4 https://github.com/IntersectMBO/mithril/releases/download/${mithril_release}/mithril-${mithril_release}-linux-x64.tar.gz -O mithril.tar.gz
 ```
 
 設定
@@ -51,6 +51,9 @@ rm mithril.tar.gz mithril-client
 ```bash
 mithril-client -V
 ```
+```yaml title="期待される表示例：" noCopy
+mithril-client 0.13.20+3f6cb73
+```
 > Mithril Githubの[リリースノート](https://github.com/IntersectMBO/mithril/releases/latest)内にある`mithril-client-cli`のバージョンをご確認ください。
 
 ## 2. DBブートストラップ [#sec-4]
@@ -64,8 +67,8 @@ tmux new -s mithril
 
 ```bash
 export AGGREGATOR_ENDPOINT=https://aggregator.release-mainnet.api.mithril.network/aggregator
-export GENESIS_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/genesis.vkey)
-export ANCILLARY_VERIFICATION_KEY=$(wget -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/ancillary.vkey)
+export GENESIS_VERIFICATION_KEY=$(wget -4 -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/genesis.vkey)
+export ANCILLARY_VERIFICATION_KEY=$(wget -4 -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/ancillary.vkey)
 export SNAPSHOT_DIGEST=latest
 ```
 

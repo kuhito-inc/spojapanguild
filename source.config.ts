@@ -38,6 +38,8 @@ function rehypeCodeOptionsWithCustomMeta() {
 export const docs = defineDocs({
   dir: 'content/docs',
   docs: {
+    // Keep page bodies out of the shared source module until requested.
+    async: true,
     schema: pageSchema,
     postprocess: {
       includeProcessedMarkdown: true,

@@ -9,7 +9,7 @@ Mithrilネットワークの堅牢性とスケーラビリティを向上させ�
 <Callout type="info" title="情報">
 
 以下の構成により、DMQ NodeをMainnet環境にデプロイできます。  
-最新安定版の`DMQ Node 0.7.0.0`と`Mithril Signer 1.1.6`の組み合わせです。
+最新安定版の`DMQ Node 0.7.1.0`と`Mithril Signer 1.1.9`の組み合わせです。
 
 </Callout>
 
@@ -26,9 +26,9 @@ Mithril Signerのバージョンを確認します。
 mithril-signer -V
 ```
 
-`1.1.6`であることを確認し、以降の手順へ進んでください。
+`1.1.9`であることを確認し、以降の手順へ進んでください。
 ```yaml title="期待される表示例：" noCopy
-mithril-signer 1.1.6+23e124d
+mithril-signer 1.1.9+3f6cb73
 ```
 
 </Tab>
@@ -41,7 +41,7 @@ mithril-signer 1.1.6+23e124d
 
 | Cardano Node | Mithril Signer | Squid | DMQ Node |
 | :----------- | :------------- | :---- | :------- |
-| 11.0.1       | 1.1.6          | 7.6   | 0.7.0.0  |
+| 11.1.2       | 1.1.9          | 7.7   | 0.7.1.0  |
 
 </Callout>
 
@@ -61,7 +61,7 @@ cd $HOME/git/mithril/dmq
 
 ビルド済みバイナリファイルのダウンロード
 ```bash
-wget -O dmq-node.tar.gz https://github.com/IntersectMBO/dmq-node/releases/download/0.7.0.0/dmq-node-linux.tar.gz
+wget -4 -O dmq-node.tar.gz https://github.com/IntersectMBO/dmq-node/releases/download/0.7.1.0/dmq-node-linux.tar.gz
 ```
 
 解凍してtar.gzファイルの削除
@@ -81,7 +81,7 @@ dmq-node --version
 ```
 
 ```yaml title="期待される表示例：" noCopy
-dmq-node version: 0.7.0.0
+dmq-node version: 0.7.1.0
 ```
 
 
@@ -304,9 +304,6 @@ WorkingDirectory=$NODE_HOME
 Restart=always
 RestartSec=60
 LimitNOFILE=32768
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=dmq-node
 ExecStart=/usr/local/bin/dmq-node --configuration-file $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json --topology-file $HOME/mithril/dmq/${NODE_CONFIG}-dmq-topology.json --local-socket ${DMQ_NODE_SOCKET_PATH} --host-addr $(curl -s https://api.ipify.org) --port 6161
 
 [Install]
@@ -332,9 +329,6 @@ WorkingDirectory=$NODE_HOME
 Restart=always
 RestartSec=60
 LimitNOFILE=32768
-StandardOutput=syslog
-StandardError=syslog
-SyslogIdentifier=dmq-node
 ExecStart=/usr/local/bin/dmq-node --configuration-file $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json --topology-file $HOME/mithril/dmq/${NODE_CONFIG}-dmq-topology.json --local-socket ${DMQ_NODE_SOCKET_PATH} --host-addr $(curl -s https://api.ipify.org) --port 6161
 
 [Install]
@@ -483,7 +477,7 @@ cd $HOME/git/mithril/dmq
 
 ビルド済みバイナリファイルのダウンロード
 ```bash
-wget -O dmq-node.tar.gz https://github.com/IntersectMBO/dmq-node/releases/download/0.7.0.0/dmq-node-linux.tar.gz
+wget -4 -O dmq-node.tar.gz https://github.com/IntersectMBO/dmq-node/releases/download/0.7.1.0/dmq-node-linux.tar.gz
 ```
 
 解凍してtar.gzファイルの削除
@@ -503,7 +497,7 @@ dmq-node --version
 ```
 
 ```yaml title="期待される表示例：" noCopy
-dmq-node version: 0.7.0.0
+dmq-node version: 0.7.1.0
 ```
 
 dmq-nodeの起動

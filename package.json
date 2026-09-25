@@ -5,21 +5,24 @@
   "packageManager": "pnpm@10.28.2",
   "scripts": {
     "build": "next build --webpack",
-    "dev": "next dev",
-    "docs:absolutize-links": "node scripts/absolutize-docs-links.mjs",
-    "docs:english-anchors": "node scripts/english-anchor-docs.mjs",
-    "docs:fix-relative-fragments": "node scripts/fix-relative-doc-fragments.mjs",
-    "docs:infer-fence-lang": "node scripts/infer-code-fence-lang.mjs",
+    "dev": "next dev --webpack --port 3001",
+    "docs:absolutize-links": "node tools/docs/absolutize-docs-links.mjs",
+    "docs:check-links": "node tools/docs/check-internal-links.mjs",
+    "docs:english-anchors": "node tools/docs/english-anchor-docs.mjs",
+    "docs:fix-relative-fragments": "node tools/docs/fix-relative-doc-fragments.mjs",
+    "docs:infer-fence-lang": "node tools/docs/infer-code-fence-lang.mjs",
     "start": "next start",
     "test": "pnpm run types:check",
+    "test:topology": "node --test tools/topology-generator.test.mjs",
     "types:check": "next typegen && fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },
   "pnpm": {
     "overrides": {
+      "baseline-browser-mapping": "2.11.21",
       "esbuild": "0.28.1",
-      "js-yaml": "4.2.0",
-      "postcss": "8.5.13"
+      "js-yaml": "4.3.2",
+      "postcss": "8.5.23"
     }
   },
   "dependencies": {
@@ -30,7 +33,7 @@
     "fumadocs-mdx": "14.3.2",
     "fumadocs-ui": "16.8.7",
     "lucide-react": "^1.14.0",
-    "next": "16.2.6",
+    "next": "16.3.5",
     "next-themes": "^0.4.6",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
@@ -43,7 +46,8 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "github-slugger": "^2.0.0",
-    "postcss": "^8.5.13",
+    "parse5": "7.3.0",
+    "postcss": "^8.5.23",
     "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3"
   }

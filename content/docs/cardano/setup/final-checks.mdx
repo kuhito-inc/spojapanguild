@@ -33,42 +33,7 @@ cd $NODE_HOME/scripts
 ![](/images/glive-tx.png)
 
 
-## 2. TraceMempoolの無効化 [#sec-2]
-
-<Callout type="error" title="重要な最終調整">
-
-ノード稼働時のCPU/メモリ消費を抑えるため、`TraceMempool` を無効化します。  
-この設定はプール運営時のパフォーマンス改善に有効な推奨設定です。
-
-- トランザクション流入ログの記録により、CPU/メモリ消費が増加する場合があります。
-- 無効化後は「Total Tx」「Pending Tx」は増加しなくなりますが、事前に増加を確認できていれば問題ありません。
-
-</Callout>
-
-
-<Tabs items={["リレー/BP"]}>
-<Tab value="リレー/BP">
-
-```bash
-sed -i $NODE_HOME/${NODE_CONFIG}-config.json \
-  -e "s/TraceMempool\": true/TraceMempool\": false/g"
-```
-
-</Tab>
-</Tabs>
-
-**ノードを再起動してください。**
-```bash
-sudo systemctl reload-or-restart cardano-node
-```
-
-ノードログにエラーが出ていないか確認してください。
-```bash
-journalctl --unit=cardano-node --follow
-```
-
-
-## 3. ブロック生成可能状態チェック [#sec-3]
+## 2. ブロック生成可能状態チェック [#sec-2]
 
 **SJGツールを導入してください。**
 

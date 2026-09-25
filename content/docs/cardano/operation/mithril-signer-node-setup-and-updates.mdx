@@ -8,7 +8,7 @@ title: "Mithril Signerノードの設定、更新"
 
 | Cardano Node | Mithril Signer | Squid |
 | :----------- | :------------- | :---- |
-| 11.0.1       | 1.1.6          | 7.6   |
+| 11.1.2       | 1.1.9          | 7.7   |
 
 </Callout>
 
@@ -41,7 +41,7 @@ mkdir -p $HOME/mithril
 
 ビルド済みバイナリのダウンロード
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/IntersectMBO/mithril/refs/heads/main/mithril-install.sh | sh -s -- -c mithril-signer -d 2630.0 -p $HOME/git/mithril
+curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/IntersectMBO/mithril/refs/heads/main/mithril-install.sh | sh -s -- -c mithril-signer -d 2630.1-hotfix -p $HOME/git/mithril
 ```
 
 `bin`ディレクトリへコピー
@@ -54,14 +54,14 @@ sudo cp $HOME/git/mithril/mithril-signer /usr/local/bin/mithril-signer
 mithril-signer -V
 ```
 ```yaml title="期待される表示例：" noCopy
-mithril-signer 1.1.6+23e124d
+mithril-signer 1.1.9+3f6cb73
 ```
 
 #### ENV変数の設定 [#sec-3]
 
 パラメータ値算出
 ```bash
-era_params=$(jq -nc --arg address $(wget -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/era.addr) --arg verification_key $(wget -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/era.vkey) '{"address": $address, "verification_key": $verification_key}')
+era_params=$(jq -nc --arg address $(wget -4 -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/era.addr) --arg verification_key $(wget -4 -q -O - https://raw.githubusercontent.com/IntersectMBO/mithril/main/mithril-infra/configuration/release-mainnet/era.vkey) '{"address": $address, "verification_key": $verification_key}')
 ```
 
 BPから接続するリレーIPを指定
@@ -154,12 +154,12 @@ sudo apt update && sudo apt upgrade -y
 `squid`のインストール
 ```bash
 cd $HOME
-wget https://github.com/squid-cache/squid/releases/download/SQUID_7_6/squid-7.6.tar.gz
+wget -4 https://github.com/squid-cache/squid/releases/download/SQUID_7_7/squid-7.7.tar.gz
 ```
 
 ```bash
-tar xzf squid-7.6.tar.gz
-cd squid-7.6
+tar xzf squid-7.7.tar.gz
+cd squid-7.7
 ```
 
 `squid`のビルド
@@ -189,7 +189,7 @@ sudo make install
 /opt/squid/sbin/squid -v
 ```
 ```yaml title="期待される表示例：" noCopy
-Squid Cache: Version 7.6
+Squid Cache: Version 7.7
 Service Name: squid
 configure options:  '--prefix=/opt/squid' '--localstatedir=/opt/squid/var' '--libexecdir=/opt/squid/lib/squid' '--datadir=/opt/squid/share/squid' '--sysconfdir=/etc/squid' '--with-default-user=squid' '--with-logdir=/opt/squid/var/log/squid' '--with-pidfile=/opt/squid/var/run/squid.pid' 'PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:'
 ```
@@ -197,8 +197,8 @@ configure options:  '--prefix=/opt/squid' '--localstatedir=/opt/squid/var' '--li
 インストールファイルの削除
 ```bash
 cd $HOME
-rm squid-7.6.tar.gz
-rm -rf squid-7.6
+rm squid-7.7.tar.gz
+rm -rf squid-7.7
 ```
 
 `squid`のアカウント作成
@@ -359,7 +359,7 @@ journalctl -u mithril-signer -f --output=cat
 
 ```bash
 cd $HOME/mithril
-wget https://mithril.network/doc/scripts/verify_signer_registration.sh
+wget -4 https://mithril.network/doc/scripts/verify_signer_registration.sh
 ```
 ```bash
 chmod +x verify_signer_registration.sh
@@ -532,7 +532,7 @@ rm -rf $HOME/git/mithril/*
 
 ビルド済みバイナリファイルのダウンロード
 ```bash
-curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/IntersectMBO/mithril/refs/heads/main/mithril-install.sh | sh -s -- -c mithril-signer -d 2630.0 -p $HOME/git/mithril
+curl --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/IntersectMBO/mithril/refs/heads/main/mithril-install.sh | sh -s -- -c mithril-signer -d 2630.1-hotfix -p $HOME/git/mithril
 ```
 
 `bin`ディレクトリへコピー
@@ -545,7 +545,7 @@ sudo cp $HOME/git/mithril/mithril-signer /usr/local/bin/mithril-signer
 mithril-signer -V
 ```
 ```yaml title="期待される表示例：" noCopy
-mithril-signer 1.1.6+23e124d
+mithril-signer 1.1.9+3f6cb73
 ```
 
 `mithril-signer`の起動
@@ -593,7 +593,7 @@ journalctl -u mithril-signer -f --output=cat
 
 <Callout type="info" title="ヒント">
 
-`Squid Cache: Version 7.6` の戻り値がある場合、以降実施不要です。
+`Squid Cache: Version 7.7` の戻り値がある場合、以降実施不要です。
 
 </Callout>
 
@@ -611,15 +611,15 @@ sudo systemctl disable squid
 sudo apt update && sudo apt upgrade -y
 ```
 
-`squid7.6`のインストール
+`squid7.7`のインストール
 ```bash
 cd $HOME
-wget https://github.com/squid-cache/squid/releases/download/SQUID_7_6/squid-7.6.tar.gz
+wget -4 https://github.com/squid-cache/squid/releases/download/SQUID_7_7/squid-7.7.tar.gz
 ```
 
 ```bash
-tar xzf squid-7.6.tar.gz
-cd squid-7.6
+tar xzf squid-7.7.tar.gz
+cd squid-7.7
 ```
 
 `squid`のビルド
@@ -650,7 +650,7 @@ sudo make install
 
 戻り値
 ```yaml title="期待される表示例：" noCopy
-Squid Cache: Version 7.6
+Squid Cache: Version 7.7
 ```
 
 `squid`のサービス有効化
@@ -666,8 +666,8 @@ sudo systemctl start squid
 インストールファイルの削除
 ```bash
 cd $HOME
-rm squid-7.6.tar.gz
-rm -rf squid-7.6
+rm squid-7.7.tar.gz
+rm -rf squid-7.7
 ```
 
 </Tab>

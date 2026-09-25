@@ -39,6 +39,10 @@ P2P では接続先の多くはノードが自動で選びます。
 
 ## 2. トポロジーファイルの変更 [#sec-3]
 
+この手順では、`GenesisMode` を使用する構成を前提としています。  
+Genesis Modeでは bootstrapPeers を使用せず、リレーは peerSnapshotFile を使用してGenesis同期を行います。  
+BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
+
 <Callout type="info" title="${NODE_CONFIG}-topology.json">
 
 
@@ -66,54 +70,36 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 | **localRoots** | 常に維持したいピアのグループ（**グループ間で同じピアを重ねない**） |
 | **accessPoints** | IP または DNS とポート |
 | **advertise** | Peer Sharing でその接続先を他ノードへ知らせてよいか。BP や内部用リレーなど、公開したくない接続先は `false`に設定 |
-| **trustable** | `bootstrapPeers: null` の場合、初期接続先として信頼するピアには通常 `true` を指定。自BP・自リレーなど、自分で管理しているピアは通常 `true` に設定。 |
+| **trustable** | Bootstrap peersを使用する場合に、そのlocalRootsグループを信頼できる同期元として扱う設定。GenesisModeではbootstrap peersを使用しないため、通常はfalse。 |
 | **hotValency** | そのグループの Hot 接続数（旧 `valency` と同義） |
 | **diffusionMode** | UFW 等で通信元を制限している場合、`InitiatorOnly` は不要です。`diffusionMode` を省略すると `InitiatorAndResponder` になります。 |
-| **peerSnapshotFile** | 手順例どおりパスを書く（運用で `null` にする場合は別途確認） |
+| **peerSnapshotFile** | Genesis Modeの初期同期に使用するBig Ledger Peerのスナップショットファイル。 |
 | **useLedgerAfterSlot** | リレーは手順例の値、BP は **`-1`** |
 
 ### 手順 [#sec-5]
 
-<Callout type="error" title="リレー">
+[5. ノード起動スクリプトの作成](/cardano/setup/node-setup#sec-15) で決めた**ノード用ポート**に合わせること。  
 
+以下のフォームで、接続先に合わせたファイル作成コマンドを生成できます。
+リレー用の Peer Snapshot パスは、初期値 `$NODE_HOME/${NODE_CONFIG}-peer-snapshot.json` の環境変数をそのまま使用できます。BP用では Peer Snapshot を使用しません。
 
-<Callout type="warn" title="クラウドのセキュリティグループでファイアウォールを開けている場合">
+<TopologyGenerator />
 
+生成したファイル作成コマンドを対象ノードで実行してください。環境変数が展開され、`${NODE_HOME}/${NODE_CONFIG}-topology.json` に保存されます。
 
-`ufw` は使わず、コンソールで**リレー用ポート（例: 6000）のインバウンド**を許可してください。
+<AccordionsBlue type="single">
+<Accordion id="relay-bp-setup-topology-manual" title="手動設定用のサンプル">
 
-</Callout>
-
-
-```bash
-sudo ufw allow 6000/tcp
-sudo ufw reload
-```
-
-[4. ノード起動スクリプトの作成](/cardano/setup/node-setup#sec-8) で決めた**ノード用ポート**に合わせること。  
+BP用サンプルの自リレーは `advertise: false` ですが、フォームでは自リレーの初期値を `true` とし、変更できます。
 行末の「`＋`」で注釈を表示できます。
 
-<Tabs items={["リレー1", "リレー2"]}>
+<Tabs items={["リレー1", "リレー2" ,"BP"]}>
 <Tab value="リレー1">
 
 <AnnotatedCode
   code={[
     'cat > ${NODE_HOME}/${NODE_CONFIG}-topology.json << EOF',
     '{',
-    '  "bootstrapPeers": [',
-    '    {',
-    '      "address": "backbone.cardano.iog.io",',
-    '      "port": 3001',
-    '    },',
-    '    {',
-    '      "address": "backbone.mainnet.cardanofoundation.org",',
-    '      "port": 3001',
-    '    },',
-    '    {',
-    '      "address": "backbone.mainnet.emurgornd.com",',
-    '      "port": 3001',
-    '    }',
-    '  ],',
     '  "localRoots": [',
     '    {',
     '      "accessPoints": [',
@@ -123,7 +109,7 @@ sudo ufw reload
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 1',
     '    },',
     '    {',
@@ -134,21 +120,25 @@ sudo ufw reload
     '        }',
     '      ],',
     '      "advertise": true,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 1',
     '    }',
     '  ],',
+    '  "peerSnapshotFile": "$NODE_HOME/${NODE_CONFIG}-peer-snapshot.json",',
     '  "publicRoots": [],',
-    '  "useLedgerAfterSlot": 185500763',
+    '  "useLedgerAfterSlot": 194140785',
     '}',
     'EOF',
   ].join('\n')}
   annotations={{
-    21: 'BP の IP。',
-    22: 'BP のポート。`grep PORT=` `startBlockProducingNode.sh` の値に合わせてください（例は `00000`）。',
-    25: 'BP 宛の localRoot は必ず `advertise: false` とします。',
-    32: 'リレー2 の IP アドレスまたは DNS。',
-    33: 'リレー2 のポート。リレー2 ノード側に設定したポートへ合わせてください。',
+    7: 'BP の IP。',
+    8: 'BP のポート。`grep PORT=` `startBlockProducingNode.sh` の値に合わせてください（例は `00000`）。',
+    11: 'BP 宛の接続先をPeer Sharingで他ノードへ知らせないため `advertise: false` にします。',
+    18: 'リレー2 の IP アドレスまたは DNS。',
+    19: 'リレー2 のポート。リレー2 ノード側に設定したポートへ合わせてください。',
+    22: '`true` にすると、この接続先をPeer Sharingで他ノードへ知らせることを許可します。',
+    27: 'Genesis Modeで初期同期に使用するPeer Snapshotファイルを指定します。',
+    29: 'このスロット以降、Ledger Peersを使用します。',
   }}
 />
 
@@ -159,20 +149,6 @@ sudo ufw reload
   code={[
     'cat > ${NODE_HOME}/${NODE_CONFIG}-topology.json << EOF',
     '{',
-    '  "bootstrapPeers": [',
-    '    {',
-    '      "address": "backbone.cardano.iog.io",',
-    '      "port": 3001',
-    '    },',
-    '    {',
-    '      "address": "backbone.mainnet.cardanofoundation.org",',
-    '      "port": 3001',
-    '    },',
-    '    {',
-    '      "address": "backbone.mainnet.emurgornd.com",',
-    '      "port": 3001',
-    '    }',
-    '  ],',
     '  "localRoots": [',
     '    {',
     '      "accessPoints": [',
@@ -182,7 +158,7 @@ sudo ufw reload
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 1',
     '    },',
     '    {',
@@ -193,66 +169,35 @@ sudo ufw reload
     '        }',
     '      ],',
     '      "advertise": true,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 1',
     '    }',
     '  ],',
+    '  "peerSnapshotFile": "$NODE_HOME/${NODE_CONFIG}-peer-snapshot.json",',
     '  "publicRoots": [],',
-    '  "useLedgerAfterSlot": 185500763',
+    '  "useLedgerAfterSlot": 194140785',
     '}',
     'EOF',
   ].join('\n')}
   annotations={{
-    21: 'BP の IP。',
-    22: 'BP のポート。`grep PORT=` `startBlockProducingNode.sh` の値に合わせてください（例は `00000`）。',
-    25: 'BP 宛の localRoot は必ず `advertise: false` とします。',
-    32: 'リレー1 の IP アドレスまたは DNS。',
-    33: 'リレー1 のポート。リレー1 ノード側に設定したポートへ合わせてください。',
+    7: 'BP の IP。',
+    8: 'BP のポート。`grep PORT=` `startBlockProducingNode.sh` の値に合わせてください（例は `00000`）。',
+    11: 'BP 宛の接続先をPeer Sharingで他ノードへ知らせないため `advertise: false` にします。',
+    18: 'リレー1 の IP アドレスまたは DNS。',
+    19: 'リレー1 のポート。リレー1 ノード側に設定したポートへ合わせてください。',
+    22: '`true` にすると、この接続先をPeer Sharingで他ノードへ知らせることを許可します。',
+    27: 'Genesis Modeで初期同期に使用するPeer Snapshotファイルを指定します。',
+    29: 'このスロット以降、Ledger Peersを使用します。',
   }}
 />
 
 </Tab>
-</Tabs>
 
-
-</Callout>
-
-
-<Callout type="error" title="BP">
-
-<Callout type="warn" title="クラウドのセキュリティグループでファイアウォールを開けている場合">
-
-
-`ufw` は使わず、コンソールで**BP用ポートのインバウンド**を許可してください。
-
-</Callout>
-
-
-```bash
-PORT=`grep "PORT=" $NODE_HOME/startBlockProducingNode.sh`
-b_PORT=${PORT#"PORT="}
-echo "BPポートは ${b_PORT} です"
-```
-
-```bash
-sudo ufw allow from <リレーサーバー1のIP> to any port ${b_PORT}
-```
-
-```bash
-sudo ufw allow from <リレーサーバー2のIP> to any port ${b_PORT}
-```
-
-```bash
-sudo ufw reload
-```
-
-行末の「`＋`」で注釈を表示できます。
-
+<Tab value="BP">
 <AnnotatedCode
   code={[
     'cat > ${NODE_HOME}/${NODE_CONFIG}-topology.json << EOF',
     '{',
-    '  "bootstrapPeers": null,',
     '  "localRoots": [',
     '    {',
     '      "accessPoints": [',
@@ -266,7 +211,7 @@ sudo ufw reload
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": true,',
+    '      "trustable": false,',
     '      "hotValency": 2',
     '    }',
     '  ],',
@@ -276,18 +221,21 @@ sudo ufw reload
     'EOF',
   ].join('\n')}
   annotations={{
-    8: 'リレー1 の IP アドレスまたは DNS。',
-    9: 'リレー1 ノード側に設定したポート。',
-    12: 'リレー2 の IP アドレスまたは DNS。',
-    13: 'リレー2 ノード側に設定したポート。',
-    16: 'BP は他ノードにピア情報を広めないよう `advertise: false` にします。',
-    18: 'Hot として維持したい自リレー数。`accessPoints` の数と揃えるのが一般的です。',
-    22: '`-1` で台帳ピアを使わない BP 向けモードになります。',
+    7: 'リレー1 の IP アドレスまたは DNS。',
+    8: 'リレー1 ノード側に設定したポート。',
+    11: 'リレー2 の IP アドレスまたは DNS。',
+    12: 'リレー2 ノード側に設定したポート。',
+    15: 'BP は自リレーをPeer Sharingで他ノードへ知らせないため `advertise: false` にします。',
+    17: 'Hot として維持したい自リレー数。`accessPoints` の数と揃えるのが一般的です。',
+    21: '`-1` を指定してLedger Peersを使用しないようにします。',
   }}
 />
+</Tab>
 
-</Callout>
+</Tabs>
 
+</Accordion>
+</AccordionsBlue>
 
 ### 構文チェックと再起動 [#sec-6]
 
