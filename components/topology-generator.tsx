@@ -16,8 +16,8 @@ export function TopologyGenerator() {
   const relayInputsByMode = useRef<Record<TopologyInput['mode'], Peer[]>>({
     relay: [],
     bp: [
-      { id: 'bp-relay-1', address: '', port: '6000', advertise: true },
-      { id: 'bp-relay-2', address: '', port: '6000', advertise: true },
+      { id: 'bp-relay-1', address: '', port: '6000', advertise: false },
+      { id: 'bp-relay-2', address: '', port: '6000', advertise: false },
     ],
   });
   const [input, setInput] = useState<TopologyInput>({
@@ -80,7 +80,7 @@ export function TopologyGenerator() {
           </div>
         </div>}
         <div className="mt-3 flex flex-wrap items-end justify-between gap-3">
-          {kind === 'relays' ? <div>
+          {kind === 'relays' && input.mode === 'relay' ? <div>
             <label htmlFor={`${baseId}-${peer.id}-advertise`} className="text-sm">advertise</label>
             <select id={`${baseId}-${peer.id}-advertise`} className={fieldClass} value={String(peer.advertise)}
               aria-describedby={`${baseId}-${peer.id}-advertise-help`}
@@ -112,7 +112,7 @@ export function TopologyGenerator() {
       })}
       {kind === 'relays' && errors.relays && <p className="text-sm text-red-600 dark:text-red-400">{errors.relays}</p>}
       <button type="button" className={buttonClass} onClick={() => update({
-        [kind]: [...input[kind], { id: `${kind}-${nextId.current++}`, address: '', port: '6000', advertise: kind === 'relays' }],
+        [kind]: [...input[kind], { id: `${kind}-${nextId.current++}`, address: '', port: '6000', advertise: kind === 'relays' && input.mode === 'relay' }],
       })}>＋ {title}を追加</button>
     </section>;
   }

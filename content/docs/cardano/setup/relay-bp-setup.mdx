@@ -35,6 +35,27 @@ P2P では接続先の多くはノードが自動で選びます。
 - `advertise`は`Peer Sharing`でその接続先を他ノードへ知らせてよいかを表します。  
 - BPや内部用リレーなど、外部へ公開したくない接続先は `false`に設定。
 
+
+リレーノードポートのFW許可
+<Callout type="warn" title="VPS側のFWを使用している場合">
+`ufw` は使わず、VPSの管理画面で**リレー用ポート（例: 6000）のインバウンド**を許可してください。
+</Callout>
+```
+sudo ufw allow 6000/tcp
+```
+```
+sudo ufw reload
+```
+
+<Callout type="info" title="BPのインバウンド通信を許可する必要がない理由">
+Dynamic P2Pでは、**Duplex Connection（双方向接続）**により、BPからRelayへ確立した1本のアウトバウンド接続を双方向のノード間通信に利用できます。
+そのため、BPのノードポートへの新規インバウンド接続をFirewallで許可しなくても、BPとRelay間の通信を維持できます。
+これによりBPを外部から直接接続できない状態に置くことができ、攻撃対象となる範囲（Attack Surface）を縮小できます。
+
+[Engineering dive into Cardano's Dynamic P2P design](https://www.essentialcardano.io/article/engineering-dive-into-cardanos-dynamic-p2p-design?utm_source=chatgpt.com)
+</Callout>
+
+
 ---
 
 ## 2. トポロジーファイルの変更 [#sec-3]
@@ -70,7 +91,7 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 | **localRoots** | 常に維持したいピアのグループ（**グループ間で同じピアを重ねない**） |
 | **accessPoints** | IP または DNS とポート |
 | **advertise** | Peer Sharing でその接続先を他ノードへ知らせてよいか。BP や内部用リレーなど、公開したくない接続先は `false`に設定 |
-| **trustable** | Bootstrap peersを使用する場合に、そのlocalRootsグループを信頼できる同期元として扱う設定。GenesisModeではbootstrap peersを使用しないため、通常はfalse。 |
+| **trustable** | この手順では、BP用の自リレーグループは `true`、リレー用のグループは `false` に設定します。 |
 | **hotValency** | そのグループの Hot 接続数（旧 `valency` と同義） |
 | **diffusionMode** | UFW 等で通信元を制限している場合、`InitiatorOnly` は不要です。`diffusionMode` を省略すると `InitiatorAndResponder` になります。 |
 | **peerSnapshotFile** | Genesis Modeの初期同期に使用するBig Ledger Peerのスナップショットファイル。 |
@@ -90,7 +111,7 @@ cardano-cli latest query tip ${NODE_NETWORK} | grep syncProgress
 <AccordionsBlue type="single">
 <Accordion id="relay-bp-setup-topology-manual" title="手動設定用のサンプル">
 
-BP用サンプルの自リレーは `advertise: false` ですが、フォームでは自リレーの初期値を `true` とし、変更できます。
+BP用では自リレーの `advertise` は `false` 固定です。リレー用フォームでは、自リレーの初期値を `true` とし、変更できます。
 行末の「`＋`」で注釈を表示できます。
 
 <Tabs items={["リレー1", "リレー2" ,"BP"]}>
@@ -211,7 +232,7 @@ BP用サンプルの自リレーは `advertise: false` ですが、フォーム�
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": false,',
+    '      "trustable": true,',
     '      "hotValency": 2',
     '    }',
     '  ],',
@@ -226,6 +247,7 @@ BP用サンプルの自リレーは `advertise: false` ですが、フォーム�
     11: 'リレー2 の IP アドレスまたは DNS。',
     12: 'リレー2 ノード側に設定したポート。',
     15: 'BP は自リレーをPeer Sharingで他ノードへ知らせないため `advertise: false` にします。',
+    16: 'BP用では、自リレーのグループを `trustable: true` に設定します。',
     17: 'Hot として維持したい自リレー数。`accessPoints` の数と揃えるのが一般的です。',
     21: '`-1` を指定してLedger Peersを使用しないようにします。',
   }}
