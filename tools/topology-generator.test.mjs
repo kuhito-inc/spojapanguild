@@ -47,7 +47,7 @@ test('private self-managed relays join the BP group', () => {
   assert.equal(result.localRoots[1].hotValency, 1);
 });
 
-test('BP output ignores hidden fields and retains self-relay advertise choices', () => {
+test('BP output ignores hidden fields and forces advertise false', () => {
   const input = fixture();
   input.mode = 'bp';
   input.bp.address = '';
@@ -55,11 +55,23 @@ test('BP output ignores hidden fields and retains self-relay advertise choices',
   input.snapshotPath = '';
   const result = generate(input);
   assert.equal(result.localRoots.length, 1);
-  assert.equal(result.localRoots[0].advertise, true);
+  assert.equal(result.localRoots[0].advertise, false);
+  assert.equal(result.localRoots[0].trustable, true);
   assert.equal(result.localRoots[0].hotValency, 2);
   assert.deepEqual(result.publicRoots, []);
   assert.equal(result.useLedgerAfterSlot, -1);
   assert.equal('peerSnapshotFile' in result, false);
+});
+
+test('BP combines relays into one trusted non-advertised group', () => {
+  const input = { ...fixture(), mode: 'bp' };
+  input.relays[0].advertise = false;
+  const result = generate(input);
+  assert.equal(result.localRoots.length, 1);
+  assert.equal(result.localRoots[0].advertise, false);
+  assert.equal(result.localRoots[0].trustable, true);
+  assert.equal(result.localRoots[0].hotValency, 2);
+  assert.equal(result.localRoots[0].accessPoints.length, 2);
 });
 
 test('zero relays is allowed for relay output but not BP output', () => {

@@ -60,7 +60,7 @@ export function generateTopology(input: TopologyInput) {
   const errors: Record<string, string> = {};
   const local = input.mode === 'relay'
     ? [{ ...input.bp, advertise: false }, ...input.relays]
-    : input.relays;
+    : input.relays.map((peer) => ({ ...peer, advertise: false }));
   const external = input.mode === 'relay'
     ? input.external.map((peer) => ({ ...peer, advertise: false }))
     : [];
@@ -111,7 +111,7 @@ export function generateTopology(input: TopologyInput) {
   }
 
   const topology = {
-    localRoots: group(local).map((root) => ({ ...root, trustable: false, hotValency: root.accessPoints.length })),
+    localRoots: group(local).map((root) => ({ ...root, trustable: input.mode === 'bp', hotValency: root.accessPoints.length })),
     ...(input.mode === 'relay' ? { peerSnapshotFile: snapshotPath } : {}),
     publicRoots: group(external),
     useLedgerAfterSlot: input.mode === 'relay' ? 194140785 : -1,

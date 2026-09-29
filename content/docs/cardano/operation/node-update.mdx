@@ -761,7 +761,7 @@ BPは自リレーのみに接続し、peerSnapshotFile は使用しません。
 <AccordionsBlue type="single">
 <Accordion id="node-update-topology-manual" title="手動設定用のサンプル">
 
-BP用サンプルの自リレーは `advertise: false` ですが、フォームでは自リレーの初期値を `true` とし、変更できます。
+BP用では自リレーの `advertise` は `false` 固定です。リレー用フォームでは、自リレーの初期値を `true` とし、変更できます。
 行末の「`＋`」で注釈を表示できます。
 
 <Tabs items={["リレー1", "リレー2", "BP"]}>
@@ -882,7 +882,7 @@ BP用サンプルの自リレーは `advertise: false` ですが、フォーム�
     '        }',
     '      ],',
     '      "advertise": false,',
-    '      "trustable": false,',
+    '      "trustable": true,',
     '      "hotValency": 2',
     '    }',
     '  ],',
@@ -897,6 +897,7 @@ BP用サンプルの自リレーは `advertise: false` ですが、フォーム�
     11: 'リレー2 の IP アドレスまたは DNS。',
     12: 'リレー2 ノード側に設定したポート。',
     15: 'BP は自リレーをPeer Sharingで他ノードへ知らせないため `advertise: false` にします。',
+    16: 'BP用では、自リレーのグループを `trustable: true` に設定します。',
     17: 'Hot として維持したい自リレー数。`accessPoints` の数と揃えるのが一般的です。',
     21: '`-1` を指定してLedger Peersを使用しないようにします。',
   }}
