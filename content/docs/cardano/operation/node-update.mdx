@@ -2,12 +2,12 @@
 title: "ノードアップデート"
 ---
 
-このガイドは ノードバージョン`11.1.2`に対応しています。  
+このガイドは ノードバージョン`11.1.3`に対応しています。  
 
 <LastUpdated />
 
 <Callout type="warn" title="留意点">
-`11.0.1`以前から`11.1.2`へのアップデートでは大幅な変更があります。
+`11.0.1`以前から`11.1.3`へのアップデートでは大幅な変更があります。
 
 - ログシステム変更(cardano-tracer常駐)
 - stdoutログ形式をJSONに変更
@@ -39,20 +39,20 @@ title: "ノードアップデート"
 
 | OS | Node | CLI | GHC | Cabal | CNCLI |
 | :----------: | :----------: | :----------: | :----------: | :----------: | :----------: |
-| ubuntu 24.04.* | 11.1.2 | 11.2.3.0 | 9.6.7 | 3.12.1.0 | 6.8.0 |
+| ubuntu 24.04.* | 11.1.3 | 11.2.3.0 | 9.6.7 | 3.12.1.0 | 6.8.0 |
 
 **■アップデートパターンDB再構築有無**
 
 | バージョン | DB再構築有無 | 設定ファイル更新有無 | トポロジーファイル更新有無 |
 | :----------: | :----------: | :----------: | :----------: |
-| 11.0.1 → 11.1.2 | なし | 更新あり | 更新あり |
+| 11.0.1 → 11.1.3 | なし | 更新あり | 更新あり |
 
 </Callout>
 
 <AccordionsBlue type="single">
   <Accordion id="node-update-major-changes" title="主な変更点と新機能および検証結果">
 
-<Callout type="info" title="cardano-node 11.1.2">
+<Callout type="info" title="cardano-node 11.1.3">
 
 - Time Lock Scriptのメモリ使用量を最適化  
 - Block HeaderのProtocol Version minorを更新  
@@ -86,7 +86,7 @@ title: "ノードアップデート"
 <Callout type="info" title="検証結果">
 
 ■検証環境
-PreProd-Testnet / cardano-node 11.1.2 / cardano-cli 11.2.3.0 / SJG-TOOL 5.0.0  
+PreProd-Testnet / cardano-node 11.1.3 / cardano-cli 11.2.3.0 / SJG-TOOL 5.0.0  
 
 | 検証項目 | 結果 |
 | :----------: | :----------: |
@@ -420,17 +420,22 @@ rm -rf $HOME/git/cardano-node-old/
 ```bash
 mkdir -p $HOME/git/cardano-node2
 cd $HOME/git/cardano-node2
-wget -4 https://github.com/IntersectMBO/cardano-node/releases/download/11.1.2/cardano-node-11.1.2-linux-amd64.tar.gz
+wget -4 https://github.com/IntersectMBO/cardano-node/releases/download/11.1.3/cardano-node-11.1.3-linux-amd64.tar.gz
 ```
 
 解凍
 ```bash
-tar zxvf cardano-node-11.1.2-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano-cli ./bin/snapshot-converter ./bin/cardano-tracer
+tar zxvf cardano-node-11.1.3-linux-amd64.tar.gz ./bin/cardano-node ./bin/cardano-cli ./bin/snapshot-converter ./bin/cardano-tracer
 ```
 
 **ノードの停止** 
 ```bash
 sudo systemctl stop cardano-node
+```
+
+**Tracerの停止**
+```bash
+sudo systemctl stop cardano-tracer
 ```
 
 ### バイナリインストール [#sec-7]
@@ -449,11 +454,11 @@ cardano-cli version
 cardano-tracer --version
 ```
 ```yaml title="期待される表示例：" noCopy
-cardano-node 11.1.2 - linux-x86_64 - ghc-9.6
-git rev fef83fed01d7926f3de83b3b917be5a4a48768b5
+cardano-node 11.1.3 - linux-x86_64 - ghc-9.6
+git rev 938cba990357ae7c4b7f95c8f75dd9d31174bbeb
 
 cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6
-git rev fef83fed01d7926f3de83b3b917be5a4a48768b5
+git rev 938cba990357ae7c4b7f95c8f75dd9d31174bbeb
 
 0.5.0
 ```
@@ -496,7 +501,7 @@ cabal update
 
 ```bash
 git fetch --all --recurse-submodules --tags
-git checkout tags/11.1.2
+git checkout tags/11.1.3
 cabal configure --with-compiler=ghc-9.6.7
 ```
 
@@ -537,11 +542,11 @@ cardano-tracer --version
 ```
 
 ```yaml title="期待される表示例：" noCopy
-cardano-node 11.1.2 - linux-x86_64 - ghc-9.6  
-git rev fef83fed01d7926f3de83b3b917be5a4a48768b5  
+cardano-node 11.1.3 - linux-x86_64 - ghc-9.6  
+git rev 938cba990357ae7c4b7f95c8f75dd9d31174bbeb  
 
 cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6  
-git rev fef83fed01d7926f3de83b3b917be5a4a48768b5  
+git rev 938cba990357ae7c4b7f95c8f75dd9d31174bbeb  
 
 0.5.0
 ```
@@ -569,13 +574,13 @@ cp $NODE_HOME/${NODE_CONFIG}-byron-genesis.json $NODE_HOME/${NODE_CONFIG}-shelle
 ```bash
 cd $NODE_HOME
 WGET_OPTS=(-4 --no-use-server-timestamps --tries=5 --waitretry=3 --connect-timeout=10 --read-timeout=30)
-wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
-wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
-wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
-wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
-wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
-wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
-wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
 
 ファイル確認
@@ -613,7 +618,7 @@ OK  mainnet-checkpoints.json
 `peer-snapshot.json`のダウンロード
 ```bash
 cd $NODE_HOME
-wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
 ```
 
 </Tab>
@@ -1040,7 +1045,7 @@ cd ${NODE_HOME}/tracer
 
 ```bash
 WGET_OPTS=(-4 --no-use-server-timestamps --tries=5 --waitretry=3 --connect-timeout=10 --read-timeout=30)
-wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
+wget "${WGET_OPTS[@]}" https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
 ```
 
 **tracer-config.jsonの設定**
@@ -1067,6 +1072,7 @@ Description=Cardano Tracer Service
 Wants=network-online.target
 After=network-online.target
 Before=cardano-node.service
+PartOf=cardano-node.service
 StartLimitIntervalSec=0
 
 [Service]
@@ -1079,7 +1085,7 @@ RestartSec=5
 LimitNOFILE=32768
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=cardano-node.service
 EOF
 ```
 
@@ -1385,6 +1391,22 @@ sudo systemctl status cardano-tracer --no-pager
 ```yaml title="期待される表示例：" noCopy
 Active: active (running) 
 ```
+
+`cardano-node.service`と`cardano-tracer.service`の連動設定を確認します。
+
+```bash
+systemctl show cardano-tracer.service -p PartOf --value
+systemctl list-dependencies cardano-node.service --plain | grep cardano-tracer.service
+```
+
+以下のように両方のコマンドで`cardano-node.service`、`cardano-tracer.service`がそれぞれ表示されれば問題ありません。
+
+```yaml title="期待される表示例：" noCopy
+cardano-node.service
+cardano-tracer.service
+```
+
+以降は`cardano-node.service`を操作するだけで、Tracerも連動して起動・停止・再起動します。
 
 Tracer Socketの確認
 ```bash
@@ -2149,7 +2171,7 @@ cardano-cli version
 **戻り値確認**
 ```yaml title="期待される表示例：" noCopy
 cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6  
-git rev fef83fed01d7926f3de83b3b917be5a4a48768b5
+git rev 938cba990357ae7c4b7f95c8f75dd9d31174bbeb
 ```
 
 </Tab>
@@ -2285,7 +2307,7 @@ cardano-cli version
 **戻り値確認**
 ```yaml title="期待される表示例：" noCopy
 cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6  
-git rev fef83fed01d7926f3de83b3b917be5a4a48768b5
+git rev 938cba990357ae7c4b7f95c8f75dd9d31174bbeb
 ```
 
 
