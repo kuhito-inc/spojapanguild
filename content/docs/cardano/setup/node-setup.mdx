@@ -6,7 +6,7 @@ title: "ノードセットアップ"
 
 | Node | CLI | GHC | Cabal | CNCLI |
 | :----------: | :----------: | :----------: | :----------: | :----------: |
-| 11.1.2 | 11.2.3.0 | 9.6.7 | 3.12.1.0 | 6.8.0 |
+| 11.1.3 | 11.2.3.0 | 9.6.7 | 3.12.1.0 | 6.8.0 |
 
 </Callout>
 
@@ -238,7 +238,7 @@ cd $HOME/git
 git clone https://github.com/IntersectMBO/cardano-node.git
 cd cardano-node
 git fetch --all --recurse-submodules --tags
-git checkout tags/11.1.2
+git checkout tags/11.1.3
 ```
 
 Cabalのビルドオプションを構成します。
@@ -273,11 +273,11 @@ cardano-tracer --version
 ```
 
 ```yaml title="期待される表示例：" noCopy
-cardano-node 11.1.2 - linux-x86_64 - ghc-9.6  
-git rev fef83fed01d7926f3de83b3b917be5a4a48768b5  
+cardano-node 11.1.3 - linux-x86_64 - ghc-9.6  
+git rev 938cba990357ae7c4b7f95c8f75dd9d31174bbeb  
 
 cardano-cli 11.2.3.0 - linux-x86_64 - ghc-9.6  
-git rev fef83fed01d7926f3de83b3b917be5a4a48768b5  
+git rev 938cba990357ae7c4b7f95c8f75dd9d31174bbeb  
 
 0.5.0
 ```
@@ -350,13 +350,13 @@ cd $NODE_HOME
 
 ファイルをダウンロードします。
 ```bash
-wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
-wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
-wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
-wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
-wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
-wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
-wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-byron-genesis.json -O ${NODE_CONFIG}-byron-genesis.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-shelley-genesis.json -O ${NODE_CONFIG}-shelley-genesis.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-alonzo-genesis.json -O ${NODE_CONFIG}-alonzo-genesis.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-conway-genesis.json -O ${NODE_CONFIG}-conway-genesis.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-config.json -O ${NODE_CONFIG}-config.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-topology.json -O ${NODE_CONFIG}-topology.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-checkpoints.json -O ${NODE_CONFIG}-checkpoints.json
 ```
 
 <Tabs items={["リレーのみ"]}>
@@ -365,7 +365,7 @@ wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_confi
 
 `peer-snapshot.json`のダウンロード
 ```bash
-wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-peer-snapshot.json -O ${NODE_CONFIG}-peer-snapshot.json
 ```
 
 </Tab>
@@ -456,7 +456,7 @@ cd ${NODE_HOME}/tracer
 ```
 
 ```bash
-wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.2/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
+wget -4 --no-use-server-timestamps https://download.spojapanguild.net/node_config/11.1.3/${NODE_CONFIG}-tracer-config.json -O ${NODE_CONFIG}-tracer-config.json
 ```
 
 ### tracer-config.jsonの設定 [#sec-12]
@@ -484,6 +484,7 @@ Description=Cardano Tracer Service
 Wants=network-online.target
 After=network-online.target
 Before=cardano-node.service
+PartOf=cardano-node.service
 StartLimitIntervalSec=0
 
 [Service]
@@ -496,7 +497,7 @@ RestartSec=5
 LimitNOFILE=32768
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=cardano-node.service
 EOF
 ```
 
@@ -518,7 +519,9 @@ systemdへ設定を反映します。
 sudo systemctl daemon-reload
 ```
 
-Tracerをサーバー起動時に自動起動し、起動します。
+Tracerを`cardano-node.service`の従属サービスとして有効化し、起動します。
+
+`cardano-node.service`を起動するとTracerが先に起動し、Nodeを停止・再起動するとTracerにも同じ操作が伝播します。
 
 ```bash
 sudo systemctl enable --now cardano-tracer.service
@@ -749,6 +752,22 @@ sudo systemctl daemon-reload
 ```bash
 sudo systemctl enable --now cardano-node
 ```
+
+`cardano-node.service`と`cardano-tracer.service`の連動設定を確認します。
+
+```bash
+systemctl show cardano-tracer.service -p PartOf --value
+systemctl list-dependencies cardano-node.service --plain | grep cardano-tracer.service
+```
+
+以下のように両方のコマンドで`cardano-node.service`、`cardano-tracer.service`がそれぞれ表示されれば問題ありません。
+
+```yaml title="期待される表示例：" noCopy
+cardano-node.service
+cardano-tracer.service
+```
+
+以降は`cardano-node.service`を操作するだけで、Tracerも連動して起動・停止・再起動します。
 
 システム起動後にログモニターを表示します。
 ```bash
