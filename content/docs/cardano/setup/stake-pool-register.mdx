@@ -28,6 +28,10 @@ title: "ステークプール登録"
 
 </Callout>
 
+フォームにプール情報を入力し、`poolMetaData.json`を作成してください。拡張メタデータを利用する場合は、チェックボックスを有効にして公開先のURLを入力します。
+
+<StakePoolMetadataGenerator />
+
 
 <Tabs items={["JSONファイルをGitHubでホストする方法", "ご自身のホームページサーバでホストする方法"]}>
 <Tab value="JSONファイルをGitHubでホストする方法">
@@ -73,7 +77,7 @@ title: "ステークプール登録"
 - 下記は参考フォーマットとなります。ご自身のプール名、Ticker名に書き換えてください  
 - まだホームページURLが無い場合は、ご自身のX(Twitter)アドレスでも大丈夫です。
 - **ticker**名の長さは3～5文字以内で、`A-Z`と`0-9`のみで構成する必要があります。  
-- **description**の長さは255文字以内(`255byte`)となります。（ひらがな、漢字、カタカナは1文字2byte）
+- **description**の長さは255文字以内です。生成するJSONファイル全体は512バイト以内にしてください。
 
 </Callout>
 
@@ -162,7 +166,7 @@ wget -4 -O poolMetaData.json "$metadata_url"
 <Callout type="info" title="作成ルール">
 
 **ticker**名の長さは3～5文字にする必要があります。文字は`A-Z`と`0-9`のみで構成する必要があります。  
-**description**の長さは255文字以内(`255byte`)となります。（ひらがな、漢字、カタカナは1文字2byte）
+**description**の長さは255文字以内です。生成するJSONファイル全体は512バイト以内にしてください。
 
 </Callout>
 
@@ -222,6 +226,10 @@ wget -4 -O poolMetaData.json "$metadata_url"
 
 </Tab>
 </Tabs>
+
+JSONファイルを公開したあと、公開URLから取得できることとファイル内容を確認してください。拡張メタデータでは画像の表示とサイズも確認できます。
+
+<StakePoolMetadataValidator />
 
 メタデータJSONの確認
 ```bash

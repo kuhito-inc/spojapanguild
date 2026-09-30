@@ -4,6 +4,8 @@ import { Accordion, Accordions } from '@/components/docs-accordion';
 import { AccordionsBlue, AccordionsRed, AccordionsYellow, DocsAccordions } from '@/components/docs-colored-accordions';
 import { AnnotatedCode } from '@/components/docs-annotated-code';
 import { TopologyGenerator } from '@/components/topology-generator';
+import { StakePoolMetadataGenerator } from '@/components/stake-pool-metadata-generator';
+import { StakePoolMetadataValidator } from '@/components/stake-pool-metadata-validator';
 import { Changelog, Release } from '@/components/docs-changelog';
 import { DocsMdxAnchor } from '@/components/docs-mdx-anchor';
 import { Mermaid } from '@/components/mermaid';
@@ -82,6 +84,8 @@ export function getMDXComponents(components?: MDXComponents) {
     AccordionsRed,
     AnnotatedCode,
     TopologyGenerator,
+    StakePoolMetadataGenerator,
+    StakePoolMetadataValidator,
     Changelog,
     Release,
     LastUpdated,

@@ -14,6 +14,7 @@
     "start": "next start",
     "test": "pnpm run types:check",
     "test:topology": "node --test tools/topology-generator.test.mjs",
+    "test:pool-metadata": "node --test tools/stake-pool-metadata-generator.test.mjs tools/stake-pool-metadata-validator.test.mjs",
     "types:check": "next typegen && fumadocs-mdx && tsc --noEmit",
     "postinstall": "fumadocs-mdx"
   },
