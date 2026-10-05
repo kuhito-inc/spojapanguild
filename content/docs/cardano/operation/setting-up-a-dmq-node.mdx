@@ -11,6 +11,8 @@ Mithrilネットワークの堅牢性とスケーラビリティを向上させ�
 以下の構成により、DMQ NodeをMainnet環境にデプロイできます。  
 最新安定版の`DMQ Node 0.7.1.0`と`Mithril Signer 1.1.9`の組み合わせです。
 
+<span style={{color: "red"}}>DMQ Nodeは、BPとリレーのそれぞれにインストールしてください。</span>
+
 </Callout>
 
 <Callout type="tip" title="補足">
@@ -286,6 +288,8 @@ jq . $HOME/mithril/dmq/${NODE_CONFIG}-dmq-topology.json
 
 ## systemd サービス作成 [#sec-4]
 
+`cardano-node.service`の起動に合わせてDMQを起動し、停止・再起動も連動させます。DMQ単独での起動・停止・再起動も可能で、DMQの操作はCardanoノードには影響しません。
+
 <Tabs items={["リレー", "BP"]}>
 <Tab value="リレー">
 
@@ -295,6 +299,7 @@ cat > $HOME/mithril/dmq/dmq-node.service << EOF
 Description=DMQ relay service
 Wants=network-online.target
 After=network-online.target cardano-node.service
+PartOf=cardano-node.service
 StartLimitIntervalSec=0
 
 [Service]
@@ -307,7 +312,7 @@ LimitNOFILE=32768
 ExecStart=/usr/local/bin/dmq-node --configuration-file $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json --topology-file $HOME/mithril/dmq/${NODE_CONFIG}-dmq-topology.json --local-socket ${DMQ_NODE_SOCKET_PATH} --host-addr $(curl -s https://api.ipify.org) --port 6161
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=cardano-node.service
 EOF
 ```
 
@@ -320,6 +325,7 @@ cat > $HOME/mithril/dmq/dmq-node.service << EOF
 Description=DMQ block producer service
 Wants=network-online.target
 After=network-online.target cardano-node.service
+PartOf=cardano-node.service
 StartLimitIntervalSec=0
 
 [Service]
@@ -332,7 +338,7 @@ LimitNOFILE=32768
 ExecStart=/usr/local/bin/dmq-node --configuration-file $HOME/mithril/dmq/${NODE_CONFIG}-dmq-config.json --topology-file $HOME/mithril/dmq/${NODE_CONFIG}-dmq-topology.json --local-socket ${DMQ_NODE_SOCKET_PATH} --host-addr $(curl -s https://api.ipify.org) --port 6161
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=cardano-node.service
 EOF
 ```
 
@@ -356,6 +362,28 @@ sudo systemctl daemon-reload
 ```bash
 sudo systemctl enable dmq-node --now
 ```
+
+`WantedBy=cardano-node.service`でCardanoノード起動時にDMQを起動し、`PartOf=cardano-node.service`でCardanoノードの停止・再起動をDMQへ伝えます。Cardanoノードが停止していても、DMQ単独で起動できます。
+
+<AccordionsBlue type="single">
+  <Accordion id="dmq-standalone-commands" title="DMQ単独で操作する場合は、必要なコマンドのみ実行してください。">
+
+```bash title="DMQのみ起動"
+sudo systemctl start dmq-node.service
+```
+
+```bash title="DMQのみ停止"
+sudo systemctl stop dmq-node.service
+```
+
+```bash title="DMQのみ再起動"
+sudo systemctl restart dmq-node.service
+```
+
+DMQを単独で停止した後も、Cardanoノードを次に起動・再起動するとDMQは連動して起動します。
+
+  </Accordion>
+</AccordionsBlue>
 
 状態確認
 ```bash
@@ -452,7 +480,9 @@ journalctl -u mithril-signer -f --output=cat
 </Tabs>
 
 
-## DMQ Nodeの更新
+## DMQ Nodeアップデート手順
+
+この手順はDMQ Nodeアップデート時に実施してください
 
 システムのアップデート
 ```bash
