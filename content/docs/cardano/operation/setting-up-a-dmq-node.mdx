@@ -476,6 +476,15 @@ sudo systemctl status mithril-signer --no-pager
 ```bash
 journalctl -u mithril-signer -f --output=cat
 ```
+
+DMQ連動確認
+```
+sudo journalctl -u mithril-signer -n 200 -o cat | grep DMQ
+```
+```yaml title="期待される表示例：" noCopy
+"msg":"Publish message to DMQ","v":0,"name":"mithril-signer" ....
+```
+
 </Tab>
 </Tabs>
 
